@@ -10,7 +10,7 @@
     "target": "es6",
     "jsx": "react",
     "strict": true,
-    "typeRoots": ["node_modules/@types", "src/custom-types"],
+    "typeRoots": ["node_modules/@types"],
     "baseUrl": ".",
     "moduleResolution": "node",
     "esModuleInterop": true

@@ -4,7 +4,8 @@
   "description": "component programming",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js --mode development"
+    "dev": "webpack-dev-server --mode development",
+    "build": "webpack-dev-server --mode production"
   },
   "author": "erik polderman",
   "license": "ISC",
