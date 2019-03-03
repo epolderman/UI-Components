@@ -1,5 +1,15 @@
+/*
+
+    TSLint helps you to detect bad coding practices or follow a coding style.
+
+*/
+
 {
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier" ],
   "rules": {
-    "no-unused-variable": true
+    "no-unused-variable": true,
+    "no-namespace": false,
+    "no-unused-expression": true,
   }
 }
