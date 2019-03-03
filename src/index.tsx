@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 /*
-  Magic Behind Styled Components: https://mxstbr.blog/2016/11/styled-components-magic-explained/
+  Styled Components: 
+  https://mxstbr.blog/2016/11/styled-components-magic-explained/
+  https://medium.com/styled-components/how-styled-components-works-618a69970421
 */
 
 // TEMP example
 
 const MyButton = styled.button<{ isActive?: boolean }>`
-  background-color: ${props => (props.isActive ? 'red' : 'blue')};
+  background-color: ${({ isActive }) => (isActive ? 'red' : 'blue')};
   width: 100px;
   height: 100px;
 `;
