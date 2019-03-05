@@ -4,7 +4,8 @@
   "description": "component programming",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development",
+    "prestart": "webpack -p",
+    "start": "webpack-dev-server --mode development",
     "build": "webpack-dev-server --mode production"
   },
   "author": "erik polderman",
@@ -21,6 +22,7 @@
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
+    "@types/html-webpack-plugin": "^3.2.0",
     "@types/node": "^11.10.4",
     "@types/react": "^16.8.6",
     "@types/react-dom": "^16.8.2",
@@ -31,6 +33,9 @@
     "@types/webpack-env": "^1.13.8",
     "babel-loader": "^8.0.5",
     "babel-plugin-styled-components": "^1.10.0",
+    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-react-root-plugin": "^0.9.0",
+    "html-webpack-root-plugin": "^0.10.0",
     "react-hot-loader": "^4.7.1",
     "source-map-loader": "^0.2.4",
     "ts-node": "^8.0.2",

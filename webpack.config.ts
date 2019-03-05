@@ -1,4 +1,7 @@
 import webpack from 'webpack';
+import htmlwebpackplugin from 'html-webpack-plugin';
+import path from 'path';
+const htmlWebPackRootPlugin = require('html-webpack-root-plugin');
 
 const pluginReporter = (
   percentage: number,
@@ -39,7 +42,11 @@ const config: webpack.Configuration = {
     It defaults to ./dist/main.js for the main output file and to the ./dist folder for any other generated file. 
   */
   output: {
-    path: __dirname + '/dist',
+    // path: __dirname + '/dist',
+    // publicPath: '/',
+    // filename: 'bundle.js'
+
+    path: path.resolve(__dirname, './dist'),
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -49,11 +56,15 @@ const config: webpack.Configuration = {
     This apply method is called by the webpack compiler, giving access to the entire compilation lifecycle.
   */
   plugins: [
+    new htmlwebpackplugin({
+      title: 'Web Components'
+    }),
+    new htmlWebPackRootPlugin(),
     new webpack.ProgressPlugin(pluginReporter),
     new webpack.HotModuleReplacementPlugin()
   ],
   devServer: {
-    contentBase: './dist',
+    contentBase: path.join(__dirname, './dist'),
     hot: true
   }
 };
