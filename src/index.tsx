@@ -38,7 +38,7 @@ const App: React.FC = () => (
   </div>
 );
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('root'));
 
 //@ts-ignore
 module.hot.accept();
