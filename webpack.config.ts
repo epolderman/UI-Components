@@ -3,73 +3,208 @@ import htmlwebpackplugin from 'html-webpack-plugin';
 import path from 'path';
 const htmlWebPackRootPlugin = require('html-webpack-root-plugin');
 
-const pluginReporter = (
-  percentage: number,
-  message: string,
-  moduleProgress?: string | undefined
-) => console.info(percentage, ' Message:', message, ' Module Progress:', moduleProgress);
-
-const config: webpack.Configuration = {
-  entry: './src/index.tsx',
-  /* 
-    Loaders:
-    Out of the box, webpack only understands JavaScript and JSON files. 
-    Loaders allow webpack to process other types of files and 
-    convert them into valid modules that can be consumed by your application and added to the dependency graph.
-
-    The test property identifies which file or files should be transformed.
-    The use property indicates which loader should be used to do the transforming.
-  */
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        loader: 'babel-loader'
-      },
-      {
-        test: /\.js$/,
-        use: ['source-map-loader'],
-        enforce: 'pre'
-      }
-    ]
+const webpackConfigs: webpack.Configuration[] = [
+  {
+    name: 'development',
+    entry: './src/index.tsx',
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: 'babel-loader'
+        },
+        {
+          test: /\.js$/,
+          use: ['source-map-loader'],
+          enforce: 'pre'
+        }
+      ]
+    },
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js']
+    },
+    output: {
+      path: path.resolve(__dirname, './dist'),
+      publicPath: '/',
+      filename: 'bundle.js'
+    },
+    plugins: [
+      new htmlwebpackplugin({
+        title: 'User Interface Web Components'
+      }),
+      new htmlWebPackRootPlugin(),
+      new webpack.HotModuleReplacementPlugin()
+    ],
+    devServer: {
+      contentBase: path.join(__dirname, './dist'),
+      hot: true,
+      port: 9000
+    }
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js']
-  },
-  /* 
-    Output: 
-    The output property tells webpack where to emit the bundles it creates and how to name these files. 
-    It defaults to ./dist/main.js for the main output file and to the ./dist folder for any other generated file. 
-  */
-  output: {
-    // path: __dirname + '/dist',
-    // publicPath: '/',
-    // filename: 'bundle.js'
-
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/',
-    filename: 'bundle.js'
-  },
-  /*
-    Plugins:
-    A webpack plugin is a JavaScript object that has an apply method. 
-    This apply method is called by the webpack compiler, giving access to the entire compilation lifecycle.
-  */
-  plugins: [
-    new htmlwebpackplugin({
-      title: 'Web Components'
-    }),
-    new htmlWebPackRootPlugin(),
-    new webpack.ProgressPlugin(pluginReporter),
-    new webpack.HotModuleReplacementPlugin()
-  ],
-  devServer: {
-    contentBase: path.join(__dirname, './dist'),
-    hot: true
+  {
+    name: 'library',
+    entry: './src/index.tsx',
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: 'babel-loader'
+        },
+        {
+          test: /\.js$/,
+          use: ['source-map-loader'],
+          enforce: 'pre'
+        }
+      ]
+    },
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js']
+    },
+    output: {
+      path: path.resolve(__dirname, 'lib'),
+      filename: 'webComponents.js',
+      library: 'WebComponents',
+      libraryTarget: 'umd',
+      umdNamedDefine: true
+    },
+    externals: {
+      react: 'React',
+      'react-dom': 'ReactDOM',
+      'styled-components': 'styled'
+    }
   }
-};
+];
 
-export default config;
+// const devBuild: webpack.Configuration = {
+//   entry: './src/index.tsx',
+//   module: {
+//     rules: [
+//       {
+//         test: /\.tsx?$/,
+//         loader: 'babel-loader'
+//       },
+//       {
+//         test: /\.js$/,
+//         use: ['source-map-loader'],
+//         enforce: 'pre'
+//       }
+//     ]
+//   },
+//   resolve: {
+//     extensions: ['.tsx', '.ts', '.js']
+//   },
+//   output: {
+//     path: path.resolve(__dirname, './dist'),
+//     publicPath: '/',
+//     filename: 'bundle.js'
+//   },
+//   plugins: [
+//     new htmlwebpackplugin({
+//       title: 'User Interface Web Components'
+//     }),
+//     new htmlWebPackRootPlugin(),
+//     new webpack.HotModuleReplacementPlugin()
+//   ],
+//   devServer: {
+//     contentBase: path.join(__dirname, './dist'),
+//     hot: true,
+//     port: 9000
+//   }
+// };
+
+// const libBuild: webpack.Configuration = {
+//   entry: './src/index.tsx',
+//   module: {
+//     rules: [
+//       {
+//         test: /\.tsx?$/,
+//         loader: 'babel-loader'
+//       },
+//       {
+//         test: /\.js$/,
+//         use: ['source-map-loader'],
+//         enforce: 'pre'
+//       }
+//     ]
+//   },
+//   resolve: {
+//     extensions: ['.tsx', '.ts', '.js']
+//   },
+//   output: {
+//     path: path.resolve(__dirname, 'lib'),
+//     filename: 'webComponents.js',
+//     library: 'WebComponents',
+//     libraryTarget: 'umd',
+//     umdNamedDefine: true
+//   },
+//   externals: {
+//     react: 'React',
+//     'react-dom': 'ReactDOM',
+//     'styled-components': 'styled'
+//   }
+// };
+
+// const config: webpack.Configuration = {
+//   entry: './src/index.tsx',
+//   /*
+//     Loaders:
+//     Out of the box, webpack only understands JavaScript and JSON files.
+//     Loaders allow webpack to process other types of files and
+//     convert them into valid modules that can be consumed by your application and added to the dependency graph.
+
+//     The test property identifies which file or files should be transformed.
+//     The use property indicates which loader should be used to do the transforming.
+//   */
+//   module: {
+//     rules: [
+//       {
+//         test: /\.tsx?$/,
+//         loader: 'babel-loader'
+//       },
+//       {
+//         test: /\.js$/,
+//         use: ['source-map-loader'],
+//         enforce: 'pre'
+//       }
+//     ]
+//   },
+//   resolve: {
+//     extensions: ['.tsx', '.ts', '.js']
+//   },
+//   /*
+//     Output:
+//     The output property tells webpack where to emit the bundles it creates and how to name these files.
+//     It defaults to ./dist/main.js for the main output file and to the ./dist folder for any other generated file.
+//   */
+//   output: {
+//     // path: __dirname + '/dist',
+//     // publicPath: '/',
+//     // filename: 'bundle.js'
+
+//     path: path.resolve(__dirname, './dist'),
+//     publicPath: '/',
+//     filename: 'bundle.js'
+//   },
+//   /*
+//     Plugins:
+//     A webpack plugin is a JavaScript object that has an apply method.
+//     This apply method is called by the webpack compiler, giving access to the entire compilation lifecycle.
+//   */
+//   plugins: [
+//     new htmlwebpackplugin({
+//       title: 'Web Components'
+//     }),
+//     new htmlWebPackRootPlugin(),
+//     new webpack.HotModuleReplacementPlugin()
+//   ],
+//   devServer: {
+//     contentBase: path.join(__dirname, './dist'),
+//     hot: true
+//   }
+// };
+
+export default webpackConfigs;
+//module.exports = [devBuild, libBuild];
 
 /*
 

@@ -4,9 +4,10 @@
   "description": "component programming",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -rf node_modules/ lib/",
     "prestart": "webpack -p",
-    "start": "webpack-dev-server --mode development",
-    "build": "webpack-dev-server --mode production"
+    "build:lib": "webpack --config-name library && tsc",
+    "start:dev": "webpack-dev-server --mode development"
   },
   "author": "erik polderman",
   "license": "ISC",
