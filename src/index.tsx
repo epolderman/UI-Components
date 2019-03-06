@@ -24,7 +24,7 @@ const MyButton = styled.button<{ isActive?: boolean }>`
   height: 100px;
 `;
 
-interface TextProps {
+export interface TextProps {
   name: string;
 }
 
