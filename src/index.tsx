@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
+import { DateSelector } from './selection/dateSelector';
 
 /*
   Styled Components: 
@@ -35,6 +36,7 @@ const App: React.FC = () => (
     <Text name={'erik'} />
     <MyButton isActive>Button Text</MyButton>
     <MyButton>Second Text</MyButton>
+    <DateSelector />
   </div>
 );
 
