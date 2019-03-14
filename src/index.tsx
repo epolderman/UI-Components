@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
 import { DateSelector } from './selection/dateSelector';
 
 /*
@@ -16,29 +15,9 @@ import { DateSelector } from './selection/dateSelector';
      rules but it is used in nesting selectors when need to refer to other component.
   3. generatedClassName — uniq per every component instance which has actual CSS rules.
 */
+const onChange = (incomingDate: Date) => console.log(incomingDate);
 
-// TEMP example
-
-const MyButton = styled.button<{ isActive?: boolean }>`
-  background-color: ${({ isActive }) => (isActive ? 'red' : 'blue')};
-  width: 100px;
-  height: 100px;
-`;
-
-export interface TextProps {
-  name: string;
-}
-
-const Text: React.FC<TextProps> = ({ name }) => <h1>{`hello ${name}`}</h1>;
-
-const App: React.FC = () => (
-  <div>
-    <Text name={'erik'} />
-    <MyButton isActive>Button Text</MyButton>
-    <MyButton>Second Text</MyButton>
-    <DateSelector />
-  </div>
-);
+const App: React.FC = () => <DateSelector value={new Date()} onChange={onChange} />;
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
