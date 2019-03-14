@@ -23,10 +23,13 @@ export interface DateSelectorProps {
 }
 
 export const DateSelector: React.FC<DateSelectorProps> = ({ value, onChange }) => {
-  const onSelect = useCallback((incomingDate: Date) => {
-    console.log(incomingDate);
-    onChange(incomingDate);
-  }, []);
+  const onSelect = useCallback(
+    (incomingDate: Date) => {
+      console.log(incomingDate);
+      onChange(incomingDate);
+    },
+    [onChange]
+  );
 
   return (
     <DateWrapper>
