@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+/* Main Component */
+
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
   value: Date;
