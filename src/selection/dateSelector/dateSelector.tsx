@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+export interface DateSelectorProps {
+  onChange: (incomingDate: Date) => void;
+  value: Date;
+}
+
 export const DateSelector: React.FC = () => {
   return <DateWrapper>{'Date Selector'}</DateWrapper>;
 };
