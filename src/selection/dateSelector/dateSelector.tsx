@@ -22,22 +22,24 @@ export interface DateSelectorProps {
   value: Date;
 }
 
-export const DateSelector: React.FC<DateSelectorProps> = ({ value, onChange }) => {
-  const onSelect = useCallback(
-    (incomingDate: Date) => {
-      console.log(incomingDate);
-      onChange(incomingDate);
-    },
-    [onChange]
-  );
+export const DateSelector: React.FC<DateSelectorProps> = React.memo(
+  ({ value, onChange }) => {
+    const onSelect = useCallback(
+      (incomingDate: Date) => {
+        console.log(incomingDate);
+        onChange(incomingDate);
+      },
+      [onChange]
+    );
 
-  return (
-    <DateWrapper>
-      <CalendarMonth onSelect={onSelect} month={value} selectedDate={value} />
-      <AnimatedGrid column={1} />
-    </DateWrapper>
-  );
-};
+    return (
+      <DateWrapper>
+        <CalendarMonth onSelect={onSelect} month={value} selectedDate={value} />
+        <AnimatedGrid column={1} />
+      </DateWrapper>
+    );
+  }
+);
 
 const DateWrapper = styled.div`
   display: flex;

@@ -9,9 +9,8 @@ export interface AnimatedGridProps {
   onAnimationComplete?: () => void;
 }
 
-export const AnimatedGrid: React.FC<AnimatedGridProps> = ({
-  column,
-  onAnimationComplete
-}) => {
-  return <div>{`${column}`}</div>;
-};
+export const AnimatedGrid: React.FC<AnimatedGridProps> = React.memo(
+  ({ column, onAnimationComplete }) => {
+    return <div>{`${column}`}</div>;
+  }
+);
