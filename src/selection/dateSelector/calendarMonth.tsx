@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import {} from 'date-fns';
 
 /* Calculation of calendar month data */
 
@@ -10,9 +11,22 @@ export interface CalendarMonthProps {
   skeleton?: boolean;
 }
 
-export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(() => {
-  return <CalendarMonthWrapper />;
-});
+export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
+  ({ month, selectedDate, skeleton, onSelect }) => {
+    const renderWeek = () => <div />;
+    const renderMonth = () => {
+      return <div />;
+    };
+
+    const renderSkeletonMonth = () => <div />;
+
+    return (
+      <CalendarMonthWrapper>
+        {skeleton ? renderSkeletonMonth() : renderMonth()}
+      </CalendarMonthWrapper>
+    );
+  }
+);
 
 const CalendarMonthWrapper = styled.div`
   display: flex;
