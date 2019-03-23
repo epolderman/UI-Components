@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { constructMonthData, CALENDAR_DAY_FORMAT } from './dateUtils';
 import { map } from 'lodash';
@@ -15,20 +15,23 @@ export interface CalendarMonthProps {
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
-    const renderWeek = (week: Date[]) =>
-      map(week, (date, index) => {
-        if (date == null) {
-          return <Item key={index} />;
-        }
-        return <Item key={index}>{format(date, CALENDAR_DAY_FORMAT)}</Item>;
-      });
+    const renderWeek = useCallback(
+      (week: Date[]) =>
+        map(week, (date, index) => {
+          if (date == null) {
+            return <Item key={index} />;
+          }
+          return <Item key={index}>{format(date, CALENDAR_DAY_FORMAT)}</Item>;
+        }),
+      [month]
+    );
 
-    const renderMonth = () => {
-      const currentMonth = constructMonthData(month);
+    const renderMonth = useCallback(() => {
+      const currentMonth = useMemo(() => constructMonthData(month), [month]);
       return map(currentMonth, (week, index) => {
         return <Row key={index}>{renderWeek(week)}</Row>;
       });
-    };
+    }, [month]);
 
     const renderSkeletonMonth = () => <div />;
 
