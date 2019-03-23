@@ -27,6 +27,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     );
 
     const renderMonth = useCallback(() => {
+      /* TODO: Needs to be tested for the 'memoize last' semantics */
       const currentMonth = useMemo(() => constructMonthData(month), [month]);
       return map(currentMonth, (week, index) => {
         return <Row key={index}>{renderWeek(week)}</Row>;
