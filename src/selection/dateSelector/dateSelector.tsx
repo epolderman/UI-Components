@@ -21,7 +21,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     return (
       <DateWrapper>
         <CalendarMonth onSelect={onSelect} month={value} selectedDate={value} />
-        <AnimatedGrid column={1} />
+        {/* <AnimatedGrid column={1} /> */}
       </DateWrapper>
     );
   }
