@@ -5,7 +5,7 @@ import { DateSelector } from './selection/dateSelector';
 const onChange = (incomingDate: Date) => console.log(incomingDate);
 
 const App: React.FC = () => (
-  <DateSelector value={new Date('January 1, 2019')} onChange={onChange} />
+  <DateSelector value={new Date('March 1, 2019')} onChange={onChange} />
 );
 
 ReactDOM.render(<App />, document.getElementById('root'));

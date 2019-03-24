@@ -33,6 +33,8 @@ type CalendarMonthData = {
   beginDay: string;
 };
 
+export type DateMatrix = Date[][];
+
 const getIndexOfDay = (day: string): number => findIndex(DAYS, name => day === name);
 
 const constructDate = (monthData: CalendarMonthData, day: number) =>
@@ -48,21 +50,20 @@ const calculateMonthData = (incomingDate: Date): CalendarMonthData => ({
 });
 
 /*
-      Creates a 2D Array where our Prev and Next Month data is shelled into the Data Structure
-      returns this DS model
+      Creates a Matrix of weeks [2D array] and fills with prev, next, current dates
     [
       [prev sun, mon, ..]
-      [..., null, null]
+      [..., 1, 2]
       [..., null, null]
       [..., null, null]
       [..., nextMonth Sun, ...]
     ]
   */
-const fillMonth = (
+const fillMonthMatrix = (
   prevMonth: CalendarMonthData,
   currentMonth: CalendarMonthData,
   nextMonth: CalendarMonthData
-): Date[][] => {
+): DateMatrix => {
   const endingRow =
     currentMonth.beginIndex >= 5 && currentMonth.daysInMonth >= 30
       ? 5
@@ -76,7 +77,7 @@ const fillMonth = (
   let nextMonthDayIterator = 1;
   let currentMonthDayIterator = 1;
 
-  // non-readable but filling a matrix is never going to be pretty
+  // fill matrix
   return range(0, MAX_NUMBER_WEEKS_SHOWN).map(index => {
     const week = new Array(DAYS.length).fill(null);
 
@@ -124,10 +125,10 @@ const fillMonth = (
 /*
   Builds matrix of dates including prev, current, next month dates
 */
-export const buildDateMatrix = (incomingDate: Date): Date[][] => {
+export const buildDateMatrix = (incomingDate: Date): DateMatrix => {
   const prevMonth = calculateMonthData(addMonths(incomingDate, -1));
   const nextMonth = calculateMonthData(addMonths(incomingDate, 1));
   const currentMonth = calculateMonthData(incomingDate);
-  const activeMonth = fillMonth(prevMonth, currentMonth, nextMonth);
+  const activeMonth = fillMonthMatrix(prevMonth, currentMonth, nextMonth);
   return activeMonth;
 };
