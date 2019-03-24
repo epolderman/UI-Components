@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { constructMonthData, CALENDAR_DAY_FORMAT } from './dateUtils';
+import { buildDateMatrix, CALENDAR_DAY_FORMAT } from './dateUtils';
 import { map } from 'lodash';
 import { format } from 'date-fns';
 
@@ -28,7 +28,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 
     const renderMonth = useCallback(() => {
       /* TODO: Needs to be tested for the 'memoize last' semantics */
-      const currentMonth = useMemo(() => constructMonthData(month), [month]);
+      const currentMonth = useMemo(() => buildDateMatrix(month), [month]);
       return map(currentMonth, (week, index) => {
         return <Row key={index}>{renderWeek(week)}</Row>;
       });
