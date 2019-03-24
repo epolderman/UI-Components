@@ -58,7 +58,7 @@ const calculateMonthData = (incomingDate: Date): CalendarMonthData => ({
       [..., nextMonth Sun, ...]
     ]
   */
-const fillPrevNextMonthData = (
+const fillMonth = (
   prevMonth: CalendarMonthData,
   currentMonth: CalendarMonthData,
   nextMonth: CalendarMonthData
@@ -74,23 +74,46 @@ const fillPrevNextMonthData = (
 
   let prevMonthDayIterator = prevMonth.daysInMonth - beginDayPrevMonth;
   let nextMonthDayIterator = 1;
+  let currentMonthDayIterator = 1;
 
+  // non-readable but filling a matrix is never going to be pretty
   return range(0, MAX_NUMBER_WEEKS_SHOWN).map(index => {
     const week = new Array(DAYS.length).fill(null);
 
+    // prev month days
     if (index === 0) {
       forEach(week, (_, index) => {
         if (index < currentMonth.beginIndex) {
           week[index] = constructDate(prevMonth, prevMonthDayIterator);
           prevMonthDayIterator++;
+        } else {
+          week[index] = constructDate(currentMonth, currentMonthDayIterator);
+          currentMonthDayIterator++;
         }
       });
-    }
-
-    if (index === endingRow && currentMonth.endIndex !== 6) {
-      for (let i = currentMonth.endIndex + 1; i < DAYS.length; i++) {
-        week[i] = constructDate(nextMonth, nextMonthDayIterator);
-        nextMonthDayIterator++;
+      // next month days
+    } else if (index === endingRow) {
+      forEach(week, (_, index) => {
+        if (index <= currentMonth.endIndex) {
+          week[index] = constructDate(currentMonth, currentMonthDayIterator);
+          currentMonthDayIterator++;
+        } else {
+          week[index] = constructDate(nextMonth, nextMonthDayIterator);
+          nextMonthDayIterator++;
+        }
+      });
+      // combination of current and next month days
+    } else {
+      if (index < endingRow) {
+        forEach(week, (_, index) => {
+          week[index] = constructDate(currentMonth, currentMonthDayIterator);
+          currentMonthDayIterator++;
+        });
+      } else {
+        forEach(week, (_, index) => {
+          week[index] = constructDate(nextMonth, nextMonthDayIterator);
+          nextMonthDayIterator++;
+        });
       }
     }
 
@@ -99,23 +122,12 @@ const fillPrevNextMonthData = (
 };
 
 /*
-  Fills our 2D currentMonth array with currentMonthData
+  Builds matrix of dates including prev, current, next month dates
 */
-export const constructMonthData = (incomingDate: Date): Date[][] => {
+export const buildDateMatrix = (incomingDate: Date): Date[][] => {
   const prevMonth = calculateMonthData(addMonths(incomingDate, -1));
   const nextMonth = calculateMonthData(addMonths(incomingDate, 1));
   const currentMonth = calculateMonthData(incomingDate);
-  const activeMonth = fillPrevNextMonthData(prevMonth, currentMonth, nextMonth);
-
-  let currentMonthIterator = 1;
-  for (let row = 0; row < DAYS.length; row++) {
-    for (let col = row === 0 ? currentMonth.beginIndex : 0; col < DAYS.length; col++) {
-      if (currentMonthIterator <= currentMonth.daysInMonth) {
-        activeMonth[row][col] = constructDate(currentMonth, currentMonthIterator);
-        currentMonthIterator++;
-      }
-    }
-  }
-
+  const activeMonth = fillMonth(prevMonth, currentMonth, nextMonth);
   return activeMonth;
 };
