@@ -20,8 +20,15 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     return (
       <DateWrapper>
-        <CalendarMonth onSelect={onSelect} month={value} selectedDate={value} />
-        {/* <AnimatedGrid column={1} /> */}
+        <div
+          style={{
+            width: '500px',
+            height: '500px',
+            display: 'flex'
+          }}
+        >
+          <CalendarMonth onSelect={onSelect} month={value} selectedDate={value} />
+        </div>
       </DateWrapper>
     );
   }
@@ -33,6 +40,6 @@ const DateWrapper = styled.div`
   flex: 1 1 0%;
   box-sizing: border-box;
   justify-content: stretch;
-  align-items: stretch;
+  align-items: center;
   background-color: black;
 `;

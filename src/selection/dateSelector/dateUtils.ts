@@ -5,7 +5,10 @@ import {
   format,
   getMonth,
   getYear,
-  addMonths
+  addMonths,
+  isSameDay,
+  isSameMonth,
+  isSameYear
 } from 'date-fns';
 import { findIndex, range, forEach } from 'lodash';
 
@@ -14,7 +17,7 @@ import { findIndex, range, forEach } from 'lodash';
 const DAY_NAME_FORMAT: string = 'dddd';
 const MAX_NUMBER_WEEKS_SHOWN: number = 6;
 export const CALENDAR_DAY_FORMAT = 'D';
-const DAYS: string[] = [
+export const DAYS: string[] = [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -131,4 +134,12 @@ export const buildDateMatrix = (incomingDate: Date): DateMatrix => {
   const currentMonth = calculateMonthData(incomingDate);
   const activeMonth = fillMonthMatrix(prevMonth, currentMonth, nextMonth);
   return activeMonth;
+};
+
+export const isSameDate = (date: Date, selectedDate: Date) => {
+  return (
+    isSameDay(date, selectedDate) &&
+    isSameMonth(date, selectedDate) &&
+    isSameYear(date, selectedDate)
+  );
 };
