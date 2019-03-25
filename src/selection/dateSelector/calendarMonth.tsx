@@ -23,9 +23,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
     const renderDayNames = () => (
       <Row>
-        {map(DAYS, (day, index) => {
-          return <Item key={index}>{day.slice(0, 3)}</Item>;
-        })}
+        {map(DAYS, (day, index) => (
+          <Item key={index}>{day.slice(0, 3)}</Item>
+        ))}
       </Row>
     );
     const renderWeek = useCallback(
