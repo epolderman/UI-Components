@@ -24,7 +24,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const renderDayNames = () => (
       <Row>
         {map(DAYS, (day, index) => (
-          <Item key={index}>{day.slice(0, 3)}</Item>
+          <DayItem key={index}>{day.slice(0, 3)}</DayItem>
         ))}
       </Row>
     );
@@ -33,18 +33,18 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
         map(week, (date, index) => {
           const dispatchSelect = () => onSelect(date);
           if (date == null) {
-            return <Item key={index} />;
+            return <CalendarItem key={index} />;
           } else if (isSameDate(date, selectedDate)) {
             return (
-              <Item style={{ color: 'red' }} key={index}>
+              <CalendarItem style={{ color: 'red' }} key={index}>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Item>
+              </CalendarItem>
             );
           } else {
             return (
-              <Item onClick={dispatchSelect} key={index}>
+              <CalendarItem onClick={dispatchSelect} key={index}>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Item>
+              </CalendarItem>
             );
           }
         }),
@@ -88,11 +88,9 @@ const Row = styled.div`
   box-sizing: border-box;
 `;
 
-const Item = styled.div`
+const CalendarItem = styled.div`
   display: flex;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0%;
+  flex: 1 1 0%;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
@@ -105,4 +103,15 @@ const Item = styled.div`
     background-color: black;
     color: white;
   }
+`;
+
+const DayItem = styled.div`
+  display: flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
 `;

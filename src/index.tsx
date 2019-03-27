@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { DateSelector } from './selection/dateSelector';
 //TODO: Add global styles for the project
 //TODO: setup favicon
-//TODO: refactor to emotion vs styled components
+//TODO: refactor to emotion over styled components
 
-const onChange = (incomingDate: Date) => console.log(incomingDate);
+//TODO: temporary test file // refacotr
 
-const App: React.FC = () => <DateSelector value={new Date()} onChange={onChange} />;
+const App: React.FC = () => {
+  const [currentDate, setDate] = useState(new Date());
+  const onChange = useCallback((incomingDate: Date) => setDate(incomingDate), [setDate]);
+  return <DateSelector value={currentDate} onChange={onChange} />;
+};
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

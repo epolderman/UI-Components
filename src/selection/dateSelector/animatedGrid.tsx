@@ -2,7 +2,7 @@ import { FixedSizeGrid } from 'react-window';
 import React from 'react';
 import { useSpring } from 'react-spring';
 
-/* Handles virtualization with animations */
+/* Handles virtualization with animations via windowing */
 
 export interface AnimatedGridProps {
   column: number;
