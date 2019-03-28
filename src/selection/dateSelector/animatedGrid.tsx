@@ -1,6 +1,7 @@
-import { FixedSizeGrid } from 'react-window';
+import { FixedSizeGrid, FixedSizeGridProps } from 'react-window';
 import React from 'react';
 import { useSpring } from 'react-spring';
+import { CalendarMonth } from './calendarMonth';
 
 /* Handles virtualization with animations via windowing */
 
@@ -9,8 +10,15 @@ export interface AnimatedGridProps {
   onAnimationComplete?: () => void;
 }
 
-export const AnimatedGrid: React.FC<AnimatedGridProps> = React.memo(
-  ({ column, onAnimationComplete }) => {
-    return <div>{`${column}`}</div>;
-  }
-);
+export type CombinedProps = AnimatedGridProps & FixedSizeGridProps;
+
+export const AnimatedGrid: React.FC<AnimatedGridProps> = React.memo(CombinedProps => {
+  const { column, onAnimationComplete, ...gridProps } = CombinedProps;
+  return (
+    <FixedSizeGrid
+      {...gridProps}
+      //@ts-ignore TODO: look into how rendering is handles in react-window fix-sized-grid vs react-virtualization grid
+      children={<div />}
+    />
+  );
+});
