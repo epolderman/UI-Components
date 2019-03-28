@@ -1,7 +1,6 @@
 import { FixedSizeGrid, FixedSizeGridProps } from 'react-window';
 import React from 'react';
 import { useSpring } from 'react-spring';
-import { CalendarMonth } from './calendarMonth';
 
 /* Handles virtualization with animations via windowing */
 
