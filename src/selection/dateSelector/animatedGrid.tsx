@@ -1,6 +1,7 @@
-import { FixedSizeGrid, FixedSizeGridProps } from 'react-window';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSpring } from 'react-spring';
+import { Grid } from 'react-virtualized';
+import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
 
 /* Handles virtualization with animations via windowing */
 
@@ -9,15 +10,30 @@ export interface AnimatedGridProps {
   onAnimationComplete?: () => void;
 }
 
-export type CombinedProps = AnimatedGridProps & FixedSizeGridProps;
+export type CombinedProps = AnimatedGridProps & GridProps;
 
 export const AnimatedGrid: React.FC<AnimatedGridProps> = React.memo(CombinedProps => {
+  const [scrollLeft, setScrollLeft] = useState(0);
   const { column, onAnimationComplete, ...gridProps } = CombinedProps;
+  const onScroll = () => {};
+  const cellRenderer = () => {
+    return <div />;
+  };
   return (
-    <FixedSizeGrid
+    <Grid
+      cellRenderer={cellRenderer}
+      height={300}
+      width={300}
+      rowHeight={300}
+      rowCount={1}
+      columnCount={1000}
+      columnWidth={300}
+      style={{ overflow: 'hidden' }}
+      /* Everything above this wil be in the date selector then passed in */
       {...gridProps}
-      //@ts-ignore TODO: look into how rendering is handles in react-window fix-sized-grid vs react-virtualization grid
-      children={<div />}
+      scrollLeft={scrollLeft}
+      onScroll={onScroll}
+      scrollToColumn={undefined}
     />
   );
 });

@@ -18,7 +18,7 @@
     "react-dom": "^16.8.3",
     "react-router-dom": "^4.3.1",
     "react-spring": "^8.0.9",
-    "react-window": "^1.6.2",
+    "react-virtualized": "^9.21.0",
     "styled-components": "^4.1.3",
     "typesafe-react-router": "^2.2.3"
   },
@@ -34,7 +34,7 @@
     "@types/react": "^16.8.6",
     "@types/react-dom": "^16.8.2",
     "@types/react-router-dom": "^4.3.1",
-    "@types/react-window": "^1.5.1",
+    "@types/react-virtualized": "^9.21.0",
     "@types/styled-components": "^4.1.11",
     "@types/webpack": "^4.4.25",
     "@types/webpack-dev-server": "^3.1.2",
