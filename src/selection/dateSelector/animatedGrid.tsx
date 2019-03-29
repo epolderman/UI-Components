@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSpring } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
+import { FixedSizeGrid, FixedSizeGridProps } from 'react-window';
 
 /* Handles virtualization with animations via windowing */
 
