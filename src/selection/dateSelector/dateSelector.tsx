@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid } from './animatedGrid';
@@ -26,6 +26,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const onSelect = useCallback((incomingDate: Date) => onChange(incomingDate), [
       onChange
     ]);
+
+    useEffect(() => {
+      // handle month offset change coming from the controller
+    }, [monthOffset]);
+
+    const nextMonth = () => onChange(addMonths(initialDate.current, 1));
+    const prevMonth = () => onChange(addMonths(initialDate.current, -1));
 
     const cellRenderer = (props: GridCellProps) => {
       const { style, columnIndex, key, isVisible } = props;
@@ -59,8 +66,18 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       );
     };
 
+    const renderControls = () => {
+      return (
+        <ControlRow>
+          <ControlItem onClick={prevMonth}>Prev</ControlItem>
+          <ControlItem onClick={nextMonth}>Next</ControlItem>
+        </ControlRow>
+      );
+    };
+
     return (
       <DateWrapper>
+        {renderControls()}
         <GridWrapper>{renderGrid()}</GridWrapper>
       </DateWrapper>
     );
@@ -81,4 +98,22 @@ const GridWrapper = styled.div`
   display: flex;
   flex: 1 1 500px;
   box-sizing: border-box;
+`;
+
+const ControlRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 1 0%;
+`;
+
+const ControlItem = styled.div`
+  display: flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
 `;
