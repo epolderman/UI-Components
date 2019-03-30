@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSpring } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
-import { FixedSizeGrid, FixedSizeGridProps } from 'react-window';
 
-/* Handles virtualization with animations via windowing */
+/* 
+   Handles virtualization via windowing
+   Thin wrapper around the Grid component for animations
+*/
 
 export interface AnimatedGridProps {
   column: number;
@@ -13,25 +15,25 @@ export interface AnimatedGridProps {
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
-export const AnimatedGrid: React.FC<AnimatedGridProps> = React.memo(CombinedProps => {
+export const AnimatedGrid: React.FC<CombinedProps> = React.memo(CombinedProps => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const { column, onAnimationComplete, ...gridProps } = CombinedProps;
+  const gridRef = useRef(null);
+  const isAnimating = useRef(false);
+
   const onScroll = () => {};
-  const cellRenderer = () => {
-    return <div />;
-  };
+  useEffect(() => {
+    if (isAnimating) {
+      return;
+    }
+
+    // handle scroll logic here
+  }, [column]);
+
   return (
     <Grid
-      cellRenderer={cellRenderer}
-      height={300}
-      width={300}
-      rowHeight={300}
-      rowCount={1}
-      columnCount={1000}
-      columnWidth={300}
-      style={{ overflow: 'hidden' }}
-      /* Everything above this wil be in the date selector then passed in */
       {...gridProps}
+      ref={gridRef}
       scrollLeft={scrollLeft}
       onScroll={onScroll}
       scrollToColumn={undefined}

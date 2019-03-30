@@ -136,10 +136,10 @@ export const buildDateMatrix = (incomingDate: Date): DateMatrix => {
   return activeMonth;
 };
 
-export const isSameDate = (date: Date, selectedDate: Date) => {
+export const isSameDate = (currentDate: Date, selectedDate: Date) => {
   return (
-    isSameDay(date, selectedDate) &&
-    isSameMonth(date, selectedDate) &&
-    isSameYear(date, selectedDate)
+    isSameDay(currentDate, selectedDate) &&
+    isSameMonth(currentDate, selectedDate) &&
+    isSameYear(currentDate, selectedDate)
   );
 };
