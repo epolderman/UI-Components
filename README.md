@@ -2,12 +2,11 @@
 
 ## Low Level Component Programming
 
-### Emphasis
+### Project Focus
 
 #### Performance
 
-- Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it.
-- [Google Dev Guide](https://developers.google.com/web/fundamentals/performance/rendering/)
+- Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it.[Google Dev Guide](https://developers.google.com/web/fundamentals/performance/rendering/)
 
 #### Maintainability
 
