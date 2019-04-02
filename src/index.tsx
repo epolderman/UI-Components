@@ -9,7 +9,17 @@ import { DateSelector } from './selection/dateSelector';
 const App: React.FC = () => {
   const [currentDate, setDate] = useState(new Date());
   const onChange = useCallback((incomingDate: Date) => setDate(incomingDate), [setDate]);
-  return <DateSelector value={currentDate} onChange={onChange} />;
+  return (
+    <div
+      style={{
+        width: '500px',
+        height: '500px',
+        display: 'flex'
+      }}
+    >
+      <DateSelector value={currentDate} onChange={onChange} />
+    </div>
+  );
 };
 
 ReactDOM.render(<App />, document.getElementById('root'));

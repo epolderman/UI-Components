@@ -84,27 +84,29 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   }
 );
 
+/* Top Left Container*/
 const DateWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1 1 0%;
   box-sizing: border-box;
   justify-content: stretch;
-  align-items: center;
-  background-color: black;
+  align-items: stretch;
+  background-color: teal;
 `;
 
 const GridWrapper = styled.div`
   display: flex;
-  flex: 1 1 500px;
-  box-sizing: border-box;
+  background-color: yellow;
 `;
 
 const ControlRow = styled.div`
   display: flex;
+  background-color: blue;
   justify-content: space-between;
   align-items: center;
   flex: 1 1 0%;
+  box-sizing: border-box;
 `;
 
 const ControlItem = styled.div`
