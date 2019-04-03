@@ -21,7 +21,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(CombinedProps =>
   const gridRef = useRef<Grid>(null);
   const isAnimating = useRef(false);
   const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
-  const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
+  // const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
 
   useEffect(() => {
     setScrollLeft(column * 500);
