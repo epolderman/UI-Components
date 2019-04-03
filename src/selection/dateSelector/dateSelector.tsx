@@ -23,21 +23,25 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef(new Date());
 
+    useEffect(() => {
+      setMonthOffset(monthOffset);
+    }, [monthOffset]);
+
     const onSelect = useCallback((incomingDate: Date) => onChange(incomingDate), [
       onChange
     ]);
-
-    useEffect(() => {
-      // handle month offset change coming from the controller
-    }, [monthOffset]);
-
-    const nextMonth = () => onChange(addMonths(initialDate.current, 1));
-    const prevMonth = () => onChange(addMonths(initialDate.current, -1));
+    const nextMonth = useCallback(() => onChange(addMonths(initialDate.current, 1)), [
+      onChange
+    ]);
+    const prevMonth = useCallback(() => onChange(addMonths(initialDate.current, -1)), [
+      onChange
+    ]);
 
     const cellRenderer = (props: GridCellProps) => {
       const { style, columnIndex, key, isVisible } = props;
       const itemIndex = MIDDLE_INDEX - columnIndex;
       const itemDate = addMonths(initialDate.current, itemIndex);
+      console.log('itemDate', itemDate, itemIndex, initialDate.current);
       return (
         <div style={{ ...style }} key={key}>
           <CalendarMonth
@@ -61,7 +65,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           rowCount={1}
           columnCount={MAX_TIME_SPAN}
           columnWidth={CALENDAR_DIMENSIONS}
-          style={{ overflow: 'hidden' }}
+          style={{ overflow: 'hidden', backgroundColor: 'red' }}
         />
       );
     };
@@ -78,7 +82,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     return (
       <DateWrapper>
         {renderControls()}
-        <GridWrapper>{renderGrid()}</GridWrapper>
+        {renderGrid()}
       </DateWrapper>
     );
   }
@@ -93,11 +97,6 @@ const DateWrapper = styled.div`
   justify-content: stretch;
   align-items: stretch;
   background-color: teal;
-`;
-
-const GridWrapper = styled.div`
-  display: flex;
-  background-color: yellow;
 `;
 
 const ControlRow = styled.div`

@@ -23,6 +23,17 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(CombinedProps =>
   const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
   const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
 
+  useEffect(() => {
+    setScrollLeft(column * 500);
+  }, [column]);
+
+  useEffect(() => {
+    if (gridRef.current) {
+      gridRef.current.scrollToPosition({ scrollLeft, scrollTop: 0 });
+      console.log('scrollLeft', scrollLeft);
+    }
+  }, [scrollLeft]);
+
   const onScroll = ({ scrollLeft }: { scrollLeft: number }) => {
     if (isAnimating) {
       return;
