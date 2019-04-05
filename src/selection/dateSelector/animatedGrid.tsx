@@ -15,50 +15,51 @@ export interface AnimatedGridProps {
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
-export const AnimatedGrid: React.FC<CombinedProps> = React.memo(CombinedProps => {
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const { column, onAnimationComplete, ...gridProps } = CombinedProps;
-  const gridRef = useRef<Grid>(null);
-  const isAnimating = useRef(false);
-  const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
-  // const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
+export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
+  ({ column, onAnimationComplete, ...gridProps }) => {
+    const [scrollLeft, setScrollLeft] = useState(column * 500);
+    const gridRef = useRef<Grid>(null);
+    const isAnimating = useRef(false);
+    const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
+    const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
 
-  useEffect(() => {
-    setScrollLeft(column * 500);
-  }, [column]);
+    useEffect(() => {
+      if (isAnimating) {
+        return;
+      }
 
-  useEffect(() => {
-    if (gridRef.current) {
-      gridRef.current.scrollToPosition({ scrollLeft, scrollTop: 0 });
-      console.log('scrollLeft', scrollLeft);
-    }
-  }, [scrollLeft]);
+      if (gridRef.current && scrollLeftFinal.current) {
+        scrollLeftFinal.current.scrollLeft =
+          gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft / 300;
+      }
+    }, [column]);
 
-  const onScroll = ({ scrollLeft }: { scrollLeft: number }) => {
-    if (isAnimating) {
-      return;
-    }
+    useEffect(() => {
+      if (gridRef.current) {
+        gridRef.current.scrollToPosition({ scrollLeft, scrollTop: 0 });
+      }
+    }, [scrollLeft]);
 
-    if (scrollLeftInitial.current) {
-      scrollLeftInitial.current.scrollLeft = scrollLeft;
-    }
-  };
+    const onScroll = ({ scrollLeft }: { scrollLeft: number }) => {
+      if (isAnimating) {
+        return;
+      }
 
-  useEffect(() => {
-    if (isAnimating) {
-      return;
-    }
+      if (scrollLeftInitial.current) {
+        scrollLeftInitial.current.scrollLeft = scrollLeft;
+      }
+    };
 
-    // handle scroll logic here
-  }, [column]);
+    console.log('column', column, 'sl', scrollLeft);
 
-  return (
-    <Grid
-      {...gridProps}
-      ref={gridRef}
-      scrollLeft={scrollLeft}
-      onScroll={onScroll}
-      scrollToColumn={undefined}
-    />
-  );
-});
+    return (
+      <Grid
+        {...gridProps}
+        ref={gridRef}
+        scrollLeft={scrollLeft}
+        onScroll={onScroll}
+        scrollToColumn={undefined}
+      />
+    );
+  }
+);
