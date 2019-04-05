@@ -2,8 +2,8 @@ import React, { useCallback, useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid } from './animatedGrid';
-import { GridCellProps } from 'react-virtualized';
 import { addMonths } from 'date-fns';
+import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
@@ -13,10 +13,6 @@ export interface DateSelectorProps {
 export interface DateSelectorState {
   monthOffset: number;
 }
-
-const CALENDAR_DIMENSIONS: number = 500;
-const MAX_TIME_SPAN: number = 1000;
-const MIDDLE_INDEX: number = 500;
 
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {

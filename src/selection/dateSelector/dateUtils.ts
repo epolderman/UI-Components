@@ -16,6 +16,9 @@ import { findIndex, range, forEach } from 'lodash';
 
 const DAY_NAME_FORMAT: string = 'dddd';
 const MAX_NUMBER_WEEKS_SHOWN: number = 6;
+export const CALENDAR_DIMENSIONS: number = 500;
+export const MAX_TIME_SPAN: number = 1000;
+export const MIDDLE_INDEX: number = 500;
 export const CALENDAR_DAY_FORMAT = 'D';
 export const DAYS: string[] = [
   'Sunday',

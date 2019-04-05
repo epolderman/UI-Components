@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSpring } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
+import { CALENDAR_DIMENSIONS } from './dateUtils';
 
 /* 
    Handles virtualization via windowing
@@ -17,7 +18,7 @@ export type CombinedProps = AnimatedGridProps & GridProps;
 
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
-    const [scrollLeft, setScrollLeft] = useState(column * 500);
+    const [scrollLeft, setScrollLeft] = useState(column * CALENDAR_DIMENSIONS);
     const gridRef = useRef<Grid>(null);
     const isAnimating = useRef(false);
     const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
@@ -30,7 +31,8 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
 
       if (gridRef.current && scrollLeftFinal.current) {
         scrollLeftFinal.current.scrollLeft =
-          gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft / 300;
+          gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft /
+          CALENDAR_DIMENSIONS;
       }
     }, [column]);
 
