@@ -37,18 +37,27 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       onChange
     ]);
 
-    const cellRenderer = (props: GridCellProps) => {
-      const { style, columnIndex, key, isVisible } = props;
-      const itemIndex = MIDDLE_INDEX - columnIndex;
-      const itemDate = addMonths(initialDate.current, itemIndex);
-      console.log('itemDate', itemDate, itemIndex, initialDate.current);
+    const cellRenderer = ({
+      key,
+      style,
+      columnIndex,
+      isScrolling
+    }: {
+      key: string;
+      style: React.CSSProperties;
+      columnIndex: number;
+      isScrolling: boolean;
+    }) => {
+      const itemOffset = columnIndex - MIDDLE_INDEX;
+      const itemDate = addMonths(initialDate.current, itemOffset);
+      console.log('itemDate', itemDate, 'iindex', itemOffset, 'columnndex', columnIndex);
       return (
-        <div style={{ ...style }} key={key}>
+        <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
             onSelect={onSelect}
             month={itemDate}
             selectedDate={value}
-            skeleton={isVisible}
+            skeleton={isScrolling}
           />
         </div>
       );
@@ -65,7 +74,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           rowCount={1}
           columnCount={MAX_TIME_SPAN}
           columnWidth={CALENDAR_DIMENSIONS}
-          style={{ overflow: 'hidden', backgroundColor: 'red' }}
+          style={{ overflow: 'hidden' }}
         />
       );
     };
@@ -103,7 +112,7 @@ const ControlRow = styled.div`
   display: flex;
   background-color: blue;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   flex: 1 1 0%;
   box-sizing: border-box;
 `;
@@ -117,4 +126,9 @@ const ControlItem = styled.div`
   background-color: white;
   color: black;
   border: 1px solid black;
+  cursor: pointer;
+  &:hover {
+    background-color: green;
+    color: white;
+  }
 `;

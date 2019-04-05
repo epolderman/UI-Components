@@ -61,6 +61,8 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 
     const renderSkeletonMonth = () => <div />;
 
+    console.log('Calculating', month);
+
     return (
       <CalendarMonthWrapper>
         {renderDayNames()}
