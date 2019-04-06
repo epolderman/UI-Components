@@ -17,11 +17,19 @@ export interface DateSelectorState {
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
-    const initialDate = useRef(new Date());
+    const initialDate = useRef<Date>(new Date());
+    const animatedGridRef = useRef<AnimatedGrid>(null);
 
     useEffect(() => {
-      setMonthOffset(monthOffset);
+      console.log('useEffect monthoffset', monthOffset);
     }, [monthOffset]);
+
+    useEffect(() => {
+      console.log('useEffect value', value);
+      if (animatedGridRef.current) {
+        const col = animatedGridRef.current.getCurrentColumn();
+      }
+    }, [value]);
 
     const onSelect = useCallback((incomingDate: Date) => onChange(incomingDate), [
       onChange
@@ -62,6 +70,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const renderGrid = () => {
       return (
         <AnimatedGrid
+          ref={animatedGridRef}
           column={monthOffset}
           cellRenderer={cellRenderer}
           height={CALENDAR_DIMENSIONS}
