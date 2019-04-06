@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid } from './animatedGrid';
-import { addMonths } from 'date-fns';
+import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
 
 export interface DateSelectorProps {
@@ -18,7 +18,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef<Date>(new Date());
-    const animatedGridRef = useRef<AnimatedGrid>(null);
+    //const animatedGridRef = useRef<AnimatedGrid>(null);
 
     useEffect(() => {
       console.log('useEffect monthoffset', monthOffset);
@@ -26,20 +26,21 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     useEffect(() => {
       console.log('useEffect value', value);
-      if (animatedGridRef.current) {
-        const col = animatedGridRef.current.getCurrentColumn();
+      // todo: extra logic needed here for more features [open, close, reverting back to month on current selected date]
+      if (initialDate.current) {
+        const difference = differenceInCalendarMonths(value, initialDate.current);
+        console.log('difference', difference);
+        if (difference !== 0) {
+          setMonthOffset(monthOffset + difference);
+        }
       }
     }, [value]);
 
     const onSelect = useCallback((incomingDate: Date) => onChange(incomingDate), [
       onChange
     ]);
-    const nextMonth = useCallback(() => onChange(addMonths(initialDate.current, 1)), [
-      onChange
-    ]);
-    const prevMonth = useCallback(() => onChange(addMonths(initialDate.current, -1)), [
-      onChange
-    ]);
+    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [monthOffset]);
+    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [monthOffset]);
 
     const cellRenderer = ({
       key,
@@ -54,7 +55,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }) => {
       const itemOffset = columnIndex - MIDDLE_INDEX;
       const itemDate = addMonths(initialDate.current, itemOffset);
-      console.log('itemDate', itemDate, 'iindex', itemOffset, 'columnndex', columnIndex);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
@@ -70,7 +70,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const renderGrid = () => {
       return (
         <AnimatedGrid
-          ref={animatedGridRef}
           column={monthOffset}
           cellRenderer={cellRenderer}
           height={CALENDAR_DIMENSIONS}
@@ -92,6 +91,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         </ControlRow>
       );
     };
+
+    console.log('DateSelector', monthOffset);
 
     return (
       <DateWrapper>
