@@ -21,9 +21,9 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const [scrollLeft, setScrollLeft] = useState(column * CALENDAR_DIMENSIONS);
     const gridRef = useRef<Grid>(null);
     // const isAnimating = useRef<boolean>(false);
-    // const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
+    const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
-    const [scroll, set] = useSpring(() => ({ scrollX: scrollLeft }));
+    // const [animatedProps, set] = useSpring(() => ({ scroll: scrollLeft }));
 
     useEffect(() => {
       // if (isAnimating.current) {
@@ -37,7 +37,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         console.log('newScrollOffest', newColumnIndex);
         scrollLeftFinal.current.scrollLeft = newColumnIndex * CALENDAR_DIMENSIONS;
         setScrollLeft(scrollLeftFinal.current.scrollLeft);
-        set({ scrollX: scrollLeftFinal.current.scrollLeft });
+        //set({ scroll: scrollLeftFinal.current.scrollLeft });
         // setScrollLeft(scrollLeftFinal.current.scrollLeft);
         // set(scrollLeftFinal.current.scrollLeft);
       }
@@ -61,16 +61,16 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     // todo: animate to a value pass it to the grid
 
     return (
-      <animated.div>
-        <Grid
-          {...gridProps}
-          ref={gridRef}
-          scrollX
-          scrollLeft={scrollX}
-          onScroll={undefined}
-          scrollToColumn={undefined}
-        />
-      </animated.div>
+      // <animated.div style={{style}}>
+      <Grid
+        {...gridProps}
+        ref={gridRef}
+        scrollX
+        scrollLeft={scrollLeft}
+        onScroll={undefined}
+        scrollToColumn={undefined}
+      />
+      // </animated.div>
     );
   }
 );
