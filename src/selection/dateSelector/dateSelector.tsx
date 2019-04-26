@@ -26,10 +26,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     useEffect(() => {
       console.log('useEffect value', value);
-      // todo: extra logic needed here for more features [open, close, reverting back to month on current selected date]
       if (initialDate.current) {
-        const difference = differenceInCalendarMonths(value, initialDate.current);
-        console.log('difference', difference);
+        const currentMonthDate = addMonths(
+          initialDate.current,
+          monthOffset - MIDDLE_INDEX
+        );
+        const difference = differenceInCalendarMonths(value, currentMonthDate);
         if (difference !== 0) {
           setMonthOffset(monthOffset + difference);
         }
