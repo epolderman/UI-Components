@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useSpring, animated, config, interpolate } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
@@ -23,34 +23,38 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollAnimation = useSpring({
-      left: scrollLeft,
+      to: { scrollLeft: scrollLeft },
       immediate: false
     });
 
-    useEffect(() => {
-      console.log('grid: useEffect column: ', column);
+    useLayoutEffect(() => {
+      console.log('column change ag');
       if (gridRef.current && scrollLeftFinal.current) {
         const newColumnIndex =
           gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft /
           CALENDAR_DIMENSIONS;
-        console.log('newScrollOffest', newColumnIndex);
         scrollLeftFinal.current.scrollLeft = newColumnIndex * CALENDAR_DIMENSIONS;
-        scrollAnimation.left.setValue(scrollLeftFinal.current.scrollLeft, false);
+        scrollAnimation.scrollLeft.setValue(scrollLeftFinal.current.scrollLeft, false);
         setScrollLeft(scrollLeftFinal.current.scrollLeft);
-        console.log(scrollLeft);
       }
     }, [column]);
 
+    console.log(scrollAnimation, scrollLeft);
+
+    if (gridRef.current) {
+      console.log('GF', gridRef.current);
+    }
+
     return (
-      <animated.div {...scrollAnimation}>
-        <Grid
-          {...gridProps}
-          ref={gridRef}
-          scrollLeft={scrollAnimation.left.value}
-          onScroll={undefined}
-          scrollToColumn={undefined}
-        />
-      </animated.div>
+      <AnimatedGridz
+        {...gridProps}
+        ref={gridRef}
+        {...scrollAnimation}
+        onScroll={undefined}
+        scrollToColumn={undefined}
+      />
     );
   }
 );
+
+const AnimatedGridz = animated(Grid);
