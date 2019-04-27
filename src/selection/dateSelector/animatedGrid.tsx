@@ -23,18 +23,18 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollAnimation = useSpring({
-      to: { scrollLeft: scrollLeft },
+      to: { scrollLeft },
       immediate: false
     });
 
-    useLayoutEffect(() => {
+    useEffect(() => {
       console.log('column change ag');
       if (gridRef.current && scrollLeftFinal.current) {
         const newColumnIndex =
           gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft /
           CALENDAR_DIMENSIONS;
         scrollLeftFinal.current.scrollLeft = newColumnIndex * CALENDAR_DIMENSIONS;
-        scrollAnimation.scrollLeft.setValue(scrollLeftFinal.current.scrollLeft, false);
+        //scrollAnimation.scrollLeft.setValue(newColumnIndex * CALENDAR_DIMENSIONS, false);
         setScrollLeft(scrollLeftFinal.current.scrollLeft);
       }
     }, [column]);
@@ -45,16 +45,21 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       console.log('GF', gridRef.current);
     }
 
+    console.log('a grid render', scrollLeft);
+
     return (
-      <AnimatedGridz
+      <Grid
         {...gridProps}
         ref={gridRef}
-        {...scrollAnimation}
         onScroll={undefined}
         scrollToColumn={undefined}
+        scrollLeft={scrollLeft}
       />
     );
   }
 );
 
+// wrapping the component doesnt work
+// animated.div wrapped around the grid allows scrollLeft to get to the component, but no animations
+// is the only way imperatively with requestAnimationFrame?
 const AnimatedGridz = animated(Grid);
