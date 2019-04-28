@@ -23,43 +23,46 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
     const scrollAnimation = useSpring({
-      to: { scrollLeft },
-      immediate: false
+      scrollLeft: scrollLeft
     });
 
     useEffect(() => {
-      console.log('column change ag');
+      console.log('column change ag', column);
       if (gridRef.current && scrollLeftFinal.current) {
-        const newColumnIndex =
-          gridRef.current.getOffsetForCell({ columnIndex: column }).scrollLeft /
-          CALENDAR_DIMENSIONS;
-        scrollLeftFinal.current.scrollLeft = newColumnIndex * CALENDAR_DIMENSIONS;
+        const newScrollLeft = gridRef.current.getOffsetForCell({ columnIndex: column })
+          .scrollLeft;
+        scrollLeftFinal.current.scrollLeft = newScrollLeft;
+        console.log('NewScrollLeft', newScrollLeft, scrollLeft);
+        console.log('Grid Ref:', gridRef.current);
         //scrollAnimation.scrollLeft.setValue(newColumnIndex * CALENDAR_DIMENSIONS, false);
-        setScrollLeft(scrollLeftFinal.current.scrollLeft);
+        setScrollLeft(newScrollLeft);
       }
     }, [column]);
 
+    const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
+      console.log('OnScroll', scrollLeft);
+      if (scrollLeftInitial.current) {
+        scrollLeftInitial.current.scrollLeft = scrollLeft;
+      }
+    }, []);
+
     console.log(scrollAnimation, scrollLeft);
 
-    if (gridRef.current) {
-      console.log('GF', gridRef.current);
-    }
-
-    console.log('a grid render', scrollLeft);
-
     return (
-      <Grid
-        {...gridProps}
-        ref={gridRef}
-        onScroll={undefined}
-        scrollToColumn={undefined}
-        scrollLeft={scrollLeft}
-      />
+      <animated.div {...scrollAnimation}>
+        <Grid
+          {...gridProps}
+          ref={gridRef}
+          onScroll={onScroll}
+          scrollToColumn={undefined}
+          scrollLeft={scrollLeft}
+        />
+      </animated.div>
     );
   }
 );
-
-// wrapping the component doesnt work
-// animated.div wrapped around the grid allows scrollLeft to get to the component, but no animations
-// is the only way imperatively with requestAnimationFrame?
-const AnimatedGridz = animated(Grid);
+const AGrid = animated(Grid);
+// 1. Wrapping Animated with the Grid animated(Grid) doesnt allow scrollLeft value to hit the state [exhaustingly FAIL]
+// 2. animated.div wrapped around grid allows scrollLeft to hit the component, but cannot animate due to the grid
+// being virtualized and it needs to control its scrollLeft offset. [FAIL so far]
+// 3. is the only way imperatively with requestAnimationFrame? [Only Option?]

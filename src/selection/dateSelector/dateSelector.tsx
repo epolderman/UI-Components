@@ -31,8 +31,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           initialDate.current,
           monthOffset - MIDDLE_INDEX
         );
+        console.log('currentMonthDate', currentMonthDate);
         const difference = differenceInCalendarMonths(value, currentMonthDate);
         if (difference !== 0) {
+          console.log('diffff', difference);
           setMonthOffset(monthOffset + difference);
         }
       }
@@ -57,6 +59,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }) => {
       const itemOffset = columnIndex - MIDDLE_INDEX;
       const itemDate = addMonths(initialDate.current, itemOffset);
+      console.log('cellRenderer', columnIndex, itemOffset, itemDate);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
