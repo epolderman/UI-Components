@@ -48,16 +48,16 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
             );
           }
         }),
-      [month, onSelect]
+      [onSelect, selectedDate]
     );
 
     const renderMonth = useCallback(() => {
       /* TODO: Needs to be tested for the 'memoize last' semantics */
-      const currentMonth: DateMatrix = useMemo(() => buildDateMatrix(month), [month]);
+      const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => {
         return <Row key={index}>{renderWeek(week)}</Row>;
       });
-    }, [month]);
+    }, [month, renderWeek]);
 
     const renderSkeletonMonth = () => <div />;
 

@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useLayoutEffect
+} from 'react';
 import { useSpring, animated, config, interpolate } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
@@ -20,24 +26,31 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
     const [scrollLeft, setScrollLeft] = useState(column * CALENDAR_DIMENSIONS);
     const gridRef = useRef<Grid>(null);
-    const scrollLeftInitial = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
-    const scrollLeftFinal = useRef<ScrollOffset>({ scrollLeft: 0, scrollTop: 0 });
-    const scrollAnimation = useSpring({
-      scrollLeft: scrollLeft
+    const scrollLeftInitial = useRef<ScrollOffset>({
+      scrollLeft: 0,
+      scrollTop: 0
     });
+    const scrollLeftFinal = useRef<ScrollOffset>({
+      scrollLeft: 0,
+      scrollTop: 0
+    });
+    // const scrollAnimation = useSpring({
+    //   scrollLeft: scrollLeft
+    // });
 
     useEffect(() => {
       console.log('column change ag', column);
       if (gridRef.current && scrollLeftFinal.current) {
-        const newScrollLeft = gridRef.current.getOffsetForCell({ columnIndex: column })
-          .scrollLeft;
+        const newScrollLeft = gridRef.current.getOffsetForCell({
+          columnIndex: column
+        }).scrollLeft;
         scrollLeftFinal.current.scrollLeft = newScrollLeft;
         console.log('NewScrollLeft', newScrollLeft, scrollLeft);
         console.log('Grid Ref:', gridRef.current);
-        //scrollAnimation.scrollLeft.setValue(newColumnIndex * CALENDAR_DIMENSIONS, false);
+        // scrollAnimation.scrollLeft.setValue(newColumnIndex * CALENDAR_DIMENSIONS, false);
         setScrollLeft(newScrollLeft);
       }
-    }, [column]);
+    }, [column, scrollLeft]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
       console.log('OnScroll', scrollLeft);
@@ -46,18 +59,14 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       }
     }, []);
 
-    console.log(scrollAnimation, scrollLeft);
-
     return (
-      <animated.div {...scrollAnimation}>
-        <Grid
-          {...gridProps}
-          ref={gridRef}
-          onScroll={onScroll}
-          scrollToColumn={undefined}
-          scrollLeft={scrollLeft}
-        />
-      </animated.div>
+      <Grid
+        {...gridProps}
+        ref={gridRef}
+        onScroll={onScroll}
+        scrollToColumn={undefined}
+        scrollLeft={scrollLeft}
+      />
     );
   }
 );
