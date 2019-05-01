@@ -30,14 +30,14 @@ export const DAYS: string[] = [
   'Saturday'
 ];
 
-type CalendarMonthData = {
+interface CalendarMonthData {
   endIndex: number;
   beginIndex: number;
   daysInMonth: number;
   month: number;
   year: number;
   beginDay: string;
-};
+}
 
 export type DateMatrix = Date[][];
 
