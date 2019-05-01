@@ -15,7 +15,7 @@ import { findIndex, range, forEach } from 'lodash';
 /* Utility Functions/Types for Date Components */
 
 const DAY_NAME_FORMAT: string = 'dddd';
-const MAX_NUMBER_WEEKS_SHOWN: number = 6;
+export const MAX_NUMBER_WEEKS_SHOWN: number = 6;
 export const CALENDAR_DIMENSIONS: number = 500;
 export const MAX_TIME_SPAN: number = 1000;
 export const MIDDLE_INDEX: number = 500;
@@ -41,14 +41,17 @@ type CalendarMonthData = {
 
 export type DateMatrix = Date[][];
 
-const getIndexOfDay = (day: string): number => findIndex(DAYS, name => day === name);
+const getIndexOfDay = (day: string): number =>
+  findIndex(DAYS, name => day === name);
 
 const constructDate = (monthData: CalendarMonthData, day: number) =>
   new Date(monthData.year, monthData.month, day);
 
 const calculateMonthData = (incomingDate: Date): CalendarMonthData => ({
   endIndex: getIndexOfDay(format(endOfMonth(incomingDate), DAY_NAME_FORMAT)),
-  beginIndex: getIndexOfDay(format(startOfMonth(incomingDate), DAY_NAME_FORMAT)),
+  beginIndex: getIndexOfDay(
+    format(startOfMonth(incomingDate), DAY_NAME_FORMAT)
+  ),
   daysInMonth: getDaysInMonth(incomingDate),
   month: getMonth(incomingDate),
   year: getYear(incomingDate),
@@ -77,7 +80,9 @@ const fillMonthMatrix = (
       ? 3
       : 4;
   const beginDayPrevMonth =
-    currentMonth.beginIndex !== 0 ? currentMonth.beginIndex - 1 : currentMonth.beginIndex;
+    currentMonth.beginIndex !== 0
+      ? currentMonth.beginIndex - 1
+      : currentMonth.beginIndex;
 
   let prevMonthDayIterator = prevMonth.daysInMonth - beginDayPrevMonth;
   let nextMonthDayIterator = 1;

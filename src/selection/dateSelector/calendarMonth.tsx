@@ -5,10 +5,11 @@ import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   isSameDate,
-  DAYS
+  DAYS,
+  MAX_NUMBER_WEEKS_SHOWN
 } from './dateUtils';
-import { map } from 'lodash';
 import { format } from 'date-fns';
+import { range, map } from 'lodash';
 
 /* Calculation of calendar month data */
 
@@ -52,16 +53,32 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     );
 
     const renderMonth = useCallback(() => {
-      /* TODO: Needs to be tested for the 'memoize last' semantics */
       const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => {
         return <Row key={index}>{renderWeek(week)}</Row>;
       });
     }, [month, renderWeek]);
 
-    const renderSkeletonMonth = () => <div />;
+    const getSkeletonMonth = useCallback(() => {
+      return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() => {
+        return new Array(DAYS.length).fill(null);
+      });
+    }, []);
 
-    console.log('CalendarMonth render():', month);
+    const renderSkeletonWeek = useCallback((week: any[]) => {
+      return map(week, (week, index) => {
+        return (
+          <CalendarItem key={index}>{renderSkeletonWeek(week)}</CalendarItem>
+        );
+      });
+    }, []);
+
+    const renderSkeletonMonth = useCallback(() => {
+      const month = getSkeletonMonth();
+      return map(month, (week, index) => {
+        return <Row key={index}>{renderSkeletonWeek(week)}</Row>;
+      });
+    }, [getSkeletonMonth, renderSkeletonWeek]);
 
     return (
       <CalendarMonthWrapper>

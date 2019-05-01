@@ -16,40 +16,58 @@ export interface AnimatedGridProps {
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
+const easeInQuad = (t: number) => t * t;
+
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
-    const [scrollLeft, setScrollLeft] = useState(column * CALENDAR_DIMENSIONS);
+    const [scrollLeft, setScrollLeft] = useState(0);
     const gridRef = useRef<Grid>(null);
-    const scrollLeftInitial = useRef<ScrollOffset>({
-      scrollLeft: 0,
-      scrollTop: 0
-    });
-    const scrollLeftFinal = useRef<ScrollOffset>({
-      scrollLeft: 0,
-      scrollTop: 0
-    });
+    const scrollLeftInitial = useRef(0);
+    const scrollLeftFinal = useRef(0);
+    const isAnimating = useRef(false);
+    const animationStartTime = useRef(0);
+
     // const scrollAnimation = useSpring({
     //   scrollLeft: scrollLeft
     // });
 
+    const animateToOffset = useCallback(() => {
+      requestAnimationFrame(() => {
+        const now = performance.now();
+        const elapsedTime = now - animationStartTime.current;
+        const scrollDelta = scrollLeftFinal.current - scrollLeftInitial.current;
+        const easing = easeInQuad(Math.min(1, elapsedTime / 500));
+        const scrollLeft = scrollLeftInitial.current + scrollDelta * easing;
+        setScrollLeft(scrollLeft);
+
+        if (elapsedTime < 500) {
+          animateToOffset();
+        } else {
+          animationStartTime.current = 0;
+          scrollLeftInitial.current = scrollLeftFinal.current;
+          isAnimating.current = false;
+          if (onAnimationComplete) {
+            onAnimationComplete();
+          }
+        }
+      });
+    }, []);
+
     useEffect(() => {
-      console.log('column change ag', column);
-      if (gridRef.current && scrollLeftFinal.current) {
-        const newScrollLeft = gridRef.current.getOffsetForCell({
+      if (gridRef.current) {
+        animationStartTime.current = performance.now();
+        scrollLeftFinal.current = gridRef.current.getOffsetForCell({
           columnIndex: column
         }).scrollLeft;
-        scrollLeftFinal.current.scrollLeft = newScrollLeft;
-        console.log('NewScrollLeft', newScrollLeft, scrollLeft);
-        console.log('Grid Ref:', gridRef.current);
-        // scrollAnimation.scrollLeft.setValue(newColumnIndex * CALENDAR_DIMENSIONS, false);
-        setScrollLeft(newScrollLeft);
+        isAnimating.current = true;
+        animateToOffset();
       }
-    }, [column, scrollLeft]);
+    }, [column, animateToOffset]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
       console.log('OnScroll', scrollLeft);
-      if (scrollLeftInitial.current) {
-        scrollLeftInitial.current.scrollLeft = scrollLeft;
+      if (!isAnimating) {
+        scrollLeftInitial.current = scrollLeft;
       }
     }, []);
 

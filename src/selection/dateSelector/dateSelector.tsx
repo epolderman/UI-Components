@@ -18,7 +18,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef<Date>(new Date());
-    //const animatedGridRef = useRef<AnimatedGrid>(null);
 
     useEffect(() => {
       console.log('useEffect monthoffset', monthOffset);
@@ -40,11 +39,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value]);
 
-    const onSelect = useCallback((incomingDate: Date) => onChange(incomingDate), [
-      onChange
+    const onSelect = useCallback(
+      (incomingDate: Date) => onChange(incomingDate),
+      [onChange]
+    );
+    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [
+      monthOffset
     ]);
-    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [monthOffset]);
-    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [monthOffset]);
+    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [
+      monthOffset
+    ]);
 
     const cellRenderer = ({
       key,
