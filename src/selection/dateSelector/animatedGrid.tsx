@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useLayoutEffect
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSpring, animated, config, interpolate } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';

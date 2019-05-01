@@ -10,7 +10,7 @@ module.exports = {
     '@typescript-eslint/tslint/config': [
       'warn',
       {
-        lintFile: './tslint.json' // path to tslint.json of your project
+        lintFile: './tslint.json'
       }
     ],
     'react-hooks/rules-of-hooks': 'error',
@@ -18,7 +18,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: 'detect' // Tells eslint-plugin-react to automatically detect the version of React to use
+      version: 'detect'
     }
   }
 };
