@@ -24,17 +24,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }, [monthOffset]);
 
     useEffect(() => {
-      console.log('useEffect value', value);
       if (initialDate.current) {
         const currentMonthDate = addMonths(
           initialDate.current,
           monthOffset - MIDDLE_INDEX
         );
-        console.log('currentMonthDate', currentMonthDate);
         const difference = differenceInCalendarMonths(value, currentMonthDate);
         if (difference !== 0) {
-          console.log('diffff', difference);
-          setMonthOffset(monthOffset + difference);
+          setMonthOffset(m => m + difference);
         }
       }
     }, [value]);
