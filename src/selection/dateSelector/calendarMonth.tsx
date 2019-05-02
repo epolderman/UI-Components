@@ -66,10 +66,8 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     }, []);
 
     const renderSkeletonWeek = useCallback((week: any[]) => {
-      return map(week, (week, index) => {
-        return (
-          <CalendarItem key={index}>{renderSkeletonWeek(week)}</CalendarItem>
-        );
+      return map(week, (day, index) => {
+        return <CalendarItem key={index} />;
       });
     }, []);
 
