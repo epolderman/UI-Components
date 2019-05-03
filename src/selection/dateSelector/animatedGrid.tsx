@@ -3,6 +3,7 @@ import { useSpring, animated, config, interpolate } from 'react-spring';
 import { Grid } from 'react-virtualized';
 import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
 import { CALENDAR_DIMENSIONS } from './dateUtils';
+import Easing from 'easing-functions';
 
 /* 
    Handles virtualization via windowing
@@ -16,7 +17,7 @@ export interface AnimatedGridProps {
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
-const easeInQuad = (t: number) => t * t;
+const DURATION_OF_ANIMATION = 500;
 
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
@@ -36,11 +37,13 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         const now = performance.now();
         const elapsedTime = now - animationStartTime.current;
         const scrollDelta = scrollLeftFinal.current - scrollLeftInitial.current;
-        const easing = easeInQuad(Math.min(1, elapsedTime / 500));
+        const easing = Easing.Cubic.InOut(
+          Math.min(1, elapsedTime / DURATION_OF_ANIMATION)
+        );
         const scrollLeft = scrollLeftInitial.current + scrollDelta * easing;
         setScrollLeft(scrollLeft);
 
-        if (elapsedTime < 500) {
+        if (elapsedTime < DURATION_OF_ANIMATION) {
           animateToOffset();
         } else {
           animationStartTime.current = 0;
@@ -51,7 +54,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
           }
         }
       });
-    }, []);
+    }, [onAnimationComplete]);
 
     useEffect(() => {
       if (gridRef.current) {
@@ -65,7 +68,6 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     }, [column, animateToOffset]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
-      console.log('OnScroll', scrollLeft);
       if (!isAnimating) {
         scrollLeftInitial.current = scrollLeft;
       }

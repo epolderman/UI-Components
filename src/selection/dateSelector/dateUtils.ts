@@ -12,7 +12,7 @@ import {
 } from 'date-fns';
 import { findIndex, range, forEach } from 'lodash';
 
-/* Utility Functions/Types for Date Components */
+/* Utility Functions / Types for Date Components */
 
 const DAY_NAME_FORMAT: string = 'dddd';
 export const MAX_NUMBER_WEEKS_SHOWN: number = 6;

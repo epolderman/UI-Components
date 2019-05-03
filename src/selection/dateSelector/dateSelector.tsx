@@ -20,29 +20,27 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const initialDate = useRef<Date>(new Date());
 
     useEffect(() => {
-      console.log('useEffect monthoffset', monthOffset);
-    }, [monthOffset]);
-
-    useEffect(() => {
       if (initialDate.current) {
-        const currentMonthDate = addMonths(
+        const difference = calculateMonthOffset(
           initialDate.current,
-          monthOffset - MIDDLE_INDEX
+          monthOffset - MIDDLE_INDEX,
+          value
         );
-        const difference = differenceInCalendarMonths(value, currentMonthDate);
         if (difference !== 0) {
           setMonthOffset(m => m + difference);
         }
       }
-    }, [value]);
+    }, [value, monthOffset]);
 
     const onSelect = useCallback(
       (incomingDate: Date) => onChange(incomingDate),
       [onChange]
     );
+
     const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [
       monthOffset
     ]);
+
     const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [
       monthOffset
     ]);
@@ -98,8 +96,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       );
     };
 
-    console.log('DateSelector', monthOffset);
-
     return (
       <DateWrapper>
         {renderControls()}
@@ -108,6 +104,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
   }
 );
+
+const calculateMonthOffset = (
+  date: Date,
+  monthOffset: number,
+  dateChange: Date
+): number =>
+  differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
 /* Top Left Container*/
 const DateWrapper = styled.div`

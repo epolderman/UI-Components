@@ -29,6 +29,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
         ))}
       </Row>
     );
+
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
