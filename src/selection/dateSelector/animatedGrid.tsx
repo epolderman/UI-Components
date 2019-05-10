@@ -28,10 +28,15 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const isAnimating = useRef(false);
     const animationStartTime = useRef(0);
 
-    const scrollAnimation = useSpring({
-      from: { scrollLeft: 0 },
-      to: { scrollLeft }
+    const { x } = useSpring({
+      from: { x: 0 },
+      to: { x: scrollLeft }
     });
+
+    // const scrollAnimation = useSpring({
+    //   from: { scrollLeft: 0 },
+    //   to: { scrollLeft }
+    // });
 
     const animateToOffset = useCallback(() => {
       requestAnimationFrame(() => {
@@ -76,17 +81,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       }
     }, []);
 
-    // return (
-    //   <Grid
-    //     {...gridProps}
-    //     ref={gridRef}
-    //     onScroll={onScroll}
-    //     scrollToColumn={undefined}
-    //     scrollLeft={scrollLeft}
-    //   />
-    // );
-
-    console.log('scrollAnimation', scrollAnimation, gridRef);
+    console.log('scrollAnimation', gridRef);
 
     return (
       <AGrid
@@ -94,7 +89,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         ref={gridRef}
         onScroll={onScroll}
         scrollToColumn={undefined}
-        {...scrollAnimation}
+        scrollLeft={x.interpolate((x: number) => x)}
       />
     );
   }
