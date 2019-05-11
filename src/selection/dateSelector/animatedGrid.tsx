@@ -28,9 +28,15 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const isAnimating = useRef(false);
     const animationStartTime = useRef(0);
 
-    const scrollAnimation = useSpring({
-      scrollLeft
+    const { x } = useSpring({
+      from: { x: 0 },
+      to: { x: scrollLeft }
     });
+
+    // const scrollAnimation = useSpring({
+    //   from: { scrollLeft: 0 },
+    //   to: { scrollLeft }
+    // });
 
     const animateToOffset = useCallback(() => {
       requestAnimationFrame(() => {
@@ -62,7 +68,9 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         scrollLeftFinal.current = gridRef.current.getOffsetForCell({
           columnIndex: column
         }).scrollLeft;
-        isAnimating.current = true;
+        console.log('scrollLeft Setting', scrollLeftFinal.current);
+        setScrollLeft(scrollLeftFinal.current);
+        // isAnimating.current = true;
         // animateToOffset();
       }
     }, [column, animateToOffset]);
@@ -72,6 +80,8 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         scrollLeftInitial.current = scrollLeft;
       }
     }, []);
+
+    console.log('scrollAnimation', gridRef);
 
     return (
       <animated.div>
