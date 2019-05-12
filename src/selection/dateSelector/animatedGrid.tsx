@@ -33,11 +33,6 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       to: { x: scrollLeft }
     });
 
-    // const scrollAnimation = useSpring({
-    //   from: { scrollLeft: 0 },
-    //   to: { scrollLeft }
-    // });
-
     const animateToOffset = useCallback(() => {
       requestAnimationFrame(() => {
         const now = performance.now();
@@ -70,8 +65,8 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         }).scrollLeft;
         console.log('scrollLeft Setting', scrollLeftFinal.current);
         setScrollLeft(scrollLeftFinal.current);
-        // isAnimating.current = true;
-        // animateToOffset();
+        isAnimating.current = true;
+        animateToOffset();
       }
     }, [column, animateToOffset]);
 
@@ -81,8 +76,6 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       }
     }, []);
 
-    console.log('scrollAnimation', gridRef);
-
     return (
       <animated.div>
         <Grid
@@ -90,22 +83,10 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
           ref={gridRef}
           onScroll={onScroll}
           scrollToColumn={undefined}
-          {...scrollAnimation.scrollLeft}
+          scrollLeft={scrollLeft}
         />
       </animated.div>
     );
-    // this allows our scrollLeft state value reach Grid
-    // return (
-    //   <animated.div>
-    //     <Grid
-    //       {...gridProps}
-    //       ref={gridRef}
-    //       onScroll={onScroll}
-    //       scrollToColumn={undefined}
-    //       scrollLeft={scrollLeft}
-    //     />
-    //   </animated.div>
-    // );
   }
 );
 const AGrid = animated(Grid);
