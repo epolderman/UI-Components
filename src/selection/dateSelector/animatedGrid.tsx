@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSpring, animated, config, interpolate } from 'react-spring';
 import { Grid } from 'react-virtualized';
-import { GridProps, ScrollOffset } from 'react-virtualized/dist/es/Grid';
-import { CALENDAR_DIMENSIONS } from './dateUtils';
+import { GridProps } from 'react-virtualized/dist/es/Grid';
 import Easing from 'easing-functions';
 
 /* 
