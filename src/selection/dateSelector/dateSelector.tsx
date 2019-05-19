@@ -18,9 +18,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef<Date>(new Date());
+    const prevDate = usePreviousDate(value);
 
     useEffect(() => {
-      if (initialDate.current) {
+      if (prevDate !== value) {
         const difference = calculateMonthOffset(
           initialDate.current,
           monthOffset - MIDDLE_INDEX,
@@ -30,7 +31,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           setMonthOffset(m => m + difference);
         }
       }
-    }, [value, monthOffset]);
+    }, [value, monthOffset, prevDate]);
 
     const onSelect = useCallback(
       (incomingDate: Date) => onChange(incomingDate),
@@ -147,3 +148,11 @@ const ControlItem = styled.div`
     color: white;
   }
 `;
+
+const usePreviousDate = (value: Date) => {
+  const ref = useRef<Date>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
