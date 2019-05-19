@@ -4,6 +4,7 @@ import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid } from './animatedGrid';
 import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
+import { Grid } from 'react-virtualized';
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
@@ -18,18 +19,22 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef<Date>(new Date());
+    const gridRef = useRef<Grid>(null);
 
     useEffect(() => {
-      if (initialDate.current) {
-        const difference = calculateMonthOffset(
-          initialDate.current,
-          monthOffset - MIDDLE_INDEX,
-          value
-        );
-        if (difference !== 0) {
-          setMonthOffset(m => m + difference);
-        }
+      const difference = calculateMonthOffset(
+        initialDate.current,
+        monthOffset - MIDDLE_INDEX,
+        value
+      );
+
+      if (difference !== 0) {
+        setMonthOffset(m => m + difference);
       }
+      const column =
+        gridRef.current.getOffsetForCell({
+          columnIndex: monthOffset + difference
+        }).scrollLeft / CALENDAR_DIMENSIONS;
     }, [value, monthOffset]);
 
     const onSelect = useCallback(
@@ -58,7 +63,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }) => {
       const itemOffset = columnIndex - MIDDLE_INDEX;
       const itemDate = addMonths(initialDate.current, itemOffset);
-      console.log('cellRenderer', columnIndex, itemOffset, itemDate);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
@@ -74,6 +78,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const renderGrid = () => {
       return (
         <AnimatedGrid
+          ref={gridRef}
           column={monthOffset}
           cellRenderer={cellRenderer}
           height={CALENDAR_DIMENSIONS}
@@ -106,11 +111,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 );
 
 const calculateMonthOffset = (
-  date: Date,
+  initialDate: Date,
   monthOffset: number,
   dateChange: Date
 ): number =>
-  differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
+  differenceInCalendarMonths(dateChange, addMonths(initialDate, monthOffset));
 
 /* Top Left Container*/
 const DateWrapper = styled.div`
