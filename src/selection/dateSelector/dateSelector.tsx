@@ -59,7 +59,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }) => {
       const itemOffset = columnIndex - MIDDLE_INDEX;
       const itemDate = addMonths(initialDate.current, itemOffset);
-      console.log('cellRenderer', columnIndex, itemOffset, itemDate);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
