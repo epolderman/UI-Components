@@ -51,15 +51,13 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     }, [onAnimationComplete]);
 
     useEffect(() => {
-      if (gridRef.current) {
-        animationStartTime.current = performance.now();
-        scrollLeftFinal.current = gridRef.current.getOffsetForCell({
-          columnIndex: column
-        }).scrollLeft;
-        setScrollLeft(scrollLeftFinal.current);
-        isAnimating.current = true;
-        animateToOffset();
-      }
+      animationStartTime.current = performance.now();
+      scrollLeftFinal.current = gridRef.current.getOffsetForCell({
+        columnIndex: column
+      }).scrollLeft;
+      setScrollLeft(scrollLeftFinal.current);
+      isAnimating.current = true;
+      animateToOffset();
     }, [column, animateToOffset]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
