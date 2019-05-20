@@ -95,14 +95,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           <ControlItem
             onClick={prevMonth}
             variant='contained'
-            color='secondary'
+            color={'primary'}
           >
             Prev
           </ControlItem>
           <ControlItem
             onClick={nextMonth}
             variant='contained'
-            color='secondary'
+            color={'primary'}
           >
             Next
           </ControlItem>
