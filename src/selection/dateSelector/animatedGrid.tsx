@@ -21,7 +21,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
     const [scrollLeft, setScrollLeft] = useState(0);
     const gridRef = useRef<Grid>(null);
-    const scrollLeftInitial = useRef(0);
+    const scrollLeftStart = useRef(0);
     const scrollLeftFinal = useRef(0);
     const isAnimating = useRef(false);
     const animationStartTime = useRef(0);
@@ -30,18 +30,18 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       requestAnimationFrame(() => {
         const now = performance.now();
         const elapsedTime = now - animationStartTime.current;
-        const scrollDelta = scrollLeftFinal.current - scrollLeftInitial.current;
+        const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
         const easing = Easing.Cubic.InOut(
           Math.min(1, elapsedTime / DURATION_OF_ANIMATION)
         );
-        const scrollLeft = scrollLeftInitial.current + scrollDelta * easing;
+        const scrollLeft = scrollLeftStart.current + scrollDelta * easing;
         setScrollLeft(scrollLeft);
 
         if (elapsedTime < DURATION_OF_ANIMATION) {
           animateToOffset();
         } else {
           animationStartTime.current = 0;
-          scrollLeftInitial.current = scrollLeftFinal.current;
+          scrollLeftStart.current = scrollLeftFinal.current;
           isAnimating.current = false;
           if (onAnimationComplete) {
             onAnimationComplete();
@@ -62,7 +62,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
       if (!isAnimating) {
-        scrollLeftInitial.current = scrollLeft;
+        scrollLeftStart.current = scrollLeft;
       }
     }, []);
 

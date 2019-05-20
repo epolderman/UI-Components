@@ -4,7 +4,8 @@ import { AnimatedGrid } from './animatedGrid';
 import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
 import styled from '@emotion/styled';
-import { Button, Typography } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
@@ -88,10 +89,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         />
         <ControlRow>
           <ControlItem onClick={prevMonth} color='secondary'>
-            Prev
+            <KeyboardArrowLeft />
           </ControlItem>
           <ControlItem onClick={nextMonth} color={'secondary'}>
-            Next
+            <KeyboardArrowRight />
           </ControlItem>
         </ControlRow>
       </DateWrapper>
@@ -120,20 +121,18 @@ const DateWrapper = styled.div`
 const ControlRow = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: center;
   flex: 1 1 0%;
   box-sizing: border-box;
   position: absolute;
-  top: 0;
+  top: 12px;
   left: 0;
   right: 0;
 `;
 
 const ControlItem = styled(Button)`
   display: flex;
-  flex: 1 1 0%;
-  align-items: stretch;
-  justify-content: stretch;
+  flex: 0 0 auto;
 `;
 
 // https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
