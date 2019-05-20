@@ -56,9 +56,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 
     const monthJSX = useMemo(() => {
       const currentMonth: DateMatrix = buildDateMatrix(month);
-      return map(currentMonth, (week, index) => {
-        return <Row key={index}>{renderWeek(week)}</Row>;
-      });
+      return map(currentMonth, (week, index) => (
+        <Row key={index}>{renderWeek(week)}</Row>
+      ));
     }, [month, renderWeek]);
 
     return (
@@ -87,9 +87,9 @@ const renderDayNames = () => (
 
 const renderSkeletonMonth = () => {
   const month = getSkeletonMonth();
-  return map(month, (week, index) => {
-    return <Row key={index}>{renderSkeletonWeek(week)}</Row>;
-  });
+  return map(month, (week, index) => (
+    <Row key={index}>{renderSkeletonWeek(week)}</Row>
+  ));
 };
 
 const getSkeletonMonth = () => {
@@ -99,9 +99,7 @@ const getSkeletonMonth = () => {
 };
 
 const renderSkeletonWeek = (week: any[]) => {
-  return map(week, (_, index) => {
-    return <SkeletonItem key={index} />;
-  });
+  return map(week, (_, index) => <SkeletonItem key={index} />);
 };
 
 const CalendarMonthWrapper = styled.div`
