@@ -1,9 +1,10 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid } from './animatedGrid';
 import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
+import styled from '@emotion/styled';
+import { Button } from '@material-ui/core';
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
@@ -21,6 +22,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePreviousDate(value);
 
     useEffect(() => {
+      // new date coming in
       if (prevDate !== value) {
         const difference = calculateMonthOffset(
           initialDate.current,
@@ -65,7 +67,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             onSelect={onSelect}
             month={itemDate}
             selectedDate={value}
-            skeleton={isScrolling}
+            // skeleton={isScrolling}
           />
         </div>
       );
@@ -90,8 +92,20 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const renderControls = () => {
       return (
         <ControlRow>
-          <ControlItem onClick={prevMonth}>Prev</ControlItem>
-          <ControlItem onClick={nextMonth}>Next</ControlItem>
+          <ControlItem
+            onClick={prevMonth}
+            variant='contained'
+            color='secondary'
+          >
+            Prev
+          </ControlItem>
+          <ControlItem
+            onClick={nextMonth}
+            variant='contained'
+            color='secondary'
+          >
+            Next
+          </ControlItem>
         </ControlRow>
       );
     };
@@ -120,32 +134,19 @@ const DateWrapper = styled.div`
   box-sizing: border-box;
   justify-content: stretch;
   align-items: stretch;
-  background-color: teal;
 `;
 
 const ControlRow = styled.div`
   display: flex;
-  background-color: blue;
   justify-content: space-between;
   align-items: stretch;
   flex: 1 1 0%;
   box-sizing: border-box;
 `;
 
-const ControlItem = styled.div`
+const ControlItem = styled(Button)`
   display: flex;
   flex: 1 1 0%;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  background-color: white;
-  color: black;
-  border: 1px solid black;
-  cursor: pointer;
-  &:hover {
-    background-color: green;
-    color: white;
-  }
 `;
 
 // https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state

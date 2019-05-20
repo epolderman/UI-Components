@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import {
   DateMatrix,
   buildDateMatrix,
@@ -10,7 +9,8 @@ import {
 } from './dateUtils';
 import { format } from 'date-fns';
 import { range, map } from 'lodash';
-
+import styled from '@emotion/styled';
+import { Button } from '@material-ui/core';
 /* Calculation of calendar month data */
 
 export interface CalendarMonthProps {
@@ -25,7 +25,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const renderDayNames = () => (
       <Row>
         {map(DAYS, (day, index) => (
-          <DayItem key={index}>{day.slice(0, 3)}</DayItem>
+          <DayItem key={index} variant='contained' color='secondary'>
+            {day.slice(0, 3)}
+          </DayItem>
         ))}
       </Row>
     );
@@ -35,16 +37,28 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
         map(week, (date, index) => {
           const dispatchSelect = () => onSelect(date);
           if (date == null) {
-            return <CalendarItem key={index} />;
+            return (
+              <CalendarItem key={index} variant='contained' color='primary' />
+            );
           } else if (isSameDate(date, selectedDate)) {
             return (
-              <CalendarItem style={{ color: 'red' }} key={index}>
+              <CalendarItem
+                style={{ color: 'red' }}
+                key={index}
+                variant='contained'
+                color='primary'
+              >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </CalendarItem>
             );
           } else {
             return (
-              <CalendarItem onClick={dispatchSelect} key={index}>
+              <CalendarItem
+                onClick={dispatchSelect}
+                key={index}
+                variant='contained'
+                color='primary'
+              >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </CalendarItem>
             );
@@ -68,7 +82,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 
     const renderSkeletonWeek = useCallback((week: any[]) => {
       return map(week, (day, index) => {
-        return <CalendarItem key={index} />;
+        return (
+          <CalendarItem key={index} variant='contained' color='secondary' />
+        );
       });
     }, []);
 
@@ -106,30 +122,12 @@ const Row = styled.div`
   box-sizing: border-box;
 `;
 
-const CalendarItem = styled.div`
+const CalendarItem = styled(Button)`
   display: flex;
   flex: 1 1 0%;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  background-color: white;
-  color: black;
-  border: 1px solid black;
-  cursor: pointer;
-
-  &:hover {
-    background-color: black;
-    color: white;
-  }
 `;
 
-const DayItem = styled.div`
+const DayItem = styled(Button)`
   display: flex;
   flex: 1 1 0%;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  background-color: white;
-  color: black;
-  border: 1px solid black;
 `;
