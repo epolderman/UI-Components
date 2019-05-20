@@ -38,7 +38,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
               <CalendarItem
                 onClick={dispatchSelect}
                 key={index}
-                style={{ backgroundColor: '#95a5a6', color: 'white' }}
+                style={{ backgroundColor: '#34495e', color: 'white' }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </CalendarItem>
@@ -51,7 +51,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
             );
           }
         }),
-      [onSelect, selectedDate]
+      [onSelect, selectedDate, month]
     );
 
     const monthJSX = useMemo(() => {
