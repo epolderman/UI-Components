@@ -4,7 +4,7 @@ import { AnimatedGrid } from './animatedGrid';
 import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
 import styled from '@emotion/styled';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;

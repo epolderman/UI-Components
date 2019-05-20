@@ -10,7 +10,7 @@ import {
 import { format } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 /* Calculation of calendar month data */
 
 export interface CalendarMonthProps {
@@ -97,6 +97,11 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 
     return (
       <CalendarMonthWrapper>
+        <Row>
+          <Typography style={{ textAlign: 'center' }}>
+            {format(month, 'MMM DD YYYY')}
+          </Typography>
+        </Row>
         {renderDayNames()}
         {skeleton ? renderSkeletonMonth() : renderMonth()}
       </CalendarMonthWrapper>
