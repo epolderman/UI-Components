@@ -95,9 +95,7 @@ const getSkeletonMonth = () => {
 
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => {
-    return (
-      <CalendarItemButton key={index} variant='contained' color='secondary' />
-    );
+    return <SkeletonItem key={index} />;
   });
 };
 
@@ -122,8 +120,7 @@ const Row = styled.div<{ hasText?: boolean }>`
 const CalendarItemButton = withStyles({
   root: {
     display: 'flex',
-    flex: '1 1 0%',
-    background: '#2C3539'
+    flex: '1 1 0%'
   },
   label: {
     fontSize: '20px'
@@ -131,6 +128,16 @@ const CalendarItemButton = withStyles({
 })(Button);
 
 const DayItemButton = withStyles({
+  root: {
+    display: 'flex',
+    flex: '1 1 0%'
+  },
+  label: {
+    fontSize: '20px'
+  }
+})(Button);
+
+const SkeletonItem = withStyles({
   root: {
     display: 'flex',
     flex: '1 1 0%'
