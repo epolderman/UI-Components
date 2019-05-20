@@ -88,10 +88,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           style={{ overflow: 'hidden' }}
         />
         <ControlRow>
-          <ControlItem onClick={prevMonth} color='secondary'>
+          <ControlItem onClick={prevMonth} color='primary'>
             <KeyboardArrowLeft />
           </ControlItem>
-          <ControlItem onClick={nextMonth} color={'secondary'}>
+          <ControlItem onClick={nextMonth} color='primary'>
             <KeyboardArrowRight />
           </ControlItem>
         </ControlRow>

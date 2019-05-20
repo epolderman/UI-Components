@@ -10,7 +10,7 @@ import {
 import { format } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
-import { Button, Typography, withStyles } from '@material-ui/core';
+import { Button, Typography, withStyles, Fab } from '@material-ui/core';
 
 /* Calculation of calendar month data */
 
@@ -29,20 +29,15 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           const dispatchSelect = () => onSelect(date);
           if (isSameDate(date, selectedDate)) {
             return (
-              <CalendarItemButton key={index} style={{ color: 'white' }}>
+              <SelectedItem key={index} variant='round' color='primary'>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </CalendarItemButton>
+              </SelectedItem>
             );
           } else {
             return (
-              <CalendarItemButton
-                onClick={dispatchSelect}
-                key={index}
-                variant='text'
-                color='primary'
-              >
+              <CalendarItem onClick={dispatchSelect} key={index}>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </CalendarItemButton>
+              </CalendarItem>
             );
           }
         }),
@@ -59,7 +54,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     return (
       <CalendarMonthWrapper>
         <Row hasText>
-          <Typography style={{ fontSize: '20px' }} color={'secondary'}>
+          <Typography style={{ fontSize: '20px' }} color='primary'>
             {format(month, 'MMM YYYY')}
           </Typography>
         </Row>
@@ -73,9 +68,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
 const renderDayNames = () => (
   <Row>
     {map(DAYS, (day, index) => (
-      <DayItemButton key={index} color='secondary' variant='text'>
+      <DayItem key={index} color='secondary'>
         {day.slice(0, 3)}
-      </DayItemButton>
+      </DayItem>
     ))}
   </Row>
 );
@@ -117,25 +112,42 @@ const Row = styled.div<{ hasText?: boolean }>`
   box-sizing: border-box;
 `;
 
-const CalendarItemButton = withStyles({
+const CalendarItem = withStyles({
   root: {
     display: 'flex',
-    flex: '1 1 0%'
+    flex: '1 1 0%',
+    margin: '0px 8px',
+    borderRadius: '2.5px',
+    backgroundColor: 'white'
   },
   label: {
     fontSize: '20px'
   }
-})(Button);
+})(Fab);
 
-const DayItemButton = withStyles({
+const SelectedItem = withStyles({
   root: {
     display: 'flex',
-    flex: '1 1 0%'
+    flex: '1 1 0%',
+    margin: '0px 8px',
+    borderRadius: '2.5px'
   },
   label: {
     fontSize: '20px'
   }
-})(Button);
+})(Fab);
+
+const DayItem = withStyles({
+  root: {
+    display: 'flex',
+    flex: '1 1 0%',
+    margin: '0px 8px',
+    borderRadius: '2.5px'
+  },
+  label: {
+    fontSize: '20px'
+  }
+})(Fab);
 
 const SkeletonItem = withStyles({
   root: {

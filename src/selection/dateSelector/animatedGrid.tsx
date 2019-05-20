@@ -15,7 +15,7 @@ export interface AnimatedGridProps {
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
-const DURATION_OF_ANIMATION = 500;
+const DURATION_OF_ANIMATION = 750;
 
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
   ({ column, onAnimationComplete, ...gridProps }) => {
