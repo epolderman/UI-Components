@@ -7,7 +7,7 @@ import {
   DAYS,
   MAX_NUMBER_WEEKS_SHOWN
 } from './dateUtils';
-import { format } from 'date-fns';
+import { format, isSameMonth } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
 import { Button, Typography, withStyles, Fab } from '@material-ui/core';
@@ -32,6 +32,16 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
               <SelectedItem key={index} variant='round' color='primary'>
                 {format(date, CALENDAR_DAY_FORMAT)}
               </SelectedItem>
+            );
+          } else if (!isSameMonth(month, date)) {
+            return (
+              <CalendarItem
+                onClick={dispatchSelect}
+                key={index}
+                style={{ backgroundColor: '#95a5a6', color: 'white' }}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </CalendarItem>
             );
           } else {
             return (
