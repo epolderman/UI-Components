@@ -61,13 +61,20 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       ));
     }, [month, renderWeek]);
 
-    return (
-      <CalendarMonthWrapper>
+    const monthTitleJSX = useMemo(
+      () => (
         <Row hasText>
           <Typography style={{ fontSize: '20px' }} color='primary'>
             {format(month, 'MMM YYYY')}
           </Typography>
         </Row>
+      ),
+      [month]
+    );
+
+    return (
+      <CalendarMonthWrapper>
+        {monthTitleJSX}
         {renderDayNames()}
         {skeleton ? renderSkeletonMonth() : monthJSX}
       </CalendarMonthWrapper>
