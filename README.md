@@ -2,9 +2,7 @@
 
 ## Low Level Component Programming
 
-### Project Focus
-
-#####Advanced Components with Primtives
+### Project Focus : Advanced components built with primtive lego blocks
 
 #### Performance
 
