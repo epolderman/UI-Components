@@ -73,8 +73,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       );
     };
 
-    const renderGrid = () => {
-      return (
+    return (
+      <DateWrapper>
         <AnimatedGrid
           column={monthOffset}
           cellRenderer={cellRenderer}
@@ -86,34 +86,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           columnWidth={CALENDAR_DIMENSIONS}
           style={{ overflow: 'hidden' }}
         />
-      );
-    };
-
-    const renderControls = () => {
-      return (
         <ControlRow>
-          <ControlItem
-            onClick={prevMonth}
-            variant='contained'
-            color='secondary'
-          >
+          <ControlItem onClick={prevMonth} color='secondary'>
             Prev
           </ControlItem>
-          <ControlItem
-            onClick={nextMonth}
-            variant='contained'
-            color={'secondary'}
-          >
+          <ControlItem onClick={nextMonth} color={'secondary'}>
             Next
           </ControlItem>
         </ControlRow>
-      );
-    };
-
-    return (
-      <DateWrapper>
-        {renderControls()}
-        {renderGrid()}
       </DateWrapper>
     );
   }
@@ -134,6 +114,7 @@ const DateWrapper = styled.div`
   box-sizing: border-box;
   justify-content: stretch;
   align-items: stretch;
+  position: relative;
 `;
 
 const ControlRow = styled.div`
@@ -142,11 +123,17 @@ const ControlRow = styled.div`
   align-items: stretch;
   flex: 1 1 0%;
   box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 `;
 
 const ControlItem = styled(Button)`
   display: flex;
   flex: 1 1 0%;
+  align-items: stretch;
+  justify-content: stretch;
 `;
 
 // https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state

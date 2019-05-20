@@ -13,6 +13,8 @@ import styled from '@emotion/styled';
 import { Button, Typography } from '@material-ui/core';
 /* Calculation of calendar month data */
 
+// todo: put the callbacks in usememo's in jsx blobs
+
 export interface CalendarMonthProps {
   month: Date;
   selectedDate: Date;
@@ -25,7 +27,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const renderDayNames = () => (
       <Row>
         {map(DAYS, (day, index) => (
-          <DayItem key={index} variant='contained' color='secondary'>
+          <DayItem key={index} color='secondary' disabled>
             {day.slice(0, 3)}
           </DayItem>
         ))}
@@ -43,7 +45,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           } else if (isSameDate(date, selectedDate)) {
             return (
               <CalendarItem
-                style={{ color: 'red' }}
+                style={{ backgroundColor: 'white', color: 'black' }}
                 key={index}
                 variant='contained'
                 color='primary'
@@ -98,9 +100,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     return (
       <CalendarMonthWrapper>
         <Row>
-          <Typography style={{ textAlign: 'center' }}>
-            {format(month, 'MMM DD YYYY')}
-          </Typography>
+          <Typography>{format(month, 'MMM YYYY')}</Typography>
         </Row>
         {renderDayNames()}
         {skeleton ? renderSkeletonMonth() : renderMonth()}
@@ -123,7 +123,7 @@ const Row = styled.div`
   flex: 1 1 0%;
   flex-direction: row;
   justify-content: center;
-  align-content: center;
+  align-items: center;
   box-sizing: border-box;
 `;
 
