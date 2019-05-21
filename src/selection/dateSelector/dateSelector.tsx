@@ -41,13 +41,15 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [onChange]
     );
 
-    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [
-      monthOffset
-    ]);
+    const nextMonth = useCallback(
+      () => setMonthOffset(monthOffset => monthOffset + 1),
+      []
+    );
 
-    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [
-      monthOffset
-    ]);
+    const prevMonth = useCallback(
+      () => setMonthOffset(monthOffset => monthOffset + -1),
+      []
+    );
 
     const cellRenderer = ({
       key,
