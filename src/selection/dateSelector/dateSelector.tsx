@@ -41,6 +41,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [onChange]
     );
 
+    // empty array dependency / only callbacked, useffect, useMemo = 1 intital render call
     const nextMonth = useCallback(
       () => setMonthOffset(monthOffset => monthOffset + 1),
       []
