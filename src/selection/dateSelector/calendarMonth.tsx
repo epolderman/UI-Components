@@ -72,32 +72,35 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       [month]
     );
 
+    const skeletonMonthJSX = useMemo(() => {
+      const month = getSkeletonMonth();
+      return map(month, (week, index) => (
+        <Row key={index}>{renderSkeletonWeek(week)}</Row>
+      ));
+    }, []);
+
+    const dayNamesJSX = useMemo(
+      () => (
+        <Row>
+          {map(DAYS, (day, index) => (
+            <DayItem key={index} color='secondary'>
+              {day.slice(0, 3)}
+            </DayItem>
+          ))}
+        </Row>
+      ),
+      []
+    );
+
     return (
       <CalendarMonthWrapper>
         {monthTitleJSX}
-        {renderDayNames()}
-        {skeleton ? renderSkeletonMonth() : monthJSX}
+        {dayNamesJSX}
+        {skeleton ? skeletonMonthJSX : monthJSX}
       </CalendarMonthWrapper>
     );
   }
 );
-
-const renderDayNames = () => (
-  <Row>
-    {map(DAYS, (day, index) => (
-      <DayItem key={index} color='secondary'>
-        {day.slice(0, 3)}
-      </DayItem>
-    ))}
-  </Row>
-);
-
-const renderSkeletonMonth = () => {
-  const month = getSkeletonMonth();
-  return map(month, (week, index) => (
-    <Row key={index}>{renderSkeletonWeek(week)}</Row>
-  ));
-};
 
 const getSkeletonMonth = () => {
   return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() => {
