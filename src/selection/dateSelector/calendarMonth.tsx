@@ -103,7 +103,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       []
     );
 
-    // todo: cleanup on render
+    // todo: cleanup on render after flushing out the component
     return (
       <CalendarMonthWrapper>
         <div
