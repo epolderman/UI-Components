@@ -11,6 +11,7 @@ import { format, isSameMonth } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
 import { Button, Typography, withStyles, Fab } from '@material-ui/core';
+import { useSpring, animated, config } from 'react-spring';
 
 /* Calculation of calendar month data */
 
@@ -23,6 +24,16 @@ export interface CalendarMonthProps {
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
+    // todo: clean into one
+    const fadeSkeleton = useSpring({
+      opacity: skeleton ? 1 : 0,
+      config: config.slow
+    });
+    const fadeMonth = useSpring({
+      opacity: skeleton ? 0 : 1,
+      config: config.slow
+    });
+
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
@@ -92,11 +103,22 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       []
     );
 
+    // todo: cleanup on render
     return (
       <CalendarMonthWrapper>
-        {monthTitleJSX}
-        {dayNamesJSX}
-        {skeleton ? skeletonMonthJSX : monthJSX}
+        <div
+          style={{
+            maxHeight: '125px',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: '1 1 0%'
+          }}
+        >
+          {monthTitleJSX}
+          {dayNamesJSX}
+        </div>
+        <AnimatedJSX style={fadeMonth}>{monthJSX}</AnimatedJSX>
+        <AnimatedJSX style={fadeSkeleton}>{skeletonMonthJSX}</AnimatedJSX>
       </CalendarMonthWrapper>
     );
   }
@@ -111,7 +133,7 @@ const getSkeletonMonth = () => {
 // todo: fab doesnt like children == null?
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
-    <SkeletonItem disabled key={index}>
+    <SkeletonItem key={index}>
       <Typography style={{ fontSize: '20px' }} color='primary'>
         S
       </Typography>
@@ -126,6 +148,19 @@ const CalendarMonthWrapper = styled.div`
   justify-content: stretch;
   align-content: stretch;
   box-sizing: border-box;
+  position: relative;
+`;
+
+const AnimatedJSX = styled(animated.div)`
+  display: flex;
+  flex: 1 1 0%;
+  top: 125px;
+  flex-direction: column;
+  box-sizing: border-box;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
 `;
 
 const Row = styled.div<{ hasText?: boolean }>`
