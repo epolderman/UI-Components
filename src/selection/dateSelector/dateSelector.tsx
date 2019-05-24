@@ -71,7 +71,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             onSelect={onSelect}
             month={itemDate}
             selectedDate={value}
-            // skeleton={isScrolling}
+            skeleton={isScrolling}
           />
         </div>
       );

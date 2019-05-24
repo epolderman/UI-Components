@@ -108,8 +108,15 @@ const getSkeletonMonth = () => {
   });
 };
 
+// todo: fab doesnt like children == null?
 const renderSkeletonWeek = (week: any[]) => {
-  return map(week, (_, index) => <SkeletonItem key={index} />);
+  return map(week, (_, index) => (
+    <SkeletonItem disabled key={index}>
+      <Typography style={{ fontSize: '20px' }} color='primary'>
+        S
+      </Typography>
+    </SkeletonItem>
+  ));
 };
 
 const CalendarMonthWrapper = styled.div`
@@ -170,9 +177,12 @@ const DayItem = withStyles({
 const SkeletonItem = withStyles({
   root: {
     display: 'flex',
-    flex: '1 1 0%'
+    flex: '1 1 0%',
+    margin: '0px 8px',
+    borderRadius: '2.5px',
+    backgroundColor: 'white'
   },
   label: {
     fontSize: '20px'
   }
-})(Button);
+})(Fab);
