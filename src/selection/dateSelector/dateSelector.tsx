@@ -42,15 +42,9 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     // empty array dependency / only callbacked, useffect, useMemo = 1 intital render call
-    const nextMonth = useCallback(
-      () => setMonthOffset(monthOffset => monthOffset + 1),
-      []
-    );
+    const nextMonth = () => setMonthOffset(monthOffset + 1);
 
-    const prevMonth = useCallback(
-      () => setMonthOffset(monthOffset => monthOffset + -1),
-      []
-    );
+    const prevMonth = () => setMonthOffset(monthOffset + -1);
 
     const cellRenderer = ({
       key,

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   DateMatrix,
   buildDateMatrix,
@@ -24,14 +24,14 @@ export interface CalendarMonthProps {
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
-    // todo: clean into one
+    // todo: clean into one w/ interpolation
     const fadeSkeleton = useSpring({
       opacity: skeleton ? 1 : 0,
-      config: config.slow
+      config: config.gentle
     });
     const fadeMonth = useSpring({
       opacity: skeleton ? 0 : 1,
-      config: config.slow
+      config: config.gentle
     });
 
     const renderWeek = useCallback(
@@ -94,7 +94,12 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       () => (
         <Row>
           {map(DAYS, (day, index) => (
-            <DayItem key={index} color='secondary'>
+            <DayItem
+              key={index}
+              color='secondary'
+              disableFocusRipple
+              disableRipple
+            >
               {day.slice(0, 3)}
             </DayItem>
           ))}
@@ -106,19 +111,14 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     // todo: cleanup on render after flushing out the component
     return (
       <CalendarMonthWrapper>
-        <div
-          style={{
-            maxHeight: '125px',
-            display: 'flex',
-            flexDirection: 'column',
-            flex: '1 1 0%'
-          }}
-        >
+        <TopWrapper>
           {monthTitleJSX}
           {dayNamesJSX}
-        </div>
-        <AnimatedJSX style={fadeMonth}>{monthJSX}</AnimatedJSX>
-        <AnimatedJSX style={fadeSkeleton}>{skeletonMonthJSX}</AnimatedJSX>
+        </TopWrapper>
+        <AnimatedWrapper style={fadeMonth}>{monthJSX}</AnimatedWrapper>
+        <AnimatedWrapper allowClickThrough style={fadeSkeleton}>
+          {skeletonMonthJSX}
+        </AnimatedWrapper>
       </CalendarMonthWrapper>
     );
   }
@@ -135,7 +135,7 @@ const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
     <SkeletonItem key={index}>
       <Typography style={{ fontSize: '20px' }} color='primary'>
-        S
+        {null}
       </Typography>
     </SkeletonItem>
   ));
@@ -151,7 +151,14 @@ const CalendarMonthWrapper = styled.div`
   position: relative;
 `;
 
-const AnimatedJSX = styled(animated.div)`
+const TopWrapper = styled.div`
+  max-height: 125px;
+  flex-direction: column;
+  flex: 1 1 0%;
+  display: flex;
+`;
+
+const AnimatedWrapper = styled(animated.div)<{ allowClickThrough?: boolean }>`
   display: flex;
   flex: 1 1 0%;
   top: 125px;
@@ -161,6 +168,8 @@ const AnimatedJSX = styled(animated.div)`
   right: 0;
   bottom: 0;
   position: absolute;
+  pointer-events: ${({ allowClickThrough }) =>
+    allowClickThrough ? 'none' : 'all'};
 `;
 
 const Row = styled.div<{ hasText?: boolean }>`
