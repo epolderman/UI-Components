@@ -26,14 +26,11 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
     // todo: clean into one w/ interpolation
     const fadeSkeleton = useSpring({
-      opacity: skeleton ? 1 : 0,
-      config: config.gentle
+      opacity: skeleton ? 1 : 0
     });
     const fadeMonth = useSpring({
-      opacity: skeleton ? 0 : 1,
-      config: config.gentle
+      opacity: skeleton ? 0 : 1
     });
-
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
@@ -68,17 +65,17 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const monthJSX = useMemo(() => {
       const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => (
-        <Row key={index}>{renderWeek(week)}</Row>
+        <FlexRow key={index}>{renderWeek(week)}</FlexRow>
       ));
     }, [month, renderWeek]);
 
     const monthTitleJSX = useMemo(
       () => (
-        <Row hasText>
+        <FlexRow hasText>
           <Typography style={{ fontSize: '20px' }} color='primary'>
             {format(month, 'MMM YYYY')}
           </Typography>
-        </Row>
+        </FlexRow>
       ),
       [month]
     );
@@ -86,13 +83,13 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const skeletonMonthJSX = useMemo(() => {
       const month = getSkeletonMonth();
       return map(month, (week, index) => (
-        <Row key={index}>{renderSkeletonWeek(week)}</Row>
+        <FlexRow key={index}>{renderSkeletonWeek(week)}</FlexRow>
       ));
     }, []);
 
     const dayNamesJSX = useMemo(
       () => (
-        <Row>
+        <FlexRow>
           {map(DAYS, (day, index) => (
             <DayItem
               key={index}
@@ -103,23 +100,26 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
               {day.slice(0, 3)}
             </DayItem>
           ))}
-        </Row>
+        </FlexRow>
       ),
       []
     );
 
-    // todo: cleanup on render after flushing out the component
     return (
-      <CalendarMonthWrapper>
-        <TopWrapper>
+      <CalendarContainer>
+        <CalendarHeader>
           {monthTitleJSX}
           {dayNamesJSX}
-        </TopWrapper>
-        <AnimatedWrapper style={fadeMonth}>{monthJSX}</AnimatedWrapper>
-        <AnimatedWrapper allowClickThrough style={fadeSkeleton}>
+        </CalendarHeader>
+        <CalendarAnimatedContent style={fadeMonth}>
+          {monthJSX}
+        </CalendarAnimatedContent>
+        <CalendarAnimatedContent
+          style={{ opacity: fadeSkeleton.opacity, pointerEvents: 'none' }}
+        >
           {skeletonMonthJSX}
-        </AnimatedWrapper>
-      </CalendarMonthWrapper>
+        </CalendarAnimatedContent>
+      </CalendarContainer>
     );
   }
 );
@@ -130,7 +130,7 @@ const getSkeletonMonth = () => {
   });
 };
 
-// todo: fab doesnt like children == null?
+// todo: fab doesnt like children == null? Investigate
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
     <SkeletonItem key={index}>
@@ -141,7 +141,7 @@ const renderSkeletonWeek = (week: any[]) => {
   ));
 };
 
-const CalendarMonthWrapper = styled.div`
+const CalendarContainer = styled.div`
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
@@ -151,28 +151,26 @@ const CalendarMonthWrapper = styled.div`
   position: relative;
 `;
 
-const TopWrapper = styled.div`
-  max-height: 125px;
+const CalendarHeader = styled.div`
+  max-height: 125px; /* 2 Rows = 2 * 62.5 */
   flex-direction: column;
   flex: 1 1 0%;
   display: flex;
 `;
 
-const AnimatedWrapper = styled(animated.div)<{ allowClickThrough?: boolean }>`
+const CalendarAnimatedContent = styled(animated.div)`
   display: flex;
   flex: 1 1 0%;
-  top: 125px;
+  top: 125px; /* 2 Rows = 2 * 62.5 */
   flex-direction: column;
   box-sizing: border-box;
   left: 0;
   right: 0;
   bottom: 0;
   position: absolute;
-  pointer-events: ${({ allowClickThrough }) =>
-    allowClickThrough ? 'none' : 'all'};
 `;
 
-const Row = styled.div<{ hasText?: boolean }>`
+const FlexRow = styled.div<{ hasText?: boolean }>`
   display: flex;
   flex: 1 1 0%;
   flex-direction: row;

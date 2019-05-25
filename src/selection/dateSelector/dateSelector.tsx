@@ -42,9 +42,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     // empty array dependency / only callbacked, useffect, useMemo = 1 intital render call
-    const nextMonth = () => setMonthOffset(monthOffset + 1);
 
-    const prevMonth = () => setMonthOffset(monthOffset + -1);
+    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [
+      monthOffset
+    ]);
+
+    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [
+      monthOffset
+    ]);
 
     const cellRenderer = ({
       key,
@@ -72,7 +77,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     };
 
     return (
-      <DateWrapper>
+      <DateContainer>
         <AnimatedGrid
           column={monthOffset}
           cellRenderer={cellRenderer}
@@ -92,7 +97,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             <KeyboardArrowRight />
           </ControlItem>
         </ControlRow>
-      </DateWrapper>
+      </DateContainer>
     );
   }
 );
@@ -105,7 +110,7 @@ const calculateMonthOffset = (
   differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
 /* Top Left Container*/
-const DateWrapper = styled.div`
+const DateContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1 1 0%;
