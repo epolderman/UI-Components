@@ -7,6 +7,8 @@ import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
 import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
 
+/* Parent Component that controls the Animated Grid */
+
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
   value: Date;
@@ -21,6 +23,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
+    const isGridAnimating = useRef(false);
 
     useEffect(() => {
       // new date coming in
@@ -42,14 +45,29 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     // empty array dependency / only callbacked, useffect, useMemo = 1 intital render call
+    const nextMonth = useCallback(() => {
+      if (isGridAnimating.current) {
+        return;
+      }
+      setMonthOffset(monthOffset + 1);
+    }, [monthOffset]);
 
-    const nextMonth = useCallback(() => setMonthOffset(monthOffset + 1), [
-      monthOffset
-    ]);
+    const prevMonth = useCallback(() => {
+      if (isGridAnimating.current) {
+        return;
+      }
+      setMonthOffset(monthOffset + -1);
+    }, [monthOffset]);
 
-    const prevMonth = useCallback(() => setMonthOffset(monthOffset + -1), [
-      monthOffset
-    ]);
+    // protection against users slamming the next, prev button
+    // use ref to prevent a render on grid state changes while animating
+    const startAnimation = useCallback(() => {
+      isGridAnimating.current = true;
+    }, []);
+
+    const endAnimation = useCallback(() => {
+      isGridAnimating.current = false;
+    }, []);
 
     const cellRenderer = ({
       key,
@@ -88,6 +106,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           columnCount={MAX_TIME_SPAN}
           columnWidth={CALENDAR_DIMENSIONS}
           style={{ overflow: 'hidden' }}
+          onAnimationStart={startAnimation}
+          onAnimationEnd={endAnimation}
         />
         <ControlRow>
           <ControlItem onClick={prevMonth} color='primary'>

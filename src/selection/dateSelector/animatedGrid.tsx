@@ -10,7 +10,8 @@ import Easing from 'easing-functions';
 
 export interface AnimatedGridProps {
   column: number;
-  onAnimationComplete?: () => void;
+  onAnimationStart?: () => void;
+  onAnimationEnd?: () => void;
 }
 
 export type CombinedProps = AnimatedGridProps & GridProps;
@@ -19,7 +20,7 @@ export type CombinedProps = AnimatedGridProps & GridProps;
 const DURATION_OF_ANIMATION = 800;
 
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
-  ({ column, onAnimationComplete, ...gridProps }) => {
+  ({ column, onAnimationStart, onAnimationEnd, ...gridProps }) => {
     const [scrollLeft, setScrollLeft] = useState(0);
     const gridRef = useRef<Grid>(null);
     const scrollLeftStart = useRef(0);
@@ -44,14 +45,17 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
           animationStartTime.current = 0;
           scrollLeftStart.current = scrollLeftFinal.current;
           isAnimating.current = false;
-          if (onAnimationComplete) {
-            onAnimationComplete();
+          if (onAnimationEnd) {
+            onAnimationEnd();
           }
         }
       });
-    }, [onAnimationComplete]);
+    }, [onAnimationEnd]);
 
     useEffect(() => {
+      if (onAnimationStart) {
+        onAnimationStart();
+      }
       animationStartTime.current = performance.now();
       scrollLeftFinal.current = gridRef.current.getOffsetForCell({
         columnIndex: column
@@ -59,7 +63,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       setScrollLeft(scrollLeftFinal.current);
       isAnimating.current = true;
       animateToOffset();
-    }, [column, animateToOffset]);
+    }, [column, animateToOffset, onAnimationStart]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
       if (!isAnimating) {
