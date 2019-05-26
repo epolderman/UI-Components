@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { CalendarMonth } from './calendarMonth';
-import { AnimatedGrid } from './animatedGrid';
+import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
 import { addMonths, differenceInCalendarMonths } from 'date-fns';
 import { MIDDLE_INDEX, MAX_TIME_SPAN, CALENDAR_DIMENSIONS } from './dateUtils';
 import styled from '@emotion/styled';
@@ -95,8 +95,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     };
 
     return (
-      <DateContainer>
-        <AnimatedGrid
+      <DateSelectorContainer>
+        <VirtualizedGrid
           column={monthOffset}
           cellRenderer={cellRenderer}
           height={CALENDAR_DIMENSIONS}
@@ -109,15 +109,15 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           onAnimationStart={startAnimation}
           onAnimationEnd={endAnimation}
         />
-        <ControlRow>
-          <ControlItem onClick={prevMonth} color='primary'>
+        <ControlsContainer>
+          <ControlButton onClick={prevMonth} color='primary'>
             <KeyboardArrowLeft />
-          </ControlItem>
-          <ControlItem onClick={nextMonth} color='primary'>
+          </ControlButton>
+          <ControlButton onClick={nextMonth} color='primary'>
             <KeyboardArrowRight />
-          </ControlItem>
-        </ControlRow>
-      </DateContainer>
+          </ControlButton>
+        </ControlsContainer>
+      </DateSelectorContainer>
     );
   }
 );
@@ -130,7 +130,7 @@ const calculateMonthOffset = (
   differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
 /* Top Left Container*/
-const DateContainer = styled.div`
+const DateSelectorContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1 1 0%;
@@ -140,7 +140,7 @@ const DateContainer = styled.div`
   position: relative;
 `;
 
-const ControlRow = styled.div`
+const ControlsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -152,7 +152,7 @@ const ControlRow = styled.div`
   right: 0;
 `;
 
-const ControlItem = styled(Button)`
+const ControlButton = styled(Button)`
   display: flex;
   flex: 0 0 auto;
 `;

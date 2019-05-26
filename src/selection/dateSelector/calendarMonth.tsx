@@ -10,7 +10,17 @@ import {
 import { format, isSameMonth } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
-import { Button, Typography, withStyles, Fab } from '@material-ui/core';
+import {
+  Button,
+  Typography,
+  withStyles,
+  Fab,
+  makeStyles,
+  WithStyles,
+  createStyles,
+  Theme,
+  Color
+} from '@material-ui/core';
 import { useSpring, animated, config } from 'react-spring';
 
 /* Calculation of calendar month data */
@@ -37,25 +47,25 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           const dispatchSelect = () => onSelect(date);
           if (isSameDate(date, selectedDate)) {
             return (
-              <SelectedItem key={index} variant='round' color='primary'>
+              <ClickableDefault key={index} variant='round' color='primary'>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </SelectedItem>
+              </ClickableDefault>
             );
           } else if (!isSameMonth(month, date)) {
             return (
-              <CalendarItem
+              <ClickableDefault
                 onClick={dispatchSelect}
                 key={index}
                 style={{ backgroundColor: '#34495e', color: 'white' }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </CalendarItem>
+              </ClickableDefault>
             );
           } else {
             return (
-              <CalendarItem onClick={dispatchSelect} key={index}>
+              <ClickableWhite onClick={dispatchSelect} key={index}>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </CalendarItem>
+              </ClickableWhite>
             );
           }
         }),
@@ -91,14 +101,15 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       () => (
         <FlexRow>
           {map(DAYS, (day, index) => (
-            <DayItem
+            <ClickableDefault
               key={index}
               color='secondary'
               disableFocusRipple
               disableRipple
+              disableTouchRipple
             >
               {day.slice(0, 3)}
-            </DayItem>
+            </ClickableDefault>
           ))}
         </FlexRow>
       ),
@@ -133,11 +144,11 @@ const getSkeletonMonth = () => {
 // todo: fab doesnt like children == null? Investigate
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
-    <SkeletonItem key={index}>
+    <ClickableWhite key={index}>
       <Typography style={{ fontSize: '20px' }} color='primary'>
         {null}
       </Typography>
-    </SkeletonItem>
+    </ClickableWhite>
   ));
 };
 
@@ -179,7 +190,7 @@ const FlexRow = styled.div<{ hasText?: boolean }>`
   box-sizing: border-box;
 `;
 
-const CalendarItem = withStyles({
+const ClickableWhite = withStyles({
   root: {
     display: 'flex',
     flex: '1 1 0%',
@@ -192,7 +203,7 @@ const CalendarItem = withStyles({
   }
 })(Fab);
 
-const SelectedItem = withStyles({
+const ClickableDefault = withStyles({
   root: {
     display: 'flex',
     flex: '1 1 0%',
@@ -204,27 +215,36 @@ const SelectedItem = withStyles({
   }
 })(Fab);
 
-const DayItem = withStyles({
-  root: {
-    display: 'flex',
-    flex: '1 1 0%',
-    margin: '0px 8px',
-    borderRadius: '2.5px'
-  },
-  label: {
-    fontSize: '20px'
-  }
-})(Fab);
+// const useStyles = makeStyles({
+//   root: {
+//     display: 'flex',
+//     flex: '1 1 0%',
+//     margin: '0px 8px',
+//     borderRadius: '2.5px',
+//     backgroundColor: 'white'
+//   },
+//   label: {
+//     fontSize: '20px'
+//   }
+// });
 
-const SkeletonItem = withStyles({
-  root: {
-    display: 'flex',
-    flex: '1 1 0%',
-    margin: '0px 8px',
-    borderRadius: '2.5px',
-    backgroundColor: 'white'
-  },
-  label: {
-    fontSize: '20px'
-  }
-})(Fab);
+// const styles = (theme: Theme) =>
+//   createStyles({
+//     root: {
+//       /* ... */
+//     },
+//     paper: {
+//       /* ... */
+//     },
+//     button: {
+//       /* ... */
+//     }
+//   });
+
+// interface Props extends WithStyles<typeof styles> {
+//   backgroundColor: Color;
+// }
+
+// const GenericButton = withStyles(styles)(({ backgroundColor }: Props) => (
+//   <Fab color={backgroundColor} />
+// ));
