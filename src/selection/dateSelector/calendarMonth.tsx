@@ -38,12 +38,8 @@ export interface CalendarMonthProps {
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
-    // todo: clean into one w/ interpolation
-    const fadeSkeleton = useSpring({
-      opacity: skeleton ? 1 : 0
-    });
-    const fadeMonth = useSpring({
-      opacity: skeleton ? 0 : 1
+    const fadeAnimation = useSpring({
+      interpValue: skeleton ? 0 : 1
     });
     const renderWeek = useCallback(
       (week: Date[]) =>
@@ -126,11 +122,22 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           {monthTitleJSX}
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarAnimatedContent style={fadeMonth}>
+        <CalendarAnimatedContent
+          style={{
+            opacity: fadeAnimation.interpValue.interpolate(
+              opacityValue => opacityValue
+            )
+          }}
+        >
           {monthJSX}
         </CalendarAnimatedContent>
         <CalendarAnimatedContent
-          style={{ opacity: fadeSkeleton.opacity, pointerEvents: 'none' }}
+          style={{
+            opacity: fadeAnimation.interpValue.interpolate(
+              opacityValue => 1 - opacityValue
+            ),
+            pointerEvents: 'none'
+          }}
         >
           {skeletonMonthJSX}
         </CalendarAnimatedContent>
