@@ -23,7 +23,11 @@ import {
 } from '@material-ui/core';
 import { useSpring, animated, config } from 'react-spring';
 
-/* Calculation of calendar month data */
+/*
+   Calculation of calendar month data 
+   Selection of calendar day
+   Animating Skeleton and Calendar transitions
+*/
 
 export interface CalendarMonthProps {
   month: Date;
