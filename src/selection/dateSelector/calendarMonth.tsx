@@ -47,9 +47,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           const dispatchSelect = () => onSelect(date);
           if (isSameDate(date, selectedDate)) {
             return (
-              <ClickableDefault key={index} variant='round' color='primary'>
+              <StyledFab key={index} color='green'>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </ClickableDefault>
+              </StyledFab>
             );
           } else if (!isSameMonth(month, date)) {
             return (
@@ -225,6 +225,26 @@ const ClickableDefault = withStyles({
     fontSize: '20px'
   }
 })(Fab);
+
+// export const StyledTextField = withStyles({
+//   root: {
+//     '& .MuiInputBase-input::-ms-clear': {
+//       display: 'none',
+//     },
+//   },
+// })(TextField);
+
+const StyledFab = styled(({ color, ...other }) => (
+  <Fab classes={{ root: 'MuiFab-root', label: 'label' }} {...other} />
+))`
+  & .root {
+    background-color: red;
+  }
+  & .label {
+    color: ${props => props.color};
+    font-size: 20px;
+  }
+`;
 
 // const useStyles = makeStyles({
 //   root: {
