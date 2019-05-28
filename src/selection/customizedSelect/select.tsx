@@ -7,17 +7,21 @@ import {
   MenuItem
 } from '@material-ui/core';
 
-const optionsBusiness = ['Lotus', 'Havana House', 'Bobs Burgers'];
-const optionsProperty = ['SomeProp', 'SomeProp2', 'SomeProp3'];
+export interface SelectProps {
+  business: string[];
+  properties: string[];
+}
 
-export const SelectComponent: React.FC = () => {
-  const [property, setProperty] = useState('Lotus');
-  const handleChange = (event: React.ChangeEvent<{ value: string }>) => {
-    console.log('HandleChange()');
+export const optionsBusiness = ['Lotus', 'Havana House', 'Bobs Burgers'];
+export const optionsProperty = ['SomeProp', 'SomeProp2', 'SomeProp3'];
+
+export const SelectComponent: React.FC<SelectProps> = ({
+  business,
+  properties
+}) => {
+  const [property, setProperty] = useState(business[0]);
+  const handleChange = (event: React.ChangeEvent<{ value: string }>) =>
     setProperty(event.target.value);
-  };
-
-  console.log('state call motherfucker', property);
 
   return (
     <div
@@ -27,18 +31,15 @@ export const SelectComponent: React.FC = () => {
         flex: '1 1 0%'
       }}
     >
-      <StyledSelect>
-        value={property}
-        onChange={handleChange}
-        input={<Input />}
+      <StyledSelect value={property} onChange={handleChange}>
         <Typography>Business</Typography>
-        {optionsBusiness.map(business => (
+        {business.map(business => (
           <MenuItem key={business} value={business}>
             {business}
           </MenuItem>
         ))}
         <Typography>Property</Typography>
-        {optionsProperty.map(property => (
+        {properties.map(property => (
           <MenuItem key={property} value={property}>
             {property}
           </MenuItem>
@@ -51,7 +52,10 @@ export const SelectComponent: React.FC = () => {
 const StyledSelect = withStyles({
   root: {
     '& .MuiInput-input': {
-      backgroundColor: 'red'
+      backgroundColor: 'inherit'
+    },
+    select: {
+      backgroundColor: 'green'
     }
   }
 })(Select);
