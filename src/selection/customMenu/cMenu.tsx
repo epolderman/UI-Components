@@ -1,60 +1,120 @@
-import React, { useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { TextField, Typography } from '@material-ui/core';
+import React, { useState, useCallback, MouseEvent, useMemo } from 'react';
+import {
+  TextField,
+  Typography,
+  MenuItem,
+  Menu,
+  makeStyles,
+  createStyles,
+  Theme,
+  Button,
+  withStyles
+} from '@material-ui/core';
+import { Check, KeyboardArrowDown } from '@material-ui/icons';
+import { map } from 'lodash';
+
+type AnchorElementType = null | HTMLElement;
 
 const ITEM_HEIGHT = 48;
 
-export const optionsBusiness = [
-  'Lotus',
-  'Havana House',
-  'Bobs Burgers',
-  'some property',
-  'another one',
-  'some more',
-  'hahahah',
-  'owah'
-];
+export interface SelectMenuProps {
+  parentOptions?: string[];
+  businessOptions?: string[];
+  propertyOptions?: string[];
+}
 
-export const optionsProperty = ['SomeProp1', 'SomeProp2', 'SomeProp3'];
+export const LongMenu: React.FC<SelectMenuProps> = ({
+  parentOptions,
+  businessOptions,
+  propertyOptions
+}) => {
+  const [currentLogbookSelected, setLogbook] = useState(parentOptions[0]);
+  const [anchorElement, setAnchoredElement] = useState<AnchorElementType>(null);
+  const isOpen = anchorElement != null;
+  const setAnchoredElementOnClick = useCallback(
+    (event: MouseEvent<HTMLElement>) => {
+      setAnchoredElement(event.currentTarget);
+    },
+    []
+  );
+  const handleSelectionChange = useCallback(
+    (event: MouseEvent<HTMLElement>, nextLogbookSelection: string) => {
+      setLogbook(nextLogbookSelection);
+      setAnchoredElement(null);
+    },
+    []
+  );
+  const onCloseMenu = useCallback(() => setAnchoredElement(null), []);
 
-export const LongMenu: React.FC = () => {
-  const [property, setProperty] = useState('Lotus');
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  function handleClick(event: React.MouseEvent<HTMLElement>) {
-    setAnchorEl(event.currentTarget);
-  }
-  function handleMenuItemClick(
-    event: React.MouseEvent<HTMLElement>,
-    property: string
-  ) {
-    setProperty(property);
-    setAnchorEl(null);
-  }
+  const logbookOptionsBusinesses = useMemo(
+    () =>
+      map(businessOptions, business => {
+        const dispatchUpdate = event => handleSelectionChange(event, business);
+        const isSelected = business === currentLogbookSelected;
+        return (
+          <MenuItem
+            key={business}
+            selected={isSelected}
+            onClick={dispatchUpdate}
+          >
+            {isSelected && <Check />}
+            {business}
+          </MenuItem>
+        );
+      }),
+    [currentLogbookSelected, businessOptions, handleSelectionChange]
+  );
 
-  function handleClose() {
-    setAnchorEl(null);
-  }
+  const logbookOptionsParent = useMemo(
+    () =>
+      map(parentOptions, parent => {
+        const dispatchUpdate = event => handleSelectionChange(event, parent);
+        const isSelected = parent === currentLogbookSelected;
+        return (
+          <MenuItem key={parent} selected={isSelected} onClick={dispatchUpdate}>
+            {isSelected && <Check />}
+            {parent}
+          </MenuItem>
+        );
+      }),
+    [currentLogbookSelected, parentOptions, handleSelectionChange]
+  );
+
+  const logbookOptionsProperties = useMemo(
+    () =>
+      map(propertyOptions, property => {
+        const dispatchUpdate = event => handleSelectionChange(event, property);
+        const isSelected = property === currentLogbookSelected;
+        return (
+          <MenuItem
+            key={property}
+            selected={isSelected}
+            onClick={dispatchUpdate}
+          >
+            {isSelected && <Check />}
+            {property}
+          </MenuItem>
+        );
+      }),
+    [currentLogbookSelected, propertyOptions, handleSelectionChange]
+  );
 
   return (
     <div>
-      <TextField
-        value={property}
+      <StyledButton
         aria-label='More'
-        aria-owns={open ? 'long-menu' : undefined}
+        aria-owns={isOpen ? 'logbook-options-menu' : undefined}
         aria-haspopup='true'
-        onClick={handleClick}
+        onClick={setAnchoredElementOnClick}
       >
-        <MoreVertIcon />
-      </TextField>
+        {currentLogbookSelected}
+        <KeyboardArrowDown />
+      </StyledButton>
       <Menu
-        id='long-menu'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        id='logbook-options-menu'
+        anchorEl={anchorElement}
+        open={isOpen}
+        onClose={onCloseMenu}
         PaperProps={{
           style: {
             maxHeight: ITEM_HEIGHT * 4.5,
@@ -62,31 +122,34 @@ export const LongMenu: React.FC = () => {
           }
         }}
       >
-        <Typography>Business</Typography>
-        {optionsBusiness.map((option, index) => {
-          return (
-            <MenuItem
-              key={option}
-              selected={option === property}
-              onClick={event => handleMenuItemClick(event, option)}
-            >
-              {option}
-            </MenuItem>
-          );
-        })}
-        <Typography>Property</Typography>
-        {optionsProperty.map((option, index) => {
-          return (
-            <MenuItem
-              key={option}
-              selected={option === property}
-              onClick={event => handleMenuItemClick(event, option)}
-            >
-              {option}
-            </MenuItem>
-          );
-        })}
+        <MenuHeaders headerText='Parent' />
+        {logbookOptionsParent}
+        <MenuHeaders headerText='Business' />
+        {logbookOptionsBusinesses}
+        <MenuHeaders headerText='Properties' />
+        {logbookOptionsProperties}
       </Menu>
     </div>
   );
 };
+
+// todo: cleanup
+const MenuHeaders: React.SFC<{ headerText: string }> = ({ headerText }) => (
+  <Typography
+    variant='subtitle2'
+    style={{ color: '#A9A9A9', textAlign: 'center', height: ITEM_HEIGHT / 2 }}
+  >
+    {headerText}
+  </Typography>
+);
+
+// todo: cleanup
+export const StyledButton = withStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'teal',
+    color: 'white'
+  }
+})(Button);
