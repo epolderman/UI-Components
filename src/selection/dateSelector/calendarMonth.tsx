@@ -47,9 +47,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           const dispatchSelect = () => onSelect(date);
           if (isSameDate(date, selectedDate)) {
             return (
-              <StyledFab key={index} color='green'>
+              <ClickableDefault key={index} color='primary'>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </StyledFab>
+              </ClickableDefault>
             );
           } else if (!isSameMonth(month, date)) {
             return (
@@ -225,57 +225,3 @@ const ClickableDefault = withStyles({
     fontSize: '20px'
   }
 })(Fab);
-
-// export const StyledTextField = withStyles({
-//   root: {
-//     '& .MuiInputBase-input::-ms-clear': {
-//       display: 'none',
-//     },
-//   },
-// })(TextField);
-
-const StyledFab = styled(({ color, ...other }) => (
-  <Fab classes={{ root: 'MuiFab-root', label: 'label' }} {...other} />
-))`
-  & .root {
-    background-color: red;
-  }
-  & .label {
-    color: ${props => props.color};
-    font-size: 20px;
-  }
-`;
-
-// const useStyles = makeStyles({
-//   root: {
-//     display: 'flex',
-//     flex: '1 1 0%',
-//     margin: '0px 8px',
-//     borderRadius: '2.5px',
-//     backgroundColor: 'white'
-//   },
-//   label: {
-//     fontSize: '20px'
-//   }
-// });
-
-// const styles = (theme: Theme) =>
-//   createStyles({
-//     root: {
-//       /* ... */
-//     },
-//     paper: {
-//       /* ... */
-//     },
-//     button: {
-//       /* ... */
-//     }
-//   });
-
-// interface Props extends WithStyles<typeof styles> {
-//   backgroundColor: Color;
-// }
-
-// const GenericButton = withStyles(styles)(({ backgroundColor }: Props) => (
-//   <Fab color={backgroundColor} />
-// ));
