@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   DateMatrix,
   buildDateMatrix,
@@ -10,18 +10,8 @@ import {
 import { format, isSameMonth } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
-import {
-  Button,
-  Typography,
-  withStyles,
-  Fab,
-  makeStyles,
-  WithStyles,
-  createStyles,
-  Theme,
-  Color
-} from '@material-ui/core';
-import { useSpring, animated, config } from 'react-spring';
+import { Button, Typography, withStyles, Fab } from '@material-ui/core';
+import { useSpring, animated } from 'react-spring';
 
 /*
    Calculation of calendar month data 

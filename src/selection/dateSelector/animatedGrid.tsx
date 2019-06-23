@@ -12,21 +12,31 @@ export interface AnimatedGridProps {
   column: number;
   onAnimationStart?: () => void;
   onAnimationEnd?: () => void;
+  durationOfAnimation?: number;
 }
 
 export type CombinedProps = AnimatedGridProps & GridProps;
 
-// milliseconds
-const DURATION_OF_ANIMATION = 800;
+// default: milliseconds
+const DEFAULT_DURATION_OF_ANIMATION = 800;
 
 export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
-  ({ column, onAnimationStart, onAnimationEnd, ...gridProps }) => {
+  ({
+    column,
+    onAnimationStart,
+    onAnimationEnd,
+    durationOfAnimation,
+    ...gridProps
+  }) => {
     const [scrollLeft, setScrollLeft] = useState(0);
     const gridRef = useRef<Grid>(null);
     const scrollLeftStart = useRef(0);
     const scrollLeftFinal = useRef(0);
     const isAnimating = useRef(false);
     const animationStartTime = useRef(0);
+    const animationDuration = useRef<number>(
+      durationOfAnimation || DEFAULT_DURATION_OF_ANIMATION
+    );
 
     const animateToOffset = useCallback(() => {
       requestAnimationFrame(() => {
@@ -34,12 +44,12 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
         const elapsedTime = now - animationStartTime.current;
         const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
         const easing = Easing.Cubic.InOut(
-          Math.min(1, elapsedTime / DURATION_OF_ANIMATION)
+          Math.min(1, elapsedTime / animationDuration.current)
         );
         const scrollLeft = scrollLeftStart.current + scrollDelta * easing;
         setScrollLeft(scrollLeft);
 
-        if (elapsedTime < DURATION_OF_ANIMATION) {
+        if (elapsedTime < animationDuration.current) {
           animateToOffset();
         } else {
           animationStartTime.current = 0;
@@ -50,7 +60,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
           }
         }
       });
-    }, [onAnimationEnd]);
+    }, [onAnimationEnd, animationDuration]);
 
     useEffect(() => {
       if (onAnimationStart) {

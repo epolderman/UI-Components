@@ -108,6 +108,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           style={{ overflow: 'hidden' }}
           onAnimationStart={startAnimation}
           onAnimationEnd={endAnimation}
+          durationOfAnimation={800}
         />
         <ControlsContainer>
           <ControlButton onClick={prevMonth} color='primary'>
