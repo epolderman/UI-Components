@@ -69,17 +69,20 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const monthJSX = useMemo(() => {
       const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => (
-        <FlexRow key={index}>{renderWeek(week)}</FlexRow>
+        <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
       ));
     }, [month, renderWeek]);
 
     const monthTitleJSX = useMemo(
       () => (
-        <FlexRow hasText>
-          <Typography style={{ fontSize: '16px' }} color='textPrimary'>
+        <CalendarRow hasText>
+          <Typography
+            style={{ fontSize: '16px', marginTop: '-2px' }}
+            color='textPrimary'
+          >
             {format(month, 'MMM YYYY')}
           </Typography>
-        </FlexRow>
+        </CalendarRow>
       ),
       [month]
     );
@@ -87,25 +90,21 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const skeletonMonthJSX = useMemo(() => {
       const month = getSkeletonMonth();
       return map(month, (week, index) => (
-        <FlexRow key={index}>{renderSkeletonWeek(week)}</FlexRow>
+        <CalendarRow key={index}>{renderSkeletonWeek(week)}</CalendarRow>
       ));
     }, []);
 
     const dayNamesJSX = useMemo(
       () => (
-        <FlexRow>
+        <CalendarRow>
           {map(DAYS, (day, index) => (
-            <Button
-              key={index}
-              style={{ color: 'black' }}
-              disableFocusRipple
-              disableRipple
-              disableTouchRipple
-            >
-              {day.slice(0, 3)}
-            </Button>
+            <DayNameBlocks key={index}>
+              <Typography style={{ fontSize: '14px' }} color='textPrimary'>
+                {day.slice(0, 3)}
+              </Typography>
+            </DayNameBlocks>
           ))}
-        </FlexRow>
+        </CalendarRow>
       ),
       []
     );
@@ -167,6 +166,7 @@ const CalendarContainer = styled.div`
   position: relative;
 `;
 
+/* Contains Month Name Row + Day Names Row */
 const CalendarHeader = styled.div`
   max-height: 75px; /* 2 Rows = 2 * 37.5 */
   flex-direction: column;
@@ -186,7 +186,7 @@ const CalendarAnimatedContent = styled(animated.div)`
   position: absolute;
 `;
 
-const FlexRow = styled.div<{ hasText?: boolean }>`
+const CalendarRow = styled.div<{ hasText?: boolean }>`
   display: flex;
   flex: 1 1 0%;
   flex-direction: row;
@@ -196,11 +196,24 @@ const FlexRow = styled.div<{ hasText?: boolean }>`
   padding: 2px 0;
 
   button {
-    width: 100%;
-    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 0%;
     min-width: 0;
     padding: 0 0;
     margin: 0 2px;
     border-radius: 2.5px;
   }
+`;
+
+const DayNameBlocks = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 0 0;
+  margin: 0 2px;
+  border-radius: 2.5px;
 `;

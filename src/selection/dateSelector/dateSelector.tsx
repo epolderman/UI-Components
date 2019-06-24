@@ -108,13 +108,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           style={{ overflow: 'hidden' }}
           onAnimationStart={startAnimation}
           onAnimationEnd={endAnimation}
-          durationOfAnimation={800}
+          durationOfAnimation={600}
         />
         <ControlsContainer>
-          <Button onClick={prevMonth} color='primary'>
+          <Button onClick={prevMonth}>
             <KeyboardArrowLeft />
           </Button>
-          <Button onClick={nextMonth} color='primary'>
+          <Button onClick={nextMonth}>
             <KeyboardArrowRight />
           </Button>
         </ControlsContainer>
@@ -156,7 +156,7 @@ const ControlsContainer = styled.div`
   button {
     width: 39px;
     height: 34px;
-    padding: '0 0';
+    padding: 0 0;
     min-width: 0;
   }
 `;
