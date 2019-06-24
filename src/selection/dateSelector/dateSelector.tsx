@@ -111,12 +111,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           durationOfAnimation={800}
         />
         <ControlsContainer>
-          <ControlButton onClick={prevMonth} color='primary'>
+          <Button onClick={prevMonth} color='primary'>
             <KeyboardArrowLeft />
-          </ControlButton>
-          <ControlButton onClick={nextMonth} color='primary'>
+          </Button>
+          <Button onClick={nextMonth} color='primary'>
             <KeyboardArrowRight />
-          </ControlButton>
+          </Button>
         </ControlsContainer>
       </DateSelectorContainer>
     );
@@ -148,14 +148,17 @@ const ControlsContainer = styled.div`
   flex: 1 1 0%;
   box-sizing: border-box;
   position: absolute;
-  top: 12px;
-  left: 0;
-  right: 0;
-`;
+  top: 0px;
+  left: 2px;
+  right: 2px;
 
-const ControlButton = styled(Button)`
-  display: flex;
-  flex: 0 0 auto;
+  /* overrides: Dimensions Match our Flex Rows Buttons in Calendar Month */
+  button {
+    width: 39px;
+    height: 34px;
+    padding: '0 0';
+    min-width: 0;
+  }
 `;
 
 // https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state

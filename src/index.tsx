@@ -14,7 +14,7 @@ const App: React.FC = () => {
     <MuiThemeProvider theme={theme}>
       <div
         style={{
-          width: '500px',
+          width: '300px',
           display: 'flex'
         }}
       >

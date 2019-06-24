@@ -10,7 +10,7 @@ import {
 import { format, isSameMonth } from 'date-fns';
 import { range, map } from 'lodash';
 import styled from '@emotion/styled';
-import { Button, Typography, withStyles, Fab } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { useSpring, animated } from 'react-spring';
 
 /*
@@ -37,25 +37,29 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           const dispatchSelect = () => onSelect(date);
           if (isSameDate(date, selectedDate)) {
             return (
-              <ClickableDefault key={index} color='primary'>
+              <Button
+                variant='contained'
+                key={index}
+                style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
+              >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </ClickableDefault>
+              </Button>
             );
           } else if (!isSameMonth(month, date)) {
             return (
-              <ClickableDefault
+              <Button
                 onClick={dispatchSelect}
                 key={index}
                 style={{ backgroundColor: '#34495e', color: 'white' }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </ClickableDefault>
+              </Button>
             );
           } else {
             return (
-              <ClickableWhite onClick={dispatchSelect} key={index}>
+              <Button onClick={dispatchSelect} key={index}>
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </ClickableWhite>
+              </Button>
             );
           }
         }),
@@ -72,7 +76,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     const monthTitleJSX = useMemo(
       () => (
         <FlexRow hasText>
-          <Typography style={{ fontSize: '20px' }} color='primary'>
+          <Typography style={{ fontSize: '16px' }} color='textPrimary'>
             {format(month, 'MMM YYYY')}
           </Typography>
         </FlexRow>
@@ -91,15 +95,15 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       () => (
         <FlexRow>
           {map(DAYS, (day, index) => (
-            <ClickableDefault
+            <Button
               key={index}
-              color='secondary'
+              style={{ color: 'black' }}
               disableFocusRipple
               disableRipple
               disableTouchRipple
             >
               {day.slice(0, 3)}
-            </ClickableDefault>
+            </Button>
           ))}
         </FlexRow>
       ),
@@ -142,16 +146,16 @@ const getSkeletonMonth = () => {
   });
 };
 
-// todo: fab doesnt like children == null? Investigate
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
-    <ClickableWhite key={index}>
-      <Typography style={{ fontSize: '20px' }} color='primary'>
-        {null}
-      </Typography>
-    </ClickableWhite>
+    <Button style={{ backgroundColor: BACKROUND_EMPTY }} key={index}>
+      <Typography color='primary'>{null}</Typography>
+    </Button>
   ));
 };
+
+const BACKROUND_EMPTY = 'rgb(238,238,238)';
+const BRAND_PRIMARY = 'rgb(74,175,227)';
 
 const CalendarContainer = styled.div`
   display: flex;
@@ -164,7 +168,7 @@ const CalendarContainer = styled.div`
 `;
 
 const CalendarHeader = styled.div`
-  max-height: 125px; /* 2 Rows = 2 * 62.5 */
+  max-height: 75px; /* 2 Rows = 2 * 37.5 */
   flex-direction: column;
   flex: 1 1 0%;
   display: flex;
@@ -173,7 +177,7 @@ const CalendarHeader = styled.div`
 const CalendarAnimatedContent = styled(animated.div)`
   display: flex;
   flex: 1 1 0%;
-  top: 125px; /* 2 Rows = 2 * 62.5 */
+  top: 75px; /* 2 Rows = 2 * 37.5 */
   flex-direction: column;
   box-sizing: border-box;
   left: 0;
@@ -189,29 +193,14 @@ const FlexRow = styled.div<{ hasText?: boolean }>`
   justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
   align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
   box-sizing: border-box;
+  padding: 2px 0;
+
+  button {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0 0;
+    margin: 0 2px;
+    border-radius: 2.5px;
+  }
 `;
-
-const ClickableWhite = withStyles({
-  root: {
-    display: 'flex',
-    flex: '1 1 0%',
-    margin: '0px 8px',
-    borderRadius: '2.5px',
-    backgroundColor: 'white'
-  },
-  label: {
-    fontSize: '20px'
-  }
-})(Fab);
-
-const ClickableDefault = withStyles({
-  root: {
-    display: 'flex',
-    flex: '1 1 0%',
-    margin: '0px 8px',
-    borderRadius: '2.5px'
-  },
-  label: {
-    fontSize: '20px'
-  }
-})(Fab);
