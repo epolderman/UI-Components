@@ -2,7 +2,7 @@
 
 ## Low Level Component Programming
 
-### Project Focus : Advanced components built with primitive lego blocks
+### Project Focus : Advanced components built with primitive lego blocks from Material UI
 
 #### Performance
 
