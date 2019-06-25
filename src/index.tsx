@@ -15,7 +15,9 @@ const App: React.FC = () => {
       <div
         style={{
           width: '300px',
-          display: 'flex'
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
         <DateSelector value={currentDate} onChange={onChange} />

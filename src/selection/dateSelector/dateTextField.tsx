@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ENTER_KEY, isValidDateObjectFromString } from './dateUtils';
-import { CalendarToday, DateRange } from '@material-ui/icons';
+import { DateRange } from '@material-ui/icons';
 import { useSpring } from 'react-spring';
 
-/* Todo: Rewrite to function + hooks after wire up complete */
-// write this now
+/* Handles Date Selection via Text Input and Errors parsing typed in dates */
+
 interface InputProps {
   onFocus: () => void;
   onBlur: () => void;
@@ -24,8 +24,8 @@ export const DateTextField: React.FC<InputProps> = React.forwardRef(
     const [isFocused, setFocus] = useState(false);
     const [isActiveError, setError] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const prevValue = usePreviousValue(value);
-
     const errorAnimation = useSpring({
       transform: isActiveError ? `translateX(2px)` : `translateX(0px)`
     });
@@ -35,7 +35,6 @@ export const DateTextField: React.FC<InputProps> = React.forwardRef(
         const oldDateIsValid = isValidDateObjectFromString(prevValue);
         const newDateIsValid = isValidDateObjectFromString(value);
         if (newDateIsValid && !oldDateIsValid) {
-          // this.setState({ activeError: false });
           setError(false);
         }
       }
@@ -70,14 +69,21 @@ export const DateTextField: React.FC<InputProps> = React.forwardRef(
         // animate
         // this.shakeAnimation();
       }
-      setFocus(false);
-      return onBlur();
-    }, [isActiveError, onBlur]);
+      if (isFocused) {
+        setFocus(false);
+      }
 
-    const _onFocus = useCallback(() => {
-      setFocus(true);
-      return onFocus();
-    }, [onFocus]);
+      return onBlur();
+    }, [isActiveError, onBlur, isFocused]);
+
+    const _onFocus = useCallback(
+      (evt: React.FocusEvent<HTMLInputElement>) => {
+        setFocus(true);
+        inputRef.current.setSelectionRange(0, evt.target.value.length);
+        return onFocus();
+      },
+      [onFocus]
+    );
 
     const onCalendarIconClick = useCallback(() => {
       if (isFocused) {
@@ -88,17 +94,18 @@ export const DateTextField: React.FC<InputProps> = React.forwardRef(
 
     return (
       <TextFieldWrapper ref={containerRef} isSmall={isSmall}>
-        <CalendarToday
+        <DateRange
           style={{
             paddingLeft: isSmall ? 4 : 0,
-            transform: errorAnimation.transform
+            transform: errorAnimation.transform,
+            cursor: 'pointer',
+            color: isActiveError ? 'error' : BRAND_PRIMARY
           }}
-          color={isActiveError ? 'error' : 'inherit'}
           onClick={onCalendarIconClick}
         />
         <Input
           type='text'
-          ref={innerInputRef}
+          ref={inputRef}
           value={value}
           onFocus={_onFocus}
           onBlur={_onBlur}
@@ -121,24 +128,27 @@ const usePreviousValue = (value: string) => {
   return ref.current;
 };
 
+const BACKGROUND_EMPTY = 'rgb(238,238,238)';
+const BRAND_PRIMARY = 'rgb(74,175,227)';
+
 const Input = styled.input<{
   isSmall: boolean;
-  fontConfig?: { weight: number; size: number };
 }>`
   display: flex;
   flex: 1 1 0%;
   justify-content: center;
   align-items: center;
   padding: ${props => (props.isSmall ? '4px' : '8px')};
-  background-color: inherit;
-  color: inherit;
   border-radius: 4px;
   border-width: 0px;
+  border-style: none;
   text-align: center;
   font-family: 'Open Sans', sans-serif, monospace;
   text-overflow: ellipsis;
   /* input elements have min width auto by default so it refuses to shrink */
   min-width: 0;
+  font-size: 14px;
+  background-color: ${BACKGROUND_EMPTY};
 `;
 
 const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
@@ -150,6 +160,6 @@ const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
   padding-left: ${props => (props.isSmall ? '0px' : '8px')};
   padding-right: ${props => (props.isSmall ? '0px' : '8px')};
   z-index: 99;
-  background-color: inherit;
   border-radius: 4px;
+  background-color: ${BACKGROUND_EMPTY};
 `;

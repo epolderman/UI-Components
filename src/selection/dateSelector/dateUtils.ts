@@ -10,7 +10,9 @@ import {
   isSameMonth,
   isSameYear,
   isValid,
-  parse
+  parse,
+  differenceInCalendarMonths,
+  differenceInCalendarDays
 } from 'date-fns';
 import { findIndex, range, forEach } from 'lodash';
 
@@ -156,4 +158,26 @@ export const isSameDate = (currentDate: Date, selectedDate: Date) => {
     isSameMonth(currentDate, selectedDate) &&
     isSameYear(currentDate, selectedDate)
   );
+};
+
+/* Protection Functions */
+
+export const hasDateReachedLimit = (initialDate: Date, newDate: Date) => {
+  const changeInMonth = getMonthOffset(initialDate, newDate);
+  return changeInMonth > MIDDLE_INDEX || changeInMonth < -MIDDLE_INDEX;
+};
+
+export const getMonthOffset = (firstDate: Date, secondDate: Date) =>
+  differenceInCalendarMonths(firstDate, secondDate);
+
+export const getDayOffset = (firstDate: Date, secondDate: Date) =>
+  differenceInCalendarDays(firstDate, secondDate);
+
+export const hasDateChanged = (oldDate: Date, newDate: Date) => {
+  // month will capture change in years
+  const changeInMonth = getMonthOffset(oldDate, newDate);
+  const changeInDays = getDayOffset(oldDate, newDate);
+  console.log('changeinDays', changeInDays, oldDate, newDate);
+  console.log('changeinmonths', changeInMonth);
+  return changeInMonth !== 0 || changeInDays !== 0;
 };

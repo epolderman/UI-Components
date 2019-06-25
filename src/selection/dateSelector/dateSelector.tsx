@@ -1,18 +1,27 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
-import { addMonths, differenceInCalendarMonths, format } from 'date-fns';
+import {
+  addMonths,
+  differenceInCalendarMonths,
+  format,
+  parse,
+  isValid
+} from 'date-fns';
 import {
   MIDDLE_INDEX,
   MAX_TIME_SPAN,
   CALENDAR_DIMENSIONS,
-  ENTER_KEY
+  ENTER_KEY,
+  hasDateChanged,
+  hasDateReachedLimit
 } from './dateUtils';
 import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
 import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
 import { DateTextField } from './dateTextField';
 import { useSpring, animated } from 'react-spring';
+import { makeShadow, ELEVATIONS } from '../../common/elevation';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
@@ -31,6 +40,7 @@ export interface DateSelectorState {
 }
 
 const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
+const MONTH_DAY_YEAR_FORMAT = 'M/D/YY';
 
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange, dateFormat, isSmall }) => {
@@ -39,36 +49,42 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [dateTyped, setDateTyped] = useState(
       format(value, dateFormat || DEFAULT_DATE_FORMAT)
     );
-
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
     const isGridAnimating = useRef(false);
-    const textFieldComponentRef = useRef<any>(null);
-
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`
     });
 
     useEffect(() => {
-      // new date coming in
+      // passed our protection functions, controller has been updated, new date coming in
       if (prevDate !== value) {
-        const difference = calculateMonthOffset(
+        const differenceInMonths = calculateMonthOffset(
           initialDate.current,
           monthOffset - MIDDLE_INDEX,
           value
         );
-        if (difference !== 0) {
-          setMonthOffset(m => m + difference);
+
+        setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
+
+        if (differenceInMonths !== 0) {
+          setMonthOffset(m => m + differenceInMonths);
+        }
+
+        if (isVisible) {
+          setVisibility(false);
         }
       }
-    }, [value, monthOffset, prevDate]);
+    }, [value, monthOffset, prevDate, dateFormat, isVisible]);
 
-    const onSelect = useCallback(
-      (incomingDate: Date) => onChange(incomingDate),
-      [onChange]
-    );
+    useEffect(() => {
+      if (isVisible) {
+        setDateTyped(format(dateTyped, MONTH_DAY_YEAR_FORMAT));
+      } else {
+        setDateTyped(format(dateTyped, dateFormat || DEFAULT_DATE_FORMAT));
+      }
+    }, [isVisible, dateFormat, dateTyped]);
 
-    // empty array dependency / only callbacked, useffect, useMemo = 1 intital render call
     const nextMonth = useCallback(() => {
       if (isGridAnimating.current) {
         return;
@@ -83,8 +99,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       setMonthOffset(monthOffset + -1);
     }, [monthOffset]);
 
-    // protection against users slamming the next, prev button
-    // use ref to prevent a render on grid state changes while animating
     const startAnimation = useCallback(() => {
       isGridAnimating.current = true;
     }, []);
@@ -92,6 +106,68 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const endAnimation = useCallback(() => {
       isGridAnimating.current = false;
     }, []);
+
+    const onFocus = useCallback(() => {
+      setVisibility(true);
+    }, []);
+
+    const onTextFieldChange = useCallback(
+      (evt: React.ChangeEvent<HTMLInputElement>) =>
+        setDateTyped(evt.target.value),
+      []
+    );
+
+    // protection function
+    const updateDate = useCallback(
+      (incomingDate: Date) => {
+        const validDateChange =
+          hasDateChanged(value, incomingDate) &&
+          !hasDateReachedLimit(initialDate.current, incomingDate);
+
+        if (validDateChange) {
+          console.log('valid date change');
+          return onChange(incomingDate);
+        } else {
+          console.log('not valid date change');
+          if (isVisible) {
+            setVisibility(false);
+          }
+        }
+      },
+      [onChange, value, isVisible]
+    );
+
+    const dateParse = useCallback(() => {
+      const newDate = parse(dateTyped);
+      const isValidDate = isValid(newDate) && dateTyped !== '';
+
+      if (!isValidDate) {
+        setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
+        setVisibility(false);
+      }
+
+      return updateDate(newDate);
+    }, [dateFormat, value, updateDate, dateTyped]);
+
+    const onKeyDown = useCallback(
+      (evt: React.KeyboardEvent<HTMLInputElement>) => {
+        if (evt.keyCode === ENTER_KEY && isVisible) {
+          dateParse();
+        }
+      },
+      [isVisible, dateParse]
+    );
+
+    const onBlur = useCallback(() => {
+      if (isVisible) {
+        // allow updateDate to run before this check
+        setTimeout(() => {
+          if (isVisible && !isGridAnimating.current) {
+            dateParse();
+          }
+        }, 300);
+      }
+    }, [isVisible, dateParse]);
 
     const cellRenderer = ({
       key,
@@ -109,7 +185,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonth
-            onSelect={onSelect}
+            onSelect={updateDate}
             month={itemDate}
             selectedDate={value}
             skeleton={isScrolling}
@@ -118,18 +194,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       );
     };
 
-    const monthJSX = () => {
+    const animatedGrid = () => {
       return (
-        <AnimatingDivWrapper style={openCloseAnimation}>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              padding: '4px',
-              flex: '0 0 auto'
-            }}
-          >
+        <OpenCloseDivWrapper style={openCloseAnimation}>
+          <ElevatedWrapper>
             <VirtualizedGrid
               column={monthOffset}
               cellRenderer={cellRenderer}
@@ -142,7 +210,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
               style={{ overflow: 'hidden' }}
               onAnimationStart={startAnimation}
               onAnimationEnd={endAnimation}
-              durationOfAnimation={600}
+              durationOfAnimation={500}
             />
             <ControlsContainer>
               <Button onClick={prevMonth}>
@@ -152,45 +220,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 <KeyboardArrowRight />
               </Button>
             </ControlsContainer>
-          </div>
-        </AnimatingDivWrapper>
+          </ElevatedWrapper>
+        </OpenCloseDivWrapper>
       );
     };
-
-    const onFocus = useCallback(() => {
-      setVisibility(true);
-    }, []);
-
-    const onTextFieldChange = useCallback(
-      (evt: React.ChangeEvent<HTMLInputElement>) =>
-        setDateTyped(evt.target.value),
-      []
-    );
-
-    const onKeyDown = useCallback(
-      (evt: React.KeyboardEvent<HTMLInputElement>) => {
-        if (evt.keyCode === ENTER_KEY && isVisible) {
-          setVisibility(false);
-          // this.close(() => this.dateParse('Default', true), false);
-        }
-      },
-      [isVisible]
-    );
-
-    const onBlur = useCallback(() => {
-      // setVisibility(false);
-    }, []);
-
-    // // height of our dateTextField
-    // const getInputHeight = useCallback((): number => {
-    //   if (htmlInputRef == null) {
-    //     return null;
-    //   }
-    //   console.log('clientHeight', htmlInputRef.clientHeight);
-    //   return htmlInputRef.clientHeight;
-    // }, [htmlInputRef]);
-
-    console.log('isVisible', isVisible);
 
     return (
       <DateSelectorContainer>
@@ -209,7 +242,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isSmall={isSmall}
           isVisible={isVisible}
         >
-          {monthJSX()}
+          {animatedGrid()}
         </DivToHideTopShowBottom>
       </DateSelectorContainer>
     );
@@ -231,9 +264,6 @@ const DateSelectorContainer = styled.div`
   justify-content: stretch;
   align-items: stretch;
   position: relative;
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
 `;
 
 const ControlsContainer = styled.div`
@@ -256,7 +286,22 @@ const ControlsContainer = styled.div`
   }
 `;
 
-const AnimatingDivWrapper = styled(animated.div)`
+/* Bottom Margin needs additional margins because we need space to show shadow */
+/* Change in elevation, -> needs change in margin values for casting shadows */
+/* Provides cushion to see shadows. wrapper around CalendarMonth, and in a child of dateselectordiv */
+const ElevatedWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  padding: 4px;
+  position: relative;
+  margin: 4px 8px 16px 8px;
+  border-radius: 2.5px;
+  ${makeShadow(ELEVATIONS.MENU)};
+  background-color: 'rgb(255,255,255)';
+`;
+
+const OpenCloseDivWrapper = styled(animated.div)`
   display: flex;
   position: absolute;
   top: 0px;

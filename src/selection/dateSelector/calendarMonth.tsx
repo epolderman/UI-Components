@@ -112,7 +112,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           {monthTitleJSX}
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarAnimatedContent>{monthJSX}</CalendarAnimatedContent>
+        <CalendarAnimatedContent>
+          {skeleton ? skeletonMonthJSX : monthJSX}
+        </CalendarAnimatedContent>
       </CalendarContainer>
     );
   }
