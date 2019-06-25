@@ -28,9 +28,6 @@ export interface CalendarMonthProps {
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
   ({ month, selectedDate, skeleton, onSelect }) => {
-    const fadeAnimation = useSpring({
-      interpValue: skeleton ? 0 : 1
-    });
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
@@ -50,7 +47,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
               <Button
                 onClick={dispatchSelect}
                 key={index}
-                style={{ backgroundColor: '#34495e', color: 'white' }}
+                style={{ backgroundColor: BACKGROUND_EMPTY }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
@@ -77,7 +74,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       () => (
         <CalendarRow hasText>
           <Typography
-            style={{ fontSize: '16px', marginTop: '-2px' }}
+            style={{ fontSize: '16px', marginTop: '-10px' }}
             color='textPrimary'
           >
             {format(month, 'MMM YYYY')}
@@ -115,25 +112,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
           {monthTitleJSX}
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarAnimatedContent
-          style={{
-            opacity: fadeAnimation.interpValue.interpolate(
-              opacityValue => opacityValue
-            )
-          }}
-        >
-          {monthJSX}
-        </CalendarAnimatedContent>
-        <CalendarAnimatedContent
-          style={{
-            opacity: fadeAnimation.interpValue.interpolate(
-              opacityValue => 1 - opacityValue
-            ),
-            pointerEvents: 'none'
-          }}
-        >
-          {skeletonMonthJSX}
-        </CalendarAnimatedContent>
+        <CalendarAnimatedContent>{monthJSX}</CalendarAnimatedContent>
       </CalendarContainer>
     );
   }
@@ -147,13 +126,13 @@ const getSkeletonMonth = () => {
 
 const renderSkeletonWeek = (week: any[]) => {
   return map(week, (_, index) => (
-    <Button style={{ backgroundColor: BACKROUND_EMPTY }} key={index}>
+    <Button style={{ backgroundColor: BACKGROUND_EMPTY }} key={index}>
       <Typography color='primary'>{null}</Typography>
     </Button>
   ));
 };
 
-const BACKROUND_EMPTY = 'rgb(238,238,238)';
+const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 const BRAND_PRIMARY = 'rgb(74,175,227)';
 
 const CalendarContainer = styled.div`

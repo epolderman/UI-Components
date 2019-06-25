@@ -8,7 +8,9 @@ import {
   addMonths,
   isSameDay,
   isSameMonth,
-  isSameYear
+  isSameYear,
+  isValid,
+  parse
 } from 'date-fns';
 import { findIndex, range, forEach } from 'lodash';
 
@@ -29,6 +31,10 @@ export const DAYS: string[] = [
   'Friday',
   'Saturday'
 ];
+/* Used in DateSelector, DateTextField */
+export const ENTER_KEY: number = 13;
+export const isValidDateObjectFromString = (date: string) =>
+  isValid(parse(date));
 
 interface CalendarMonthData {
   endIndex: number;
