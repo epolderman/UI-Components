@@ -178,7 +178,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     const onBlur = useCallback(() => {
-      setVisibility(false);
+      // setVisibility(false);
     }, []);
 
     // // height of our dateTextField

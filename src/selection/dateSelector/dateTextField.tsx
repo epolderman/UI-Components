@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { anime } from 'animejs';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ENTER_KEY, isValidDateObjectFromString } from './dateUtils';
 import { CalendarToday, DateRange } from '@material-ui/icons';
