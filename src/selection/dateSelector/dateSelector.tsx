@@ -18,9 +18,12 @@ import {
 } from './dateUtils';
 import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
-import { KeyboardArrowRight, KeyboardArrowLeft } from '@material-ui/icons';
-import { DateTextField } from './dateTextField';
-import { useSpring, animated } from 'react-spring';
+import {
+  KeyboardArrowRight,
+  KeyboardArrowLeft,
+  DateRange
+} from '@material-ui/icons';
+import { useSpring, animated, config, interpolate } from 'react-spring';
 import { makeShadow, ELEVATIONS } from '../../common/elevation';
 
 /* 
@@ -51,9 +54,17 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
+
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`
+    });
+
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [isActiveError, setError] = useState(false);
+    const errorAnimation = useSpring({
+      x: isActiveError ? 1 : 0,
+      config: config.wobbly
     });
 
     useEffect(() => {
@@ -70,34 +81,41 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (differenceInMonths !== 0) {
           setMonthOffset(m => m + differenceInMonths);
         }
-
         if (isVisible) {
           setVisibility(false);
         }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
 
+    // setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
+    // setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
     useEffect(() => {
       if (isVisible) {
-        setDateTyped(format(dateTyped, MONTH_DAY_YEAR_FORMAT));
-      } else {
-        setDateTyped(format(dateTyped, dateFormat || DEFAULT_DATE_FORMAT));
+        inputRef.current.focus();
       }
-    }, [isVisible, dateFormat, dateTyped]);
+    }, [isVisible]);
 
-    const nextMonth = useCallback(() => {
-      if (isGridAnimating.current) {
-        return;
-      }
-      setMonthOffset(monthOffset + 1);
-    }, [monthOffset]);
+    const nextMonth = useCallback(
+      (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+        console.log('Click');
+        evt.stopPropagation();
+        if (isGridAnimating.current) {
+          return;
+        }
+        setMonthOffset(monthOffset + 1);
+      },
+      [monthOffset]
+    );
 
-    const prevMonth = useCallback(() => {
-      if (isGridAnimating.current) {
-        return;
-      }
-      setMonthOffset(monthOffset + -1);
-    }, [monthOffset]);
+    const prevMonth = useCallback(
+      (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
+        if (isGridAnimating.current) {
+          return;
+        }
+        setMonthOffset(monthOffset + -1);
+      },
+      [monthOffset]
+    );
 
     const startAnimation = useCallback(() => {
       isGridAnimating.current = true;
@@ -107,17 +125,23 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       isGridAnimating.current = false;
     }, []);
 
-    const onFocus = useCallback(() => {
-      setVisibility(true);
-    }, []);
+    // responsibility: opening calendar & set selection range
+    const onFocus = useCallback(
+      (evt: React.FocusEvent<HTMLInputElement>) => {
+        inputRef.current.setSelectionRange(0, dateTyped.length);
+        setVisibility(true);
+      },
+      [dateTyped]
+    );
 
+    // resp: setting dateTyped, allow user to make error
     const onTextFieldChange = useCallback(
       (evt: React.ChangeEvent<HTMLInputElement>) =>
         setDateTyped(evt.target.value),
       []
     );
 
-    // protection function
+    // resp: pass the ok to the controller to update date, or invalid date swallow error
     const updateDate = useCallback(
       (incomingDate: Date) => {
         const validDateChange =
@@ -125,29 +149,25 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           !hasDateReachedLimit(initialDate.current, incomingDate);
 
         if (validDateChange) {
-          console.log('valid date change');
           return onChange(incomingDate);
         } else {
-          console.log('not valid date change');
-          if (isVisible) {
-            setVisibility(false);
-          }
+          setError(true);
+          return setVisibility(false);
         }
       },
-      [onChange, value, isVisible]
+      [onChange, value]
     );
 
+    // resp: parse dateTyped, swollow invalid date, or pass on to valid update date
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
       const isValidDate = isValid(newDate) && dateTyped !== '';
-
+      // edge case
       if (!isValidDate) {
-        setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-        setVisibility(false);
+        return setVisibility(false);
       }
-
       return updateDate(newDate);
-    }, [dateFormat, value, updateDate, dateTyped]);
+    }, [updateDate, dateTyped]);
 
     const onKeyDown = useCallback(
       (evt: React.KeyboardEvent<HTMLInputElement>) => {
@@ -158,16 +178,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [isVisible, dateParse]
     );
 
-    const onBlur = useCallback(() => {
-      if (isVisible) {
-        // allow updateDate to run before this check
-        setTimeout(() => {
-          if (isVisible && !isGridAnimating.current) {
-            dateParse();
-          }
-        }, 300);
-      }
-    }, [isVisible, dateParse]);
+    // hardest -> fires all the fucking time
+    const onBlur = useCallback((evt: React.FocusEvent<HTMLInputElement>) => {
+      console.log('onBlur');
+    }, []);
 
     const cellRenderer = ({
       key,
@@ -227,16 +241,36 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     return (
       <DateSelectorContainer>
-        <DateTextField
+        <AnimatedWrapper
           isSmall={isSmall}
-          // innerInputRef={setInputInnerRef}
-          // ref={textFieldComponentRef}
-          onFocus={onFocus}
-          onChange={onTextFieldChange}
-          value={dateTyped}
-          onKeyDown={onKeyDown}
-          onBlur={onBlur}
-        />
+          style={{
+            transform: errorAnimation.x
+              .interpolate({
+                range: [0, 0.5, 0.75, 1],
+                output: [0, 2, -2, 0]
+              })
+              .interpolate(x => `translate3d(${x}px, 0, 0)`)
+          }}
+        >
+          <DateRange
+            style={{
+              paddingLeft: isSmall ? 4 : 0,
+              cursor: 'pointer',
+              color: isActiveError ? BRAND_RED : BRAND_PRIMARY
+            }}
+            // onClick={onCalendarIconClick}
+          />
+          <Input
+            type='text'
+            ref={inputRef}
+            value={dateTyped}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            onKeyDown={onKeyDown}
+            onChange={onTextFieldChange}
+            isSmall={isSmall}
+          />
+        </AnimatedWrapper>
         <DivToHideTopShowBottom
           top={31}
           isSmall={isSmall}
@@ -341,3 +375,58 @@ const usePreviousDate = (value: Date) => {
   });
   return ref.current;
 };
+
+// text field shit
+
+// todo generically get this going
+// https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
+const usePreviousValue = (value: string) => {
+  const ref = useRef<string>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
+
+const BACKGROUND_EMPTY = 'rgb(238,238,238)';
+const BRAND_PRIMARY = 'rgb(74,175,227)';
+const BRAND_RED = 'rgb(231,54,49)';
+
+const Input = styled.input<{
+  isSmall: boolean;
+}>`
+  display: flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+  padding: ${props => (props.isSmall ? '4px' : '8px')};
+  border-radius: 4px;
+  border-width: 0px;
+  border-style: none;
+  text-align: center;
+  font-family: 'Open Sans', sans-serif, monospace;
+  text-overflow: ellipsis;
+  /* input elements have min width auto by default so it refuses to shrink */
+  min-width: 0;
+  font-size: 14px;
+  background-color: ${BACKGROUND_EMPTY};
+`;
+
+const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
+  display: flex;
+  flex: 1 1 0%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  padding-left: ${props => (props.isSmall ? '0px' : '8px')};
+  padding-right: ${props => (props.isSmall ? '0px' : '8px')};
+  z-index: 99;
+  border-radius: 4px;
+  background-color: ${BACKGROUND_EMPTY};
+
+  input {
+    outline: none;
+  }
+`;
+
+const AnimatedWrapper = animated(TextFieldWrapper);
