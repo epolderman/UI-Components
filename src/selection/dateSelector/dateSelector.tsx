@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  useMemo
+} from 'react';
 import { CalendarMonth } from './calendarMonth';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
 import {
@@ -89,16 +95,18 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     // setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
     // setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-    useEffect(() => {
-      if (isVisible) {
-        inputRef.current.focus();
-      }
-    }, [isVisible]);
+
+    // useEffect(() => {
+    //   if (isVisible) {
+    //     // inputRef.current.focus();
+    //   }
+    // }, [isVisible]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
         console.log('Click');
         evt.stopPropagation();
+        evt.nativeEvent.stopImmediatePropagation();
         if (isGridAnimating.current) {
           return;
         }
@@ -127,7 +135,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     // responsibility: opening calendar & set selection range
     const onFocus = useCallback(
-      (evt: React.FocusEvent<HTMLInputElement>) => {
+      (evt: React.FocusEvent<HTMLDivElement>) => {
+        inputRef.current.focus();
         inputRef.current.setSelectionRange(0, dateTyped.length);
         setVisibility(true);
       },
@@ -179,36 +188,39 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     // hardest -> fires all the fucking time
-    const onBlur = useCallback((evt: React.FocusEvent<HTMLInputElement>) => {
+    const onBlur = useCallback((evt: React.FocusEvent<HTMLDivElement>) => {
       console.log('onBlur');
     }, []);
 
-    const cellRenderer = ({
-      key,
-      style,
-      columnIndex,
-      isScrolling
-    }: {
-      key: string;
-      style: React.CSSProperties;
-      columnIndex: number;
-      isScrolling: boolean;
-    }) => {
-      const itemOffset = columnIndex - MIDDLE_INDEX;
-      const itemDate = addMonths(initialDate.current, itemOffset);
-      return (
-        <div style={{ ...style, display: 'flex' }} key={key}>
-          <CalendarMonth
-            onSelect={updateDate}
-            month={itemDate}
-            selectedDate={value}
-            skeleton={isScrolling}
-          />
-        </div>
-      );
-    };
+    const cellRenderer = useCallback(
+      ({
+        key,
+        style,
+        columnIndex,
+        isScrolling
+      }: {
+        key: string;
+        style: React.CSSProperties;
+        columnIndex: number;
+        isScrolling: boolean;
+      }) => {
+        const itemOffset = columnIndex - MIDDLE_INDEX;
+        const itemDate = addMonths(initialDate.current, itemOffset);
+        return (
+          <div style={{ ...style, display: 'flex' }} key={key}>
+            <CalendarMonth
+              onSelect={updateDate}
+              month={itemDate}
+              selectedDate={value}
+              skeleton={isScrolling}
+            />
+          </div>
+        );
+      },
+      []
+    );
 
-    const animatedGrid = () => {
+    const animatedGrid = useMemo(() => {
       return (
         <OpenCloseDivWrapper style={openCloseAnimation}>
           <ElevatedWrapper>
@@ -237,10 +249,17 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           </ElevatedWrapper>
         </OpenCloseDivWrapper>
       );
-    };
+    }, [
+      nextMonth,
+      prevMonth,
+      startAnimation,
+      endAnimation,
+      monthOffset,
+      cellRenderer
+    ]);
 
     return (
-      <DateSelectorContainer>
+      <DateSelectorContainer onBlur={onBlur} onFocus={onFocus}>
         <AnimatedWrapper
           isSmall={isSmall}
           style={{
@@ -264,8 +283,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             type='text'
             ref={inputRef}
             value={dateTyped}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            // onFocus={onFocus}
+            // onBlur={onBlur}
             onKeyDown={onKeyDown}
             onChange={onTextFieldChange}
             isSmall={isSmall}
@@ -276,7 +295,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isSmall={isSmall}
           isVisible={isVisible}
         >
-          {animatedGrid()}
+          {animatedGrid}
         </DivToHideTopShowBottom>
       </DateSelectorContainer>
     );
