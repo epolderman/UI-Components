@@ -31,6 +31,7 @@ import {
 } from '@material-ui/icons';
 import { useSpring, animated, config, interpolate } from 'react-spring';
 import { makeShadow, ELEVATIONS } from '../../common/elevation';
+import { usePreviousDate } from './dateHooks';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
@@ -93,20 +94,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
 
-    // setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
-    // setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-
-    // useEffect(() => {
-    //   if (isVisible) {
-    //     // inputRef.current.focus();
-    //   }
-    // }, [isVisible]);
+    useEffect(() => {
+      if (isVisible) {
+        inputRef.current.focus();
+      }
+    }, [isVisible]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-        console.log('Click');
-        evt.stopPropagation();
-        evt.nativeEvent.stopImmediatePropagation();
         if (isGridAnimating.current) {
           return;
         }
@@ -187,8 +182,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [isVisible, dateParse]
     );
 
-    // hardest -> fires all the fucking time
-    const onBlur = useCallback((evt: React.FocusEvent<HTMLDivElement>) => {
+    // hardest -> fires all the fucking time / Can you tie a input blur to contain divs?
+    const onBlur = useCallback((evt: React.FocusEvent<HTMLInputElement>) => {
       console.log('onBlur');
     }, []);
 
@@ -217,7 +212,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           </div>
         );
       },
-      []
+      [updateDate, value]
     );
 
     const animatedGrid = useMemo(() => {
@@ -255,7 +250,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       startAnimation,
       endAnimation,
       monthOffset,
-      cellRenderer
+      cellRenderer,
+      openCloseAnimation
     ]);
 
     return (
@@ -386,26 +382,7 @@ const DivToHideTopShowBottom = styled.div<{
   -ms-overflow-style: none;
 `;
 
-// https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
-const usePreviousDate = (value: Date) => {
-  const ref = useRef<Date>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
-
-// text field shit
-
-// todo generically get this going
-// https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
-const usePreviousValue = (value: string) => {
-  const ref = useRef<string>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
+/* Text Field Sctuff */
 
 const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 const BRAND_PRIMARY = 'rgb(74,175,227)';
