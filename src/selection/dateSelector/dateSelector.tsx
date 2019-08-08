@@ -87,8 +87,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
 
-    // setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
-    // setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
     useEffect(() => {
       if (isVisible) {
         inputRef.current.focus();
@@ -97,8 +95,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-        console.log('Click');
-        evt.stopPropagation();
         if (isGridAnimating.current) {
           return;
         }
@@ -178,7 +174,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [isVisible, dateParse]
     );
 
-    // hardest -> fires all the fucking time
+    // hardest -> fires all the fucking time / Can you tie a input blur to contain divs?
     const onBlur = useCallback((evt: React.FocusEvent<HTMLInputElement>) => {
       console.log('onBlur');
     }, []);
