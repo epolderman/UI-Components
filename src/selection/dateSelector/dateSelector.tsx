@@ -372,17 +372,7 @@ const usePreviousDate = (value: Date) => {
   return ref.current;
 };
 
-// text field shit
-
-// todo generically get this going
-// https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
-const usePreviousValue = (value: string) => {
-  const ref = useRef<string>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
+/* Text Field Sctuff */
 
 const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 const BRAND_PRIMARY = 'rgb(74,175,227)';
