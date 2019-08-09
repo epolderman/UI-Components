@@ -198,19 +198,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [isVisible]);
 
-    // this needs to be refactored
-    // const onBlur = useCallback(
-    //   (evt: React.FocusEvent<HTMLDivElement>) => {
-    //     console.log('onBlur Target', evt.target);
-    //     console.log('onBlur, currentTarget', evt.currentTarget);
-    //     if (isVisible) {
-    //       dateParse();
-    //       setVisibility(false);
-    //     }
-    //   },
-    //   [isVisible, dateParse]
-    // );
-
     const cellRenderer = useCallback(
       ({
         key,
