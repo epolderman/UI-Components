@@ -1,49 +1,46 @@
-import React, {
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
-  useMemo
-} from 'react';
-import { CalendarMonth } from './calendarMonth';
-import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
+import styled from '@emotion/styled';
+import { Button } from '@material-ui/core';
+import {
+  DateRange,
+  KeyboardArrowLeft,
+  KeyboardArrowRight
+} from '@material-ui/icons';
 import {
   addMonths,
   differenceInCalendarMonths,
   format,
-  parse,
-  isValid
+  isValid,
+  parse
 } from 'date-fns';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import { animated, config, useSpring } from 'react-spring';
+import { ELEVATIONS, makeShadow } from '../../common/elevation';
+import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
+import { CalendarMonth } from './calendarMonth';
+import { usePreviousDate } from './dateHooks';
 import {
-  MIDDLE_INDEX,
-  MAX_TIME_SPAN,
   CALENDAR_DIMENSIONS,
   ENTER_KEY,
   hasDateChanged,
-  hasDateReachedLimit
+  hasDateReachedLimit,
+  MAX_TIME_SPAN,
+  MIDDLE_INDEX,
+  DEFAULT_DATE_FORMAT
 } from './dateUtils';
-import styled from '@emotion/styled';
-import { Button } from '@material-ui/core';
-import {
-  KeyboardArrowRight,
-  KeyboardArrowLeft,
-  DateRange
-} from '@material-ui/icons';
-import { useSpring, animated, config, interpolate } from 'react-spring';
-import { makeShadow, ELEVATIONS } from '../../common/elevation';
-import { usePreviousDate } from './dateHooks';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
     & and the communication between the two
 */
 
-// todo: break this shit up, too much logic is in here
-// blur is broken currently, click on calendar closes before animation
-// calendar on click closes at wrong times
-
 export interface DateSelectorProps {
-  onChange: (incomingDate: Date) => void;
+  onChange: (incomingDate: Date) => VoidFunction;
   value: Date;
   isSmall?: boolean;
   dateFormat?: string;
@@ -52,9 +49,6 @@ export interface DateSelectorProps {
 export interface DateSelectorState {
   monthOffset: number;
 }
-
-const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
-const MONTH_DAY_YEAR_FORMAT = 'M/D/YY';
 
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange, dateFormat, isSmall }) => {

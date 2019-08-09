@@ -37,6 +37,7 @@ export const DAYS: string[] = [
 export const ENTER_KEY: number = 13;
 export const isValidDateObjectFromString = (date: string) =>
   isValid(parse(date));
+export const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
 
 interface CalendarMonthData {
   endIndex: number;
