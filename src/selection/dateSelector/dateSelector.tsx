@@ -311,7 +311,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             value={dateTyped}
             onKeyDown={onKeyDown}
             onFocus={onFocus}
-            // onBlur={onBlur}
             onChange={onTextFieldChange}
             isSmall={isSmall}
           />
