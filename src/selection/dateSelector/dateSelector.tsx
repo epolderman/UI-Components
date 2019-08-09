@@ -66,7 +66,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const inputRef = useRef<HTMLInputElement>(null);
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
-
     // animating grid, open close
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
@@ -76,8 +75,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (!isVisible) {
           inputRef.current.blur();
           setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-        } else {
-          inputRef.current.focus();
         }
       }
     });
@@ -145,10 +142,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     // responsibility: opening calendar & set selection range
     const onFocus = useCallback(
-      (evt: React.FocusEvent<HTMLDivElement>) => {
+      (evt: React.FocusEvent<HTMLInputElement>) => {
+        // inputRef.current.focus();
+        setVisibility(true);
         inputRef.current.focus();
         inputRef.current.setSelectionRange(0, dateTyped.length);
-        setVisibility(true);
       },
       [dateTyped]
     );
@@ -207,17 +205,17 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     }, [isVisible]);
 
     // this needs to be refactored
-    const onBlur = useCallback(
-      (evt: React.FocusEvent<HTMLInputElement>) => {
-        console.log('onBlur');
-        if (isVisible) {
-          console.log('onBlurInside');
-          dateParse();
-          setVisibility(false);
-        }
-      },
-      [isVisible, dateParse]
-    );
+    // const onBlur = useCallback(
+    //   (evt: React.FocusEvent<HTMLDivElement>) => {
+    //     console.log('onBlur Target', evt.target);
+    //     console.log('onBlur, currentTarget', evt.currentTarget);
+    //     if (isVisible) {
+    //       dateParse();
+    //       setVisibility(false);
+    //     }
+    //   },
+    //   [isVisible, dateParse]
+    // );
 
     const cellRenderer = useCallback(
       ({
@@ -313,7 +311,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             value={dateTyped}
             onKeyDown={onKeyDown}
             onFocus={onFocus}
-            onBlur={onBlur}
+            // onBlur={onBlur}
             onChange={onTextFieldChange}
             isSmall={isSmall}
           />
