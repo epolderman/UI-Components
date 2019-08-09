@@ -19,8 +19,6 @@ const App: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center'
         }}
-        onClick={() => console.log('onClickParent')}
-        onBlur={() => console.log('OnBlurParent')}
       >
         <DateSelector value={currentDate} onChange={onChange} />
       </div>

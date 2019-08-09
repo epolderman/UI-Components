@@ -38,6 +38,10 @@ import { usePreviousDate } from './dateHooks';
     & and the communication between the two
 */
 
+// todo: break this shit up, too much logic is in here
+// blur is broken currently, click on calendar closes before animation
+// calendar on click closes at wrong times
+
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
   value: Date;
@@ -59,19 +63,36 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [dateTyped, setDateTyped] = useState(
       format(value, dateFormat || DEFAULT_DATE_FORMAT)
     );
+    const inputRef = useRef<HTMLInputElement>(null);
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
 
+    // animating grid, open close
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
-      transform: isVisible ? `translateY(0px)` : `translateY(-100%)`
+      transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
+      onRest: () => {
+        // state on animation completes
+        if (!isVisible) {
+          inputRef.current.blur();
+          setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
+        } else {
+          inputRef.current.focus();
+        }
+      }
     });
 
-    const inputRef = useRef<HTMLInputElement>(null);
+    // todo: interpolating on error, but resetting back shouldnt interpolate.
     const [isActiveError, setError] = useState(false);
     const errorAnimation = useSpring({
       x: isActiveError ? 1 : 0,
-      config: config.wobbly
+      config: config.wobbly,
+      // state on animation completes
+      onRest: () => {
+        if (isActiveError && !isVisible) {
+          setError(false);
+        }
+      }
     });
 
     useEffect(() => {
@@ -93,12 +114,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
-
-    useEffect(() => {
-      if (isVisible) {
-        inputRef.current.focus();
-      }
-    }, [isVisible]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
@@ -154,9 +169,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
         if (validDateChange) {
           return onChange(incomingDate);
-        } else {
-          setError(true);
-          return setVisibility(false);
         }
       },
       [onChange, value]
@@ -166,12 +178,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
       const isValidDate = isValid(newDate) && dateTyped !== '';
+      const validDateChange =
+        hasDateChanged(value, newDate) &&
+        !hasDateReachedLimit(initialDate.current, newDate);
       // edge case
-      if (!isValidDate) {
+      if (!isValidDate && validDateChange) {
+        setError(true);
         return setVisibility(false);
       }
       return updateDate(newDate);
-    }, [updateDate, dateTyped]);
+    }, [updateDate, dateTyped, value, initialDate]);
 
     const onKeyDown = useCallback(
       (evt: React.KeyboardEvent<HTMLInputElement>) => {
@@ -182,10 +198,26 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [isVisible, dateParse]
     );
 
-    // hardest -> fires all the fucking time / Can you tie a input blur to contain divs?
-    const onBlur = useCallback((evt: React.FocusEvent<HTMLInputElement>) => {
-      console.log('onBlur');
-    }, []);
+    const onCalendarIconClick = useCallback(() => {
+      if (isVisible) {
+        inputRef.current.blur();
+      } else {
+        inputRef.current.focus();
+      }
+    }, [isVisible]);
+
+    // this needs to be refactored
+    const onBlur = useCallback(
+      (evt: React.FocusEvent<HTMLInputElement>) => {
+        console.log('onBlur');
+        if (isVisible) {
+          console.log('onBlurInside');
+          dateParse();
+          setVisibility(false);
+        }
+      },
+      [isVisible, dateParse]
+    );
 
     const cellRenderer = useCallback(
       ({
@@ -255,8 +287,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     ]);
 
     return (
-      <DateSelectorContainer onBlur={onBlur} onFocus={onFocus}>
-        <AnimatedWrapper
+      <DateSelectorContainer>
+        <AnimatedTextFieldWrapper
           isSmall={isSmall}
           style={{
             transform: errorAnimation.x
@@ -273,19 +305,19 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
               cursor: 'pointer',
               color: isActiveError ? BRAND_RED : BRAND_PRIMARY
             }}
-            // onClick={onCalendarIconClick}
+            onClick={onCalendarIconClick}
           />
           <Input
             type='text'
             ref={inputRef}
             value={dateTyped}
-            // onFocus={onFocus}
-            // onBlur={onBlur}
             onKeyDown={onKeyDown}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onChange={onTextFieldChange}
             isSmall={isSmall}
           />
-        </AnimatedWrapper>
+        </AnimatedTextFieldWrapper>
         <DivToHideTopShowBottom
           top={31}
           isSmall={isSmall}
@@ -425,4 +457,4 @@ const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
   }
 `;
 
-const AnimatedWrapper = animated(TextFieldWrapper);
+const AnimatedTextFieldWrapper = animated(TextFieldWrapper);
