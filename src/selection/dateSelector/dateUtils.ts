@@ -162,7 +162,6 @@ export const isSameDate = (currentDate: Date, selectedDate: Date) => {
 };
 
 /* Protection Functions */
-
 export const hasDateReachedLimit = (initialDate: Date, newDate: Date) => {
   const changeInMonth = getMonthOffset(initialDate, newDate);
   return changeInMonth > MIDDLE_INDEX || changeInMonth < -MIDDLE_INDEX;
