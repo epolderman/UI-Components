@@ -126,7 +126,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [monthOffset]
     );
 
-    const onFocus = useCallback(
+    const onTextFieldFocus = useCallback(
       (evt: React.FocusEvent<HTMLInputElement>) => {
         setVisibility(true);
         inputRef.current.focus();
@@ -243,7 +243,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             ref={inputRef}
             value={dateTyped}
             onKeyDown={onKeyDown}
-            onFocus={onFocus}
+            onFocus={onTextFieldFocus}
             onChange={onTextFieldChange}
             isSmall={isSmall}
           />
