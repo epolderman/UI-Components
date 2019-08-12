@@ -134,10 +134,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       isGridAnimating.current = false;
     }, []);
 
-    // responsibility: opening calendar & set selection range
     const onFocus = useCallback(
       (evt: React.FocusEvent<HTMLInputElement>) => {
-        // inputRef.current.focus();
         setVisibility(true);
         inputRef.current.focus();
         inputRef.current.setSelectionRange(0, dateTyped.length);
@@ -193,6 +191,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const onCalendarIconClick = useCallback(() => {
       if (isVisible) {
         inputRef.current.blur();
+        setVisibility(false);
       } else {
         inputRef.current.focus();
       }
