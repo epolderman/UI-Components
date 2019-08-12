@@ -145,6 +145,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const updateDate = useCallback(
       (incomingDate: Date) => {
+        // being use on a select with mouse
         const validDateChange =
           hasDateChanged(value, incomingDate) &&
           !hasDateReachedLimit(initialDate.current, incomingDate);
@@ -156,20 +157,23 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [onChange, value]
     );
 
-    // resp: parse dateTyped, swollow invalid date, or pass on to valid update date
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
-      const isValidDate = isValid(newDate) && dateTyped !== '';
+      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
       const validDateChange =
         hasDateChanged(value, newDate) &&
         !hasDateReachedLimit(initialDate.current, newDate);
 
-      // edge case
-      if (!isValidDate && validDateChange) {
+      // bad date typed
+      if (!isValidDateTyped && validDateChange) {
         setError(true);
-        return setVisibility(false);
+        setVisibility(false);
+        // no date change
+      } else if (!validDateChange) {
+        setVisibility(false);
+      } else {
+        updateDate(newDate);
       }
-      return updateDate(newDate);
     }, [updateDate, dateTyped, value, initialDate]);
 
     const onKeyDown = useCallback(
