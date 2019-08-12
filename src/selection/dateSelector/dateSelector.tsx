@@ -60,31 +60,26 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const inputRef = useRef<HTMLInputElement>(null);
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
+
     // animating grid, open close
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
       onRest: () => {
-        // state on animation completes
+        // on close state change
         if (!isVisible) {
           inputRef.current.blur();
           setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-        }
-      }
-    });
-
-    // todo: interpolating on error, but resetting back shouldnt interpolate.
-    const [isActiveError, setError] = useState(false);
-    const errorAnimation = useSpring({
-      x: isActiveError ? 1 : 0,
-      config: config.wobbly,
-      // state on animation completes
-      onRest: () => {
-        if (isActiveError && !isVisible) {
           setError(false);
         }
       }
     });
+
+    // errors: typed in text field non date format
+    const [isActiveError, setError] = useState(false);
+    const [{ x }, set] = useSpring(() => ({
+      x: 0
+    }));
 
     useEffect(() => {
       // passed our protection functions, controller has been updated, new date coming in
@@ -105,6 +100,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
+
+    useEffect(() => {
+      if (isActiveError) {
+        set({ x: x.getValue() === 1 ? 0 : 1, config: config.wobbly });
+      }
+    }, [isActiveError, set, x]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
@@ -142,7 +143,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       []
     );
 
-    // resp: pass the ok to the controller to update date, or invalid date swallow error
     const updateDate = useCallback(
       (incomingDate: Date) => {
         const validDateChange =
@@ -163,6 +163,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       const validDateChange =
         hasDateChanged(value, newDate) &&
         !hasDateReachedLimit(initialDate.current, newDate);
+
       // edge case
       if (!isValidDate && validDateChange) {
         setError(true);
@@ -222,10 +223,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         <AnimatedTextFieldWrapper
           isSmall={isSmall}
           style={{
-            transform: errorAnimation.x
+            transform: x
               .interpolate({
                 range: [0, 0.5, 0.75, 1],
-                output: [0, 2, -2, 0]
+                output: [0, -2, 2, 0]
               })
               .interpolate(x => `translate3d(${x}px, 0, 0)`)
           }}
