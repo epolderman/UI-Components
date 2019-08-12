@@ -178,7 +178,5 @@ export const hasDateChanged = (oldDate: Date, newDate: Date) => {
   // month will capture change in years
   const changeInMonth = getMonthOffset(oldDate, newDate);
   const changeInDays = getDayOffset(oldDate, newDate);
-  console.log('changeinDays', changeInDays, oldDate, newDate);
-  console.log('changeinmonths', changeInMonth);
   return changeInMonth !== 0 || changeInDays !== 0;
 };

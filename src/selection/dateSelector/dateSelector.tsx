@@ -226,45 +226,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [updateDate, value]
     );
 
-    const animatedGrid = useMemo(() => {
-      return (
-        <OpenCloseDivWrapper style={openCloseAnimation}>
-          <ElevatedWrapper>
-            <VirtualizedGrid
-              column={monthOffset}
-              cellRenderer={cellRenderer}
-              height={CALENDAR_DIMENSIONS}
-              width={CALENDAR_DIMENSIONS}
-              rowHeight={CALENDAR_DIMENSIONS}
-              rowCount={1}
-              columnCount={MAX_TIME_SPAN}
-              columnWidth={CALENDAR_DIMENSIONS}
-              style={{ overflow: 'hidden' }}
-              onAnimationStart={startAnimation}
-              onAnimationEnd={endAnimation}
-              durationOfAnimation={500}
-            />
-            <ControlsContainer>
-              <Button onClick={prevMonth}>
-                <KeyboardArrowLeft />
-              </Button>
-              <Button onClick={nextMonth}>
-                <KeyboardArrowRight />
-              </Button>
-            </ControlsContainer>
-          </ElevatedWrapper>
-        </OpenCloseDivWrapper>
-      );
-    }, [
-      nextMonth,
-      prevMonth,
-      startAnimation,
-      endAnimation,
-      monthOffset,
-      cellRenderer,
-      openCloseAnimation
-    ]);
-
     return (
       <DateSelectorContainer>
         <AnimatedTextFieldWrapper
@@ -301,7 +262,32 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isSmall={isSmall}
           isVisible={isVisible}
         >
-          {animatedGrid}
+          <OpenCloseDivWrapper style={openCloseAnimation}>
+            <ElevatedWrapper>
+              <VirtualizedGrid
+                column={monthOffset}
+                cellRenderer={cellRenderer}
+                height={CALENDAR_DIMENSIONS}
+                width={CALENDAR_DIMENSIONS}
+                rowHeight={CALENDAR_DIMENSIONS}
+                rowCount={1}
+                columnCount={MAX_TIME_SPAN}
+                columnWidth={CALENDAR_DIMENSIONS}
+                style={{ overflow: 'hidden' }}
+                onAnimationStart={startAnimation}
+                onAnimationEnd={endAnimation}
+                durationOfAnimation={500}
+              />
+              <ControlsContainer>
+                <Button onClick={prevMonth}>
+                  <KeyboardArrowLeft />
+                </Button>
+                <Button onClick={nextMonth}>
+                  <KeyboardArrowRight />
+                </Button>
+              </ControlsContainer>
+            </ElevatedWrapper>
+          </OpenCloseDivWrapper>
         </DivToHideTopShowBottom>
       </DateSelectorContainer>
     );
