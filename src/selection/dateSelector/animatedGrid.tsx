@@ -76,7 +76,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     }, [column, animateToOffset, onAnimationStart]);
 
     const onScroll = useCallback(({ scrollLeft }: { scrollLeft: number }) => {
-      if (!isAnimating) {
+      if (!isAnimating.current) {
         scrollLeftStart.current = scrollLeft;
       }
     }, []);

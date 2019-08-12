@@ -40,7 +40,7 @@ import {
 */
 
 export interface DateSelectorProps {
-  onChange: (incomingDate: Date) => VoidFunction;
+  onChange: (incomingDate: Date) => void;
   value: Date;
   isSmall?: boolean;
   dateFormat?: string;
@@ -89,9 +89,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           monthOffset - MIDDLE_INDEX,
           value
         );
-
         setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
-
         if (differenceInMonths !== 0) {
           setMonthOffset(m => m + differenceInMonths);
         }
@@ -272,7 +270,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 style={{ overflow: 'hidden' }}
                 onAnimationStart={() => (isGridAnimating.current = true)}
                 onAnimationEnd={() => (isGridAnimating.current = false)}
-                durationOfAnimation={500}
               />
               <ControlsContainer>
                 <Button onClick={prevMonth}>

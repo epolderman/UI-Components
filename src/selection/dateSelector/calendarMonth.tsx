@@ -70,20 +70,6 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       ));
     }, [month, renderWeek]);
 
-    const monthTitleJSX = useMemo(
-      () => (
-        <CalendarRow hasText>
-          <Typography
-            style={{ fontSize: '16px', marginTop: '-10px' }}
-            color='textPrimary'
-          >
-            {format(month, 'MMM YYYY')}
-          </Typography>
-        </CalendarRow>
-      ),
-      [month]
-    );
-
     const skeletonMonthJSX = useMemo(() => {
       const month = getSkeletonMonth();
       return map(month, (week, index) => (
@@ -109,7 +95,14 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     return (
       <CalendarContainer>
         <CalendarHeader>
-          {monthTitleJSX}
+          <CalendarRow hasText>
+            <Typography
+              style={{ fontSize: '16px', marginTop: '-10px' }}
+              color='textPrimary'
+            >
+              {format(month, 'MMM YYYY')}
+            </Typography>
+          </CalendarRow>
           {dayNamesJSX}
         </CalendarHeader>
         <CalendarAnimatedContent>
