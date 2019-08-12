@@ -126,14 +126,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [monthOffset]
     );
 
-    const startAnimation = useCallback(() => {
-      isGridAnimating.current = true;
-    }, []);
-
-    const endAnimation = useCallback(() => {
-      isGridAnimating.current = false;
-    }, []);
-
     const onFocus = useCallback(
       (evt: React.FocusEvent<HTMLInputElement>) => {
         setVisibility(true);
@@ -273,8 +265,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnCount={MAX_TIME_SPAN}
                 columnWidth={CALENDAR_DIMENSIONS}
                 style={{ overflow: 'hidden' }}
-                onAnimationStart={startAnimation}
-                onAnimationEnd={endAnimation}
+                onAnimationStart={() => (isGridAnimating.current = true)}
+                onAnimationEnd={() => (isGridAnimating.current = false)}
                 durationOfAnimation={500}
               />
               <ControlsContainer>
