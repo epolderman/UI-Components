@@ -42,13 +42,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const [isVisible, setVisibility] = useState(false);
     const [isActiveError, setError] = useState(false);
+    const [initialDate, setInitialDate] = useState(new Date());
     const [dateTyped, setDateTyped] = useState(
       format(value, dateFormat || DEFAULT_DATE_FORMAT)
     );
     const inputRef = useRef<HTMLInputElement>(null);
-    const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
-    // animating grid, open close
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
@@ -66,7 +65,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       // passed our protection functions, controller has been updated, new date coming in
       if (prevDate !== value) {
         const differenceInMonths = calculateMonthOffset(
-          initialDate.current,
+          initialDate,
           monthOffset - MIDDLE_INDEX,
           value
         );
@@ -121,7 +120,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         // being use on a select with mouse
         const validDateChange =
           hasDateChanged(value, incomingDate) &&
-          !hasDateReachedLimit(initialDate.current, incomingDate);
+          !hasDateReachedLimit(initialDate, incomingDate);
 
         if (validDateChange) {
           return onChange(incomingDate);
@@ -135,7 +134,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       const isValidDateTyped = isValid(newDate) && dateTyped !== '';
       const validDateChange =
         hasDateChanged(value, newDate) &&
-        !hasDateReachedLimit(initialDate.current, newDate);
+        !hasDateReachedLimit(initialDate, newDate);
 
       // bad date typed
       if (!isValidDateTyped && validDateChange) {
@@ -180,7 +179,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         isScrolling: boolean;
       }) => {
         const itemOffset = columnIndex - MIDDLE_INDEX;
-        const itemDate = addMonths(initialDate.current, itemOffset);
+        const itemDate = addMonths(initialDate, itemOffset);
         return (
           <div style={{ ...style, display: 'flex' }} key={key}>
             <CalendarMonth
