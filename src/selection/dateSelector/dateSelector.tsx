@@ -185,12 +185,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     return (
       <DateSelectorContainer>
         <DateTextField
+          ref={inputRef}
           isSmall={isSmall}
           isActiveError={isActiveError}
           onChange={onTextFieldChange}
           onFocus={onTextFieldFocus}
           onKeyDown={onKeyDown}
-          inputRef={inputRef}
           value={dateTyped}
           onCalendarIconClick={onCalendarIconClick}
         />
