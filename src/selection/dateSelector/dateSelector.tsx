@@ -12,13 +12,7 @@ import {
   isValid,
   parse
 } from 'date-fns';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { animated, config, useSpring } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../common/elevation';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
@@ -26,12 +20,12 @@ import { CalendarMonth } from './calendarMonth';
 import { usePreviousDate } from './dateHooks';
 import {
   CALENDAR_DIMENSIONS,
+  DEFAULT_DATE_FORMAT,
   ENTER_KEY,
   hasDateChanged,
   hasDateReachedLimit,
   MAX_TIME_SPAN,
-  MIDDLE_INDEX,
-  DEFAULT_DATE_FORMAT
+  MIDDLE_INDEX
 } from './dateUtils';
 
 /* 
@@ -220,6 +214,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [updateDate, value]
     );
 
+    const onAnimationEnd = useCallback(() => {
+      isGridAnimating.current = false;
+    }, []);
+
+    const onAnimationStart = useCallback(() => {
+      isGridAnimating.current = true;
+    }, []);
+
     return (
       <DateSelectorContainer>
         <AnimatedTextFieldWrapper
@@ -268,8 +270,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnCount={MAX_TIME_SPAN}
                 columnWidth={CALENDAR_DIMENSIONS}
                 style={{ overflow: 'hidden' }}
-                onAnimationStart={() => (isGridAnimating.current = true)}
-                onAnimationEnd={() => (isGridAnimating.current = false)}
+                onAnimationStart={onAnimationStart}
+                onAnimationEnd={onAnimationEnd}
               />
               <ControlsContainer>
                 <Button onClick={prevMonth}>

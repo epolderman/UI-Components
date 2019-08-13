@@ -26,92 +26,95 @@ export interface CalendarMonthProps {
   skeleton?: boolean;
 }
 
-export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
-  ({ month, selectedDate, skeleton, onSelect }) => {
-    const renderWeek = useCallback(
-      (week: Date[]) =>
-        map(week, (date, index) => {
-          const dispatchSelect = () => onSelect(date);
-          if (isSameDate(date, selectedDate)) {
-            return (
-              <Button
-                variant='contained'
-                key={index}
-                style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
-              >
-                {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
-            );
-          } else if (!isSameMonth(month, date)) {
-            return (
-              <Button
-                onClick={dispatchSelect}
-                key={index}
-                style={{ backgroundColor: BACKGROUND_EMPTY }}
-              >
-                {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
-            );
-          } else {
-            return (
-              <Button onClick={dispatchSelect} key={index}>
-                {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
-            );
-          }
-        }),
-      [onSelect, selectedDate, month]
-    );
-
-    const monthJSX = useMemo(() => {
-      const currentMonth: DateMatrix = buildDateMatrix(month);
-      return map(currentMonth, (week, index) => (
-        <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
-      ));
-    }, [month, renderWeek]);
-
-    const skeletonMonthJSX = useMemo(() => {
-      const month = getSkeletonMonth();
-      return map(month, (week, index) => (
-        <CalendarRow key={index}>{renderSkeletonWeek(week)}</CalendarRow>
-      ));
-    }, []);
-
-    const dayNamesJSX = useMemo(
-      () => (
-        <CalendarRow>
-          {map(DAYS, (day, index) => (
-            <DayNameBlocks key={index}>
-              <Typography style={{ fontSize: '14px' }} color='textPrimary'>
-                {day.slice(0, 3)}
-              </Typography>
-            </DayNameBlocks>
-          ))}
-        </CalendarRow>
-      ),
-      []
-    );
-
-    return (
-      <CalendarContainer>
-        <CalendarHeader>
-          <CalendarRow hasText>
-            <Typography
-              style={{ fontSize: '16px', marginTop: '-10px' }}
-              color='textPrimary'
+export const CalendarMonth: React.FC<CalendarMonthProps> = ({
+  month,
+  selectedDate,
+  skeleton,
+  onSelect
+}) => {
+  const renderWeek = useCallback(
+    (week: Date[]) =>
+      map(week, (date, index) => {
+        const dispatchSelect = () => onSelect(date);
+        if (isSameDate(date, selectedDate)) {
+          return (
+            <Button
+              variant='contained'
+              key={index}
+              style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
             >
-              {format(month, 'MMM YYYY')}
+              {format(date, CALENDAR_DAY_FORMAT)}
+            </Button>
+          );
+        } else if (!isSameMonth(month, date)) {
+          return (
+            <Button
+              onClick={dispatchSelect}
+              key={index}
+              style={{ backgroundColor: BACKGROUND_EMPTY }}
+            >
+              {format(date, CALENDAR_DAY_FORMAT)}
+            </Button>
+          );
+        } else {
+          return (
+            <Button onClick={dispatchSelect} key={index}>
+              {format(date, CALENDAR_DAY_FORMAT)}
+            </Button>
+          );
+        }
+      }),
+    [onSelect, selectedDate, month]
+  );
+
+  const monthJSX = useMemo(() => {
+    const currentMonth: DateMatrix = buildDateMatrix(month);
+    return map(currentMonth, (week, index) => (
+      <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
+    ));
+  }, [month, renderWeek]);
+
+  const skeletonMonthJSX = useMemo(() => {
+    const month = getSkeletonMonth();
+    return map(month, (week, index) => (
+      <CalendarRow key={index}>{renderSkeletonWeek(week)}</CalendarRow>
+    ));
+  }, []);
+
+  const dayNamesJSX = useMemo(
+    () => (
+      <CalendarRow>
+        {map(DAYS, (day, index) => (
+          <DayNameBlocks key={index}>
+            <Typography style={{ fontSize: '14px' }} color='textPrimary'>
+              {day.slice(0, 3)}
             </Typography>
-          </CalendarRow>
-          {dayNamesJSX}
-        </CalendarHeader>
-        <CalendarAnimatedContent>
-          {skeleton ? skeletonMonthJSX : monthJSX}
-        </CalendarAnimatedContent>
-      </CalendarContainer>
-    );
-  }
-);
+          </DayNameBlocks>
+        ))}
+      </CalendarRow>
+    ),
+    []
+  );
+
+  return (
+    <CalendarContainer>
+      <CalendarHeader>
+        <CalendarRow hasText>
+          <Typography
+            style={{ fontSize: '16px', marginTop: '-10px' }}
+            color='textPrimary'
+          >
+            {format(month, 'MMM YYYY')}
+          </Typography>
+        </CalendarRow>
+        {dayNamesJSX}
+      </CalendarHeader>
+      <CalendarAnimatedContent>
+        {skeleton ? skeletonMonthJSX : monthJSX}
+      </CalendarAnimatedContent>
+    </CalendarContainer>
+  );
+};
 
 const getSkeletonMonth = () => {
   return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() => {
