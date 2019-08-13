@@ -109,19 +109,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [updateDate, dateTyped, value]);
 
-    const nextMonth = useCallback(() => {
-      if (isGridAnimating.current) {
-        return;
-      }
-      setMonthOffset(monthOffset + 1);
-    }, [monthOffset]);
-
-    const prevMonth = useCallback(() => {
-      if (isGridAnimating.current) {
-        return;
-      }
-      setMonthOffset(monthOffset + -1);
-    }, [monthOffset]);
+    const toMonth = useCallback(
+      (increment: 'next' | 'prev') => {
+        if (isGridAnimating.current) {
+          return;
+        }
+        const monthValue = increment === 'next' ? 1 : -1;
+        setMonthOffset(monthOffset + monthValue);
+      },
+      [monthOffset]
+    );
 
     const onTextFieldFocus = useCallback(
       (evt: React.FocusEvent<HTMLInputElement>) => {
@@ -217,10 +214,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 onAnimationEnd={() => (isGridAnimating.current = false)}
               />
               <ControlsContainer>
-                <Button onClick={prevMonth}>
+                <Button onClick={() => toMonth('prev')}>
                   <KeyboardArrowLeft />
                 </Button>
-                <Button onClick={nextMonth}>
+                <Button onClick={() => toMonth('next')}>
                   <KeyboardArrowRight />
                 </Button>
               </ControlsContainer>
