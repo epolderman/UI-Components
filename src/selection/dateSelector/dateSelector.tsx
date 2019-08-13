@@ -90,7 +90,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           return onChange(incomingDate);
         }
       },
-      [onChange, value]
+      [onChange, value, initialDate]
     );
 
     const dateParse = useCallback(() => {
