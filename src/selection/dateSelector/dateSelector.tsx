@@ -27,6 +27,7 @@ import {
   MAX_TIME_SPAN,
   MIDDLE_INDEX
 } from './dateUtils';
+import { DateTextField } from './dateTextField';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
@@ -69,11 +70,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     });
 
-    // errors: typed in text field non date format
     const [isActiveError, setError] = useState(false);
-    const [{ x }, set] = useSpring(() => ({
-      x: 0
-    }));
 
     useEffect(() => {
       // passed our protection functions, controller has been updated, new date coming in
@@ -92,12 +89,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible]);
-
-    useEffect(() => {
-      if (isActiveError) {
-        set({ x: x.getValue() === 1 ? 0 : 1, config: config.wobbly });
-      }
-    }, [isActiveError, set, x]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
@@ -224,35 +215,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     return (
       <DateSelectorContainer>
-        <AnimatedTextFieldWrapper
+        <DateTextField
           isSmall={isSmall}
-          style={{
-            transform: x
-              .interpolate({
-                range: [0, 0.5, 0.75, 1],
-                output: [0, -2, 2, 0]
-              })
-              .interpolate(x => `translate3d(${x}px, 0, 0)`)
-          }}
-        >
-          <DateRange
-            style={{
-              paddingLeft: isSmall ? 4 : 0,
-              cursor: 'pointer',
-              color: isActiveError ? BRAND_RED : BRAND_PRIMARY
-            }}
-            onClick={onCalendarIconClick}
-          />
-          <Input
-            type='text'
-            ref={inputRef}
-            value={dateTyped}
-            onKeyDown={onKeyDown}
-            onFocus={onTextFieldFocus}
-            onChange={onTextFieldChange}
-            isSmall={isSmall}
-          />
-        </AnimatedTextFieldWrapper>
+          isActiveError={isActiveError}
+          onTextFieldChange={onTextFieldChange}
+          onTextFieldFocus={onTextFieldFocus}
+          onKeyDown={onKeyDown}
+          inputRef={inputRef}
+          dateTyped={dateTyped}
+          onCalendarIconClick={onCalendarIconClick}
+        />
         <DivToHideTopShowBottom
           top={31}
           isSmall={isSmall}
@@ -372,48 +344,3 @@ const DivToHideTopShowBottom = styled.div<{
   pointer-events: ${props => (props.isVisible ? 'auto' : 'none')};
   -ms-overflow-style: none;
 `;
-
-/* Text Field Sctuff */
-
-const BACKGROUND_EMPTY = 'rgb(238,238,238)';
-const BRAND_PRIMARY = 'rgb(74,175,227)';
-const BRAND_RED = 'rgb(231,54,49)';
-
-const Input = styled.input<{
-  isSmall: boolean;
-}>`
-  display: flex;
-  flex: 1 1 0%;
-  justify-content: center;
-  align-items: center;
-  padding: ${props => (props.isSmall ? '4px' : '8px')};
-  border-radius: 4px;
-  border-width: 0px;
-  border-style: none;
-  text-align: center;
-  font-family: 'Open Sans', sans-serif, monospace;
-  text-overflow: ellipsis;
-  /* input elements have min width auto by default so it refuses to shrink */
-  min-width: 0;
-  font-size: 14px;
-  background-color: ${BACKGROUND_EMPTY};
-`;
-
-const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
-  display: flex;
-  flex: 1 1 0%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  padding-left: ${props => (props.isSmall ? '0px' : '8px')};
-  padding-right: ${props => (props.isSmall ? '0px' : '8px')};
-  z-index: 99;
-  border-radius: 4px;
-  background-color: ${BACKGROUND_EMPTY};
-
-  input {
-    outline: none;
-  }
-`;
-
-const AnimatedTextFieldWrapper = animated(TextFieldWrapper);
