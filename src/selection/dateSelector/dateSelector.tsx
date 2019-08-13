@@ -77,7 +77,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           setVisibility(false);
         }
       }
-    }, [value, monthOffset, prevDate, dateFormat, isVisible]);
+    }, [value, monthOffset, prevDate, dateFormat, isVisible, initialDate]);
 
     const nextMonth = useCallback(
       (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
