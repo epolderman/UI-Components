@@ -79,42 +79,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible, initialDate]);
 
-    const nextMonth = useCallback(
-      (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-        if (isGridAnimating.current) {
-          return;
-        }
-        setMonthOffset(monthOffset + 1);
-      },
-      [monthOffset]
-    );
-
-    const prevMonth = useCallback(
-      (evt: React.SyntheticEvent<HTMLButtonElement, Event>) => {
-        if (isGridAnimating.current) {
-          return;
-        }
-        setMonthOffset(monthOffset + -1);
-      },
-      [monthOffset]
-    );
-
-    const onTextFieldFocus = useCallback(
-      (evt: React.FocusEvent<HTMLInputElement>) => {
-        setVisibility(true);
-        inputRef.current.focus();
-        inputRef.current.setSelectionRange(0, dateTyped.length);
-      },
-      [dateTyped]
-    );
-
-    // resp: setting dateTyped, allow user to make error
-    const onTextFieldChange = useCallback(
-      (evt: React.ChangeEvent<HTMLInputElement>) =>
-        setDateTyped(evt.target.value),
-      []
-    );
-
     const updateDate = useCallback(
       (incomingDate: Date) => {
         // being use on a select with mouse
@@ -147,6 +111,35 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         updateDate(newDate);
       }
     }, [updateDate, dateTyped, value, initialDate]);
+
+    const nextMonth = useCallback(() => {
+      if (isGridAnimating.current) {
+        return;
+      }
+      setMonthOffset(monthOffset + 1);
+    }, [monthOffset]);
+
+    const prevMonth = useCallback(() => {
+      if (isGridAnimating.current) {
+        return;
+      }
+      setMonthOffset(monthOffset + -1);
+    }, [monthOffset]);
+
+    const onTextFieldFocus = useCallback(
+      (evt: React.FocusEvent<HTMLInputElement>) => {
+        setVisibility(true);
+        inputRef.current.focus();
+        inputRef.current.setSelectionRange(0, dateTyped.length);
+      },
+      [dateTyped]
+    );
+
+    const onTextFieldChange = useCallback(
+      (evt: React.ChangeEvent<HTMLInputElement>) =>
+        setDateTyped(evt.target.value),
+      []
+    );
 
     const onKeyDown = useCallback(
       (evt: React.KeyboardEvent<HTMLInputElement>) => {
