@@ -14,9 +14,7 @@ import { Button, Typography } from '@material-ui/core';
 import { useSpring, animated } from 'react-spring';
 
 /*
-   Calculation of calendar month data 
-   Selection of calendar day
-   Animating Skeleton and Calendar transitions
+   Calculation of calendar month data / Selection of calendar day
 */
 
 export interface CalendarMonthProps {
@@ -97,7 +95,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
   );
 
   return (
-    <CalendarContainer>
+    <Container>
       <CalendarHeader>
         <CalendarRow hasText>
           <Typography
@@ -109,10 +107,10 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
         </CalendarRow>
         {dayNamesJSX}
       </CalendarHeader>
-      <CalendarAnimatedContent>
+      <CalendarContents>
         {skeleton ? skeletonMonthJSX : monthJSX}
-      </CalendarAnimatedContent>
-    </CalendarContainer>
+      </CalendarContents>
+    </Container>
   );
 };
 
@@ -133,7 +131,7 @@ const renderSkeletonWeek = (week: any[]) => {
 const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 const BRAND_PRIMARY = 'rgb(74,175,227)';
 
-const CalendarContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
@@ -151,7 +149,7 @@ const CalendarHeader = styled.div`
   display: flex;
 `;
 
-const CalendarAnimatedContent = styled(animated.div)`
+const CalendarContents = styled.div`
   display: flex;
   flex: 1 1 0%;
   top: 75px; /* 2 Rows = 2 * 37.5 */
