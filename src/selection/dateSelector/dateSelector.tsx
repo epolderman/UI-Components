@@ -31,6 +31,8 @@ import {
     & and the communication between the two
 */
 
+const TEXT_FIELD_HEIGHT = 31;
+
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
   value: Date;
@@ -195,7 +197,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           onCalendarIconClick={onCalendarIconClick}
         />
         <DivToHideTopShowBottom
-          top={31}
+          top={TEXT_FIELD_HEIGHT}
           isSmall={isSmall}
           isVisible={isVisible}
         >
