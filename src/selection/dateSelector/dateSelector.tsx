@@ -1,10 +1,6 @@
 import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
-import {
-  DateRange,
-  KeyboardArrowLeft,
-  KeyboardArrowRight
-} from '@material-ui/icons';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import {
   addMonths,
   differenceInCalendarMonths,
@@ -13,11 +9,12 @@ import {
   parse
 } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { animated, config, useSpring } from 'react-spring';
+import { animated, useSpring } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../common/elevation';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
 import { CalendarMonth } from './calendarMonth';
 import { usePreviousDate } from './dateHooks';
+import { DateTextField } from './dateTextField';
 import {
   CALENDAR_DIMENSIONS,
   DEFAULT_DATE_FORMAT,
@@ -27,7 +24,6 @@ import {
   MAX_TIME_SPAN,
   MIDDLE_INDEX
 } from './dateUtils';
-import { DateTextField } from './dateTextField';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
@@ -41,21 +37,17 @@ export interface DateSelectorProps {
   dateFormat?: string;
 }
 
-export interface DateSelectorState {
-  monthOffset: number;
-}
-
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange, dateFormat, isSmall }) => {
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const [isVisible, setVisibility] = useState(false);
+    const [isActiveError, setError] = useState(false);
     const [dateTyped, setDateTyped] = useState(
       format(value, dateFormat || DEFAULT_DATE_FORMAT)
     );
     const inputRef = useRef<HTMLInputElement>(null);
     const initialDate = useRef<Date>(new Date());
     const prevDate = usePreviousDate(value);
-
     // animating grid, open close
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
@@ -69,8 +61,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         }
       }
     });
-
-    const [isActiveError, setError] = useState(false);
 
     useEffect(() => {
       // passed our protection functions, controller has been updated, new date coming in
@@ -218,11 +208,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         <DateTextField
           isSmall={isSmall}
           isActiveError={isActiveError}
-          onTextFieldChange={onTextFieldChange}
-          onTextFieldFocus={onTextFieldFocus}
+          onChange={onTextFieldChange}
+          onFocus={onTextFieldFocus}
           onKeyDown={onKeyDown}
           inputRef={inputRef}
-          dateTyped={dateTyped}
+          value={dateTyped}
           onCalendarIconClick={onCalendarIconClick}
         />
         <DivToHideTopShowBottom
@@ -298,9 +288,6 @@ const ControlsContainer = styled.div`
   }
 `;
 
-/* Bottom Margin needs additional margins because we need space to show shadow */
-/* Change in elevation, -> needs change in margin values for casting shadows */
-/* Provides cushion to see shadows. wrapper around CalendarMonth, and in a child of dateselectordiv */
 const ElevatedWrapper = styled.div`
   display: flex;
   flex-direction: column;

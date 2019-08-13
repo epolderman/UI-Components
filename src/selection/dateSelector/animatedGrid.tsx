@@ -15,7 +15,7 @@ export interface AnimatedGridProps {
   durationOfAnimation?: number;
 }
 
-export type CombinedProps = AnimatedGridProps & GridProps;
+type CombinedProps = AnimatedGridProps & GridProps;
 
 // default: milliseconds
 const DEFAULT_DURATION_ANIMATION = 600;

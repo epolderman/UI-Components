@@ -3,26 +3,29 @@ import { DateRange } from '@material-ui/icons';
 import React, { useEffect, MutableRefObject } from 'react';
 import { animated, config, useSpring } from 'react-spring';
 
+/* 
+    Error Animations, Date selection via text input
+*/
+
 export interface DateTextFieldProps {
   isSmall: boolean;
   isActiveError: boolean;
   onCalendarIconClick: () => void;
-  dateTyped: string;
   inputRef: MutableRefObject<HTMLInputElement>;
-  onKeyDown: (evt: React.KeyboardEvent<HTMLInputElement>) => void;
-  onTextFieldFocus: (evt: React.FocusEvent<HTMLInputElement>) => void;
-  onTextFieldChange: (evt: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const DateTextField: React.FC<DateTextFieldProps> = ({
+type CombinedProps = DateTextFieldProps &
+  React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  >;
+
+export const DateTextField: React.FC<CombinedProps> = ({
   isSmall,
   isActiveError,
   onCalendarIconClick,
-  dateTyped,
   inputRef,
-  onTextFieldFocus,
-  onTextFieldChange,
-  onKeyDown
+  ...textInputProps
 }) => {
   const [{ x }, set] = useSpring(() => ({
     x: 0
@@ -54,15 +57,7 @@ export const DateTextField: React.FC<DateTextFieldProps> = ({
         }}
         onClick={onCalendarIconClick}
       />
-      <Input
-        type='text'
-        ref={inputRef}
-        value={dateTyped}
-        onKeyDown={onKeyDown}
-        onFocus={onTextFieldFocus}
-        onChange={onTextFieldChange}
-        isSmall={isSmall}
-      />
+      <Input type='text' ref={inputRef} isSmall={isSmall} {...textInputProps} />
     </AnimatedTextFieldWrapper>
   );
 };

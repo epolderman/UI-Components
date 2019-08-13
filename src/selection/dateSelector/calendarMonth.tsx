@@ -1,17 +1,16 @@
-import React, { useCallback, useMemo } from 'react';
-import {
-  DateMatrix,
-  buildDateMatrix,
-  CALENDAR_DAY_FORMAT,
-  isSameDate,
-  DAYS,
-  MAX_NUMBER_WEEKS_SHOWN
-} from './dateUtils';
-import { format, isSameMonth } from 'date-fns';
-import { range, map } from 'lodash';
 import styled from '@emotion/styled';
 import { Button, Typography } from '@material-ui/core';
-import { useSpring, animated } from 'react-spring';
+import { format, isSameMonth } from 'date-fns';
+import { map, range } from 'lodash';
+import React, { useCallback, useMemo } from 'react';
+import {
+  buildDateMatrix,
+  CALENDAR_DAY_FORMAT,
+  DateMatrix,
+  DAYS,
+  isSameDate,
+  MAX_NUMBER_WEEKS_SHOWN
+} from './dateUtils';
 
 /*
    Calculation of calendar month data / Selection of calendar day
