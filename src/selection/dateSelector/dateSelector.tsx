@@ -184,16 +184,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           </div>
         );
       },
-      [updateDate, value]
+      [updateDate, value, initialDate]
     );
-
-    const onAnimationEnd = useCallback(() => {
-      isGridAnimating.current = false;
-    }, []);
-
-    const onAnimationStart = useCallback(() => {
-      isGridAnimating.current = true;
-    }, []);
 
     return (
       <DateSelectorContainer>
@@ -224,8 +216,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnCount={MAX_TIME_SPAN}
                 columnWidth={CALENDAR_DIMENSIONS}
                 style={{ overflow: 'hidden' }}
-                onAnimationStart={onAnimationStart}
-                onAnimationEnd={onAnimationEnd}
+                onAnimationStart={() => (isGridAnimating.current = true)}
+                onAnimationEnd={() => (isGridAnimating.current = false)}
               />
               <ControlsContainer>
                 <Button onClick={prevMonth}>
