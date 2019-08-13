@@ -153,13 +153,10 @@ export const buildDateMatrix = (incomingDate: Date): DateMatrix => {
   return activeMonth;
 };
 
-export const isSameDate = (currentDate: Date, selectedDate: Date) => {
-  return (
-    isSameDay(currentDate, selectedDate) &&
-    isSameMonth(currentDate, selectedDate) &&
-    isSameYear(currentDate, selectedDate)
-  );
-};
+export const isSameDate = (currentDate: Date, selectedDate: Date) =>
+  isSameDay(currentDate, selectedDate) &&
+  isSameMonth(currentDate, selectedDate) &&
+  isSameYear(currentDate, selectedDate);
 
 /* Protection Functions */
 export const hasDateReachedLimit = (initialDate: Date, newDate: Date) => {

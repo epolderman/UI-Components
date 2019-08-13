@@ -22,7 +22,8 @@ import {
   hasDateChanged,
   hasDateReachedLimit,
   MAX_TIME_SPAN,
-  MIDDLE_INDEX
+  MIDDLE_INDEX,
+  isSameDate
 } from './dateUtils';
 
 /* 
@@ -95,22 +96,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
-      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
-      const validDateChange =
-        hasDateChanged(value, newDate) &&
-        !hasDateReachedLimit(initialDate, newDate);
+      const isValidDateTyped =
+        isValid(newDate) && dateTyped !== '' && !isSameDate(newDate, value);
 
-      // bad date typed
-      if (!isValidDateTyped && validDateChange) {
+      if (!isValidDateTyped) {
         setError(true);
-        setVisibility(false);
-        // no date change
-      } else if (!validDateChange) {
         setVisibility(false);
       } else {
         updateDate(newDate);
       }
-    }, [updateDate, dateTyped, value, initialDate]);
+    }, [updateDate, dateTyped, value]);
 
     const nextMonth = useCallback(() => {
       if (isGridAnimating.current) {
