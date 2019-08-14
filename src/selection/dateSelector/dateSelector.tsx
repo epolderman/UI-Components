@@ -13,7 +13,7 @@ import { animated, useSpring } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../common/elevation';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
 import { CalendarMonth } from './calendarMonth';
-import { usePreviousDate } from './dateHooks';
+import { usePrevious } from '../../utils/hooks';
 import { DateTextField } from './dateTextField';
 import {
   CALENDAR_DIMENSIONS,
@@ -25,6 +25,7 @@ import {
   MIDDLE_INDEX,
   isSameDate
 } from './dateUtils';
+import { Flex } from '@rebass/grid/emotion';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
@@ -50,7 +51,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       format(value, dateFormat || DEFAULT_DATE_FORMAT)
     );
     const inputRef = useRef<HTMLInputElement>(null);
-    const prevDate = usePreviousDate(value);
+    const prevDate = usePrevious<Date>(value);
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
@@ -236,22 +237,18 @@ const calculateMonthOffset = (
 ): number =>
   differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
-const DateSelectorContainer = styled.div`
-  display: flex;
+const DateSelectorContainer = styled(Flex)`
   flex-direction: column;
   flex: 1 1 0%;
-  box-sizing: border-box;
   justify-content: stretch;
   align-items: stretch;
   position: relative;
 `;
 
-const ControlsContainer = styled.div`
-  display: flex;
+const ControlsContainer = styled(Flex)`
   justify-content: space-between;
   align-items: center;
   flex: 1 1 0%;
-  box-sizing: border-box;
   position: absolute;
   top: 0px;
   left: 2px;
@@ -266,8 +263,7 @@ const ControlsContainer = styled.div`
   }
 `;
 
-const ElevatedWrapper = styled.div`
-  display: flex;
+const ElevatedWrapper = styled(Flex)`
   flex-direction: column;
   flex: 0 0 auto;
   padding: 4px;
@@ -290,12 +286,11 @@ const AnimatedDivOpenClose = styled(animated.div)`
 `;
 
 /* Hides Top / Shows Bottom */
-const CalendarWrapper = styled.div<{
+const CalendarWrapper = styled(Flex)<{
   top: number;
   isSmall: boolean;
   isVisible: boolean;
 }>`
-  display: flex;
   width: 350px;
   height: 350px;
   margin-left: ${props => (props.isSmall ? '-125px' : '-25px')};

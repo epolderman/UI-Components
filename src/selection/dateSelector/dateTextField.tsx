@@ -5,6 +5,7 @@ import { animated, config, useSpring } from 'react-spring';
 
 /* 
     Error Animations, Date selection via text input
+    isSmall prop shrinks the Date Selector when the window resizes to a threshold
 */
 
 export interface DateTextFieldProps {
@@ -81,7 +82,7 @@ const Input = styled.input<{
   background-color: ${BACKGROUND_EMPTY};
 `;
 
-const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
+const AnimatedTextFieldWrapper = styled(animated.div)<{ isSmall: boolean }>`
   display: flex;
   flex: 1 1 0%;
   height: 100%;
@@ -97,5 +98,3 @@ const TextFieldWrapper = styled.div<{ isSmall: boolean }>`
     outline: none;
   }
 `;
-
-const AnimatedTextFieldWrapper = animated(TextFieldWrapper);
