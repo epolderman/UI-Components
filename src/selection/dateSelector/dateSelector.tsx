@@ -193,12 +193,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           value={dateTyped}
           onCalendarIconClick={onCalendarIconClick}
         />
-        <DivToHideTopShowBottom
+        <CalendarWrapper
           top={TEXT_FIELD_HEIGHT}
           isSmall={isSmall}
           isVisible={isVisible}
         >
-          <OpenCloseDivWrapper style={openCloseAnimation}>
+          <AnimatedDivOpenClose style={openCloseAnimation}>
             <ElevatedWrapper>
               <VirtualizedGrid
                 column={monthOffset}
@@ -222,8 +222,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 </Button>
               </ControlsContainer>
             </ElevatedWrapper>
-          </OpenCloseDivWrapper>
-        </DivToHideTopShowBottom>
+          </AnimatedDivOpenClose>
+        </CalendarWrapper>
       </DateSelectorContainer>
     );
   }
@@ -278,7 +278,7 @@ const ElevatedWrapper = styled.div`
   background-color: 'rgb(255,255,255)';
 `;
 
-const OpenCloseDivWrapper = styled(animated.div)`
+const AnimatedDivOpenClose = styled(animated.div)`
   display: flex;
   position: absolute;
   top: 0px;
@@ -289,7 +289,8 @@ const OpenCloseDivWrapper = styled(animated.div)`
   justify-content: center;
 `;
 
-const DivToHideTopShowBottom = styled.div<{
+/* Hides Top / Shows Bottom */
+const CalendarWrapper = styled.div<{
   top: number;
   isSmall: boolean;
   isVisible: boolean;
