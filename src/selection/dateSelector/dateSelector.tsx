@@ -130,6 +130,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [dateTyped]
     );
 
+    const onTextFieldBlur = useCallback(() => {
+      console.log('onBlur()');
+      dateParse();
+    }, [dateParse]);
+
     const onTextFieldChange = useCallback(
       (evt: React.ChangeEvent<HTMLInputElement>) =>
         setDateTyped(evt.target.value),
@@ -190,6 +195,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isActiveError={isActiveError}
           onChange={onTextFieldChange}
           onFocus={onTextFieldFocus}
+          onBlur={onTextFieldBlur}
           onKeyDown={onKeyDown}
           value={dateTyped}
           onCalendarIconClick={onCalendarIconClick}
@@ -215,10 +221,18 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 onAnimationEnd={() => (isGridAnimating.current = false)}
               />
               <ControlsContainer>
-                <Button onClick={() => toMonth('prev')}>
+                <Button
+                  onClick={() => toMonth('prev')}
+                  /* Event Chain OnMouseDown -> onFocus/onBlur -> OnMouseUp -> Click */
+                  /* Cancel the focus event with e.preventDefualt on mouse down on the button */
+                  onMouseDown={e => e.preventDefault()}
+                >
                   <KeyboardArrowLeft />
                 </Button>
-                <Button onClick={() => toMonth('next')}>
+                <Button
+                  onClick={() => toMonth('next')}
+                  onMouseDown={e => e.preventDefault()}
+                >
                   <KeyboardArrowRight />
                 </Button>
               </ControlsContainer>
