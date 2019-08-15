@@ -22,8 +22,7 @@ import {
   hasDateChanged,
   hasDateReachedLimit,
   MAX_TIME_SPAN,
-  MIDDLE_INDEX,
-  isSameDate
+  MIDDLE_INDEX
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
