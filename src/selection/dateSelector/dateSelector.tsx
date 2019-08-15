@@ -99,11 +99,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
-      const isValidDateTyped =
-        isValid(newDate) && dateTyped !== '' && !isSameDate(newDate, value);
+      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
+      const isDateDifferent = hasDateChanged(value, newDate);
 
-      if (!isValidDateTyped) {
+      if (!isValidDateTyped && isDateDifferent) {
         setError(true);
+        setVisibility(false);
+      } else if (!isDateDifferent) {
         setVisibility(false);
       } else {
         updateDate(newDate);
@@ -129,6 +131,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       },
       [dateTyped]
     );
+
+    const onTextFieldBlur = useCallback(() => dateParse(), [dateParse]);
 
     const onTextFieldChange = useCallback(
       (evt: React.ChangeEvent<HTMLInputElement>) =>
@@ -190,6 +194,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isActiveError={isActiveError}
           onChange={onTextFieldChange}
           onFocus={onTextFieldFocus}
+          onBlur={onTextFieldBlur}
           onKeyDown={onKeyDown}
           value={dateTyped}
           onCalendarIconClick={onCalendarIconClick}
@@ -215,10 +220,18 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 onAnimationEnd={() => (isGridAnimating.current = false)}
               />
               <ControlsContainer>
-                <Button onClick={() => toMonth('prev')}>
+                <Button
+                  onClick={() => toMonth('prev')}
+                  /* Event Chain OnMouseDown -> onFocus/onBlur -> OnMouseUp -> Click */
+                  /* Cancel the focus event with e.preventDefualt on mouse down on the button */
+                  onMouseDown={e => e.preventDefault()}
+                >
                   <KeyboardArrowLeft />
                 </Button>
-                <Button onClick={() => toMonth('next')}>
+                <Button
+                  onClick={() => toMonth('next')}
+                  onMouseDown={e => e.preventDefault()}
+                >
                   <KeyboardArrowRight />
                 </Button>
               </ControlsContainer>

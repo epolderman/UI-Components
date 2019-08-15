@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { DateRange } from '@material-ui/icons';
 import React, { useEffect, MutableRefObject } from 'react';
 import { animated, config, useSpring } from 'react-spring';
+import isPropValid from '@emotion/is-prop-valid';
 
 /* 
     Error Animations, Date selection via text input
@@ -51,6 +52,7 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
             color: isActiveError ? BRAND_RED : BRAND_PRIMARY
           }}
           onClick={onCalendarIconClick}
+          onMouseDown={e => e.preventDefault()}
         />
         <Input type='text' ref={ref} isSmall={isSmall} {...textInputProps} />
       </AnimatedTextFieldWrapper>
@@ -82,7 +84,9 @@ const Input = styled.input<{
   background-color: ${BACKGROUND_EMPTY};
 `;
 
-const AnimatedTextFieldWrapper = styled(animated.div)<{ isSmall: boolean }>`
+const AnimatedTextFieldWrapper = styled(animated.div, {
+  shouldForwardProp: isPropValid
+})<{ isSmall: boolean }>`
   display: flex;
   flex: 1 1 0%;
   height: 100%;
