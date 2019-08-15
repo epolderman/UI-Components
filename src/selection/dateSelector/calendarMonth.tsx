@@ -48,6 +48,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
           return (
             <Button
               onClick={dispatchSelect}
+              onMouseDown={e => e.preventDefault()}
               key={index}
               style={{ backgroundColor: BACKGROUND_EMPTY }}
             >
@@ -56,7 +57,11 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
           );
         } else {
           return (
-            <Button onClick={dispatchSelect} key={index}>
+            <Button
+              onClick={dispatchSelect}
+              key={index}
+              onMouseDown={e => e.preventDefault()}
+            >
               {format(date, CALENDAR_DAY_FORMAT)}
             </Button>
           );

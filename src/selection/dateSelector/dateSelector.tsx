@@ -99,11 +99,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
-      const isValidDateTyped =
-        isValid(newDate) && dateTyped !== '' && !isSameDate(newDate, value);
+      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
+      const isDateDifferent = hasDateChanged(value, newDate);
 
-      if (!isValidDateTyped) {
+      if (!isValidDateTyped && isDateDifferent) {
         setError(true);
+        setVisibility(false);
+      } else if (!isDateDifferent) {
         setVisibility(false);
       } else {
         updateDate(newDate);
@@ -130,10 +132,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [dateTyped]
     );
 
-    const onTextFieldBlur = useCallback(() => {
-      console.log('onBlur()');
-      dateParse();
-    }, [dateParse]);
+    const onTextFieldBlur = useCallback(() => dateParse(), [dateParse]);
 
     const onTextFieldChange = useCallback(
       (evt: React.ChangeEvent<HTMLInputElement>) =>

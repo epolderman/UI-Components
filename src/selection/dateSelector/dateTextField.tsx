@@ -52,6 +52,7 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
             color: isActiveError ? BRAND_RED : BRAND_PRIMARY
           }}
           onClick={onCalendarIconClick}
+          onMouseDown={e => e.preventDefault()}
         />
         <Input type='text' ref={ref} isSmall={isSmall} {...textInputProps} />
       </AnimatedTextFieldWrapper>
