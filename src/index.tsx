@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import { DateSelector, FoldView } from './selection';
+import { DateSelector } from './selection';
 import { theme } from '../src/theme/theme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 
