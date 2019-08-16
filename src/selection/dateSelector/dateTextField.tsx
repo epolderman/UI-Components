@@ -34,7 +34,7 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
     }, [isActiveError, set, x]);
 
     return (
-      <AnimatedTextFieldWrapper
+      <AnimatedWrapper
         isSmall={isSmall}
         style={{
           transform: x
@@ -55,7 +55,7 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
           onMouseDown={e => e.preventDefault()}
         />
         <Input type='text' ref={ref} isSmall={isSmall} {...textInputProps} />
-      </AnimatedTextFieldWrapper>
+      </AnimatedWrapper>
     );
   }
 );
@@ -71,7 +71,7 @@ const Input = styled.input<{
   flex: 1 1 0%;
   justify-content: center;
   align-items: center;
-  padding: ${props => (props.isSmall ? '4px' : '8px')};
+  padding: 8px;
   border-radius: 4px;
   border-width: 0px;
   border-style: none;
@@ -84,7 +84,7 @@ const Input = styled.input<{
   background-color: ${BACKGROUND_EMPTY};
 `;
 
-const AnimatedTextFieldWrapper = styled(animated.div, {
+const AnimatedWrapper = styled(animated.div, {
   shouldForwardProp: isPropValid
 })<{ isSmall: boolean }>`
   display: flex;

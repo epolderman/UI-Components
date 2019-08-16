@@ -49,7 +49,9 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePrevious<Date>(value);
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
-      transform: buildAnimationString(isVisible, isSmall),
+      transform: isVisible
+        ? `translateY(0) scale(1)`
+        : `translateY(-100%) scale(0)`,
       config: config.stiff,
       onRest: () => {
         // close animationEnd state change
@@ -75,10 +77,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value, monthOffset, prevDate, isVisible, initialDate]);
 
-    useEffect(
-      () => setDateTyped(formatDate(value, isSmall, dateFormat)),
-      [isSmall, dateFormat, value]
-    );
+    useEffect(() => setDateTyped(formatDate(value, isSmall, dateFormat)), [
+      isSmall,
+      dateFormat,
+      value
+    ]);
 
     const updateDate = useCallback(
       (incomingDate: Date) => {
@@ -245,7 +248,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   }
 );
 
-// todo: clean this up
+// todo: react spring doesnt like this,  clean this up
 const buildAnimationString = (isVisible: boolean, isSmall: boolean) => {
   let animationString = ``;
   if (isVisible && !isSmall) {
@@ -260,11 +263,7 @@ const buildAnimationString = (isVisible: boolean, isSmall: boolean) => {
   return animationString;
 };
 
-const formatDate = (
-  value: Date,
-  isSmall: boolean,
-  dateFormat?: string
-) => {
+const formatDate = (value: Date, isSmall: boolean, dateFormat?: string) => {
   return format(
     value,
     isSmall ? MONTH_DAY_YEAR_FORMAT : dateFormat || DEFAULT_DATE_FORMAT

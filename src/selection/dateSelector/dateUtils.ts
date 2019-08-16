@@ -20,7 +20,7 @@ import { findIndex, range, forEach } from 'lodash';
 
 const DAY_NAME_FORMAT: string = 'dddd';
 export const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
-export const MONTH_DAY_YEAR_FORMAT = 'MM/DD/YY';
+export const MONTH_DAY_YEAR_FORMAT = 'M/D/YY';
 
 export const MAX_NUMBER_WEEKS_SHOWN: number = 6;
 export const CALENDAR_DIMENSIONS: number = 300;
