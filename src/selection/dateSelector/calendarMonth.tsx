@@ -120,9 +120,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
 };
 
 const getSkeletonMonth = () => {
-  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() => {
-    return new Array(DAYS.length).fill(null);
-  });
+  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() =>
+    new Array(DAYS.length).fill(null)
+  );
 };
 
 const renderSkeletonWeek = (week: any[]) => {

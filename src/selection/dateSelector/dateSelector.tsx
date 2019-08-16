@@ -49,13 +49,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePrevious<Date>(value);
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
-      transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
+      transform: buildAnimationString(isVisible, isSmall),
       config: config.stiff,
       onRest: () => {
         // close animationEnd state change
         if (!isVisible) {
           inputRef.current.blur();
-          setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
+          setDateTyped(formatDate(value, isSmall, dateFormat));
           setError(false);
         }
       }
@@ -69,12 +69,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           monthOffset - MIDDLE_INDEX,
           value
         );
-        setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
         if (differenceInMonths !== 0) {
           setMonthOffset(m => m + differenceInMonths);
         }
       }
-    }, [value, monthOffset, prevDate, dateFormat, isVisible, initialDate]);
+    }, [value, monthOffset, prevDate, isVisible, initialDate]);
+
+    useEffect(
+      () => setDateTyped(formatDate(value, isSmall, dateFormat)),
+      [isSmall, dateFormat, value]
+    );
 
     const updateDate = useCallback(
       (incomingDate: Date) => {
@@ -240,6 +244,32 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
   }
 );
+
+// todo: clean this up
+const buildAnimationString = (isVisible: boolean, isSmall: boolean) => {
+  let animationString = ``;
+  if (isVisible && !isSmall) {
+    animationString = `translateY(0)`;
+  } else if (isVisible && isSmall) {
+    animationString = `translateY(0) scale(1)`;
+  } else if (!isVisible && !isSmall) {
+    animationString = `translateY(-100%)`;
+  } else {
+    animationString = `translateY(-100%) scale(0)`;
+  }
+  return animationString;
+};
+
+const formatDate = (
+  value: Date,
+  isSmall: boolean,
+  dateFormat?: string
+) => {
+  return format(
+    value,
+    isSmall ? MONTH_DAY_YEAR_FORMAT : dateFormat || DEFAULT_DATE_FORMAT
+  );
+};
 
 const DateSelectorContainer = styled(Flex)`
   flex-direction: column;

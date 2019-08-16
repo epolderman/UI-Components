@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { DateRange } from '@material-ui/icons';
-import React, { useEffect, MutableRefObject } from 'react';
+import React, { useEffect } from 'react';
 import { animated, config, useSpring } from 'react-spring';
 import isPropValid from '@emotion/is-prop-valid';
 
