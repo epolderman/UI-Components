@@ -76,9 +76,9 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (differenceInMonths !== 0) {
           setMonthOffset(m => m + differenceInMonths);
         }
-        if (isVisible) {
-          setVisibility(false);
-        }
+        // if (isVisible) {
+        //   setVisibility(false);
+        // }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible, initialDate]);
 
@@ -185,6 +185,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       [updateDate, value, initialDate]
     );
 
+    const onAnimationEnd = useCallback(() => {
+      isGridAnimating.current = false;
+      if (prevDate !== value) {
+        setVisibility(false);
+      }
+    }, [value, prevDate]);
+
     return (
       <DateSelectorContainer>
         <DateTextField
@@ -216,7 +223,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnWidth={CALENDAR_DIMENSIONS}
                 style={{ overflow: 'hidden' }}
                 onAnimationStart={() => (isGridAnimating.current = true)}
-                onAnimationEnd={() => (isGridAnimating.current = false)}
+                onAnimationEnd={onAnimationEnd}
               />
               <ControlsContainer>
                 <Button
