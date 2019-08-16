@@ -76,9 +76,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (differenceInMonths !== 0) {
           setMonthOffset(m => m + differenceInMonths);
         }
-        // if (isVisible) {
-        //   setVisibility(false);
-        // }
       }
     }, [value, monthOffset, prevDate, dateFormat, isVisible, initialDate]);
 
