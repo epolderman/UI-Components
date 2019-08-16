@@ -19,6 +19,9 @@ import { findIndex, range, forEach } from 'lodash';
 /* Utility Functions / Types for Date Components */
 
 const DAY_NAME_FORMAT: string = 'dddd';
+export const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
+export const MONTH_DAY_YEAR_FORMAT = 'MM/DD/YY';
+
 export const MAX_NUMBER_WEEKS_SHOWN: number = 6;
 export const CALENDAR_DIMENSIONS: number = 300;
 export const MAX_TIME_SPAN: number = 1000;
@@ -37,7 +40,6 @@ export const DAYS: string[] = [
 export const ENTER_KEY: number = 13;
 export const isValidDateObjectFromString = (date: string) =>
   isValid(parse(date));
-export const DEFAULT_DATE_FORMAT = 'dddd, MMMM D, YYYY';
 
 interface CalendarMonthData {
   endIndex: number;
@@ -152,6 +154,13 @@ export const buildDateMatrix = (incomingDate: Date): DateMatrix => {
   const activeMonth = fillMonthMatrix(prevMonth, currentMonth, nextMonth);
   return activeMonth;
 };
+
+export const calculateMonthOffset = (
+  date: Date,
+  monthOffset: number,
+  dateChange: Date
+): number =>
+  differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
 export const isSameDate = (currentDate: Date, selectedDate: Date) =>
   isSameDay(currentDate, selectedDate) &&

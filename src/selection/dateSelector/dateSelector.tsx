@@ -1,15 +1,9 @@
 import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
-import {
-  addMonths,
-  differenceInCalendarMonths,
-  format,
-  isValid,
-  parse
-} from 'date-fns';
+import { addMonths, format, isValid, parse } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { animated, useSpring } from 'react-spring';
+import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../common/elevation';
 import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
 import { CalendarMonth } from './calendarMonth';
@@ -18,11 +12,13 @@ import { DateTextField } from './dateTextField';
 import {
   CALENDAR_DIMENSIONS,
   DEFAULT_DATE_FORMAT,
+  MONTH_DAY_YEAR_FORMAT,
   ENTER_KEY,
   hasDateChanged,
   hasDateReachedLimit,
   MAX_TIME_SPAN,
-  MIDDLE_INDEX
+  MIDDLE_INDEX,
+  calculateMonthOffset
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
@@ -54,8 +50,9 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible ? `translateY(0px)` : `translateY(-100%)`,
+      config: config.stiff,
       onRest: () => {
-        // on close state change
+        // close animationEnd state change
         if (!isVisible) {
           inputRef.current.blur();
           setDateTyped(format(value, dateFormat || DEFAULT_DATE_FORMAT));
@@ -81,13 +78,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const updateDate = useCallback(
       (incomingDate: Date) => {
-        // being use on a select with mouse
         const validDateChange =
           hasDateChanged(value, incomingDate) &&
           !hasDateReachedLimit(initialDate, incomingDate);
 
         if (validDateChange) {
-          return onChange(incomingDate);
+          onChange(incomingDate);
+        } else {
+          setVisibility(false);
         }
       },
       [onChange, value, initialDate]
@@ -96,12 +94,9 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const dateParse = useCallback(() => {
       const newDate = parse(dateTyped);
       const isValidDateTyped = isValid(newDate) && dateTyped !== '';
-      const isDateDifferent = hasDateChanged(value, newDate);
 
-      if (!isValidDateTyped && isDateDifferent) {
+      if (!isValidDateTyped && hasDateChanged(value, newDate)) {
         setError(true);
-        setVisibility(false);
-      } else if (!isDateDifferent) {
         setVisibility(false);
       } else {
         updateDate(newDate);
@@ -121,11 +116,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const onTextFieldFocus = useCallback(
       (evt: React.FocusEvent<HTMLInputElement>) => {
-        setVisibility(true);
+        setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
         inputRef.current.focus();
-        inputRef.current.setSelectionRange(0, dateTyped.length);
+        setVisibility(true);
       },
-      [dateTyped]
+      [value]
     );
 
     const onTextFieldBlur = useCallback(() => dateParse(), [dateParse]);
@@ -245,13 +240,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
   }
 );
-
-const calculateMonthOffset = (
-  date: Date,
-  monthOffset: number,
-  dateChange: Date
-): number =>
-  differenceInCalendarMonths(dateChange, addMonths(date, monthOffset));
 
 const DateSelectorContainer = styled(Flex)`
   flex-direction: column;
