@@ -57,8 +57,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const isGridAnimating = useRef(false);
     const openCloseAnimation = useSpring({
       transform: isVisible
-        ? `translateY(0) scale(1)`
-        : `translateY(-100%) scale(0)`,
+        ? isSmall
+          ? `translateY(0) scale(1)`
+          : `translateY(0)`
+        : isSmall
+        ? `translateY(-100%) scale(0)`
+        : `translateY(-100%)`,
       config: config.stiff,
       onRest: () => {
         // close animationEnd state change
