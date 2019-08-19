@@ -41,7 +41,7 @@ export const DateExample: React.FC = () => {
   }, [checkWindowSize]);
 
   return (
-    <Flex flex='1 1 0%' justifyContent='center' alignItems='center' bg='red'>
+    <Flex flex='1 1 0%' justifyContent='center' alignItems='center' bg='black'>
       <DateWrapper isSmall={isPastDimensionThreshold}>
         <DateSelector
           value={currentDate}
