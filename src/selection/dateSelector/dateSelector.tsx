@@ -248,21 +248,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   }
 );
 
-// todo: react spring doesnt like this,  clean this up
-const buildAnimationString = (isVisible: boolean, isSmall: boolean) => {
-  let animationString = ``;
-  if (isVisible && !isSmall) {
-    animationString = `translateY(0)`;
-  } else if (isVisible && isSmall) {
-    animationString = `translateY(0) scale(1)`;
-  } else if (!isVisible && !isSmall) {
-    animationString = `translateY(-100%)`;
-  } else {
-    animationString = `translateY(-100%) scale(0)`;
-  }
-  return animationString;
-};
-
 const formatDate = (value: Date, isSmall: boolean, dateFormat?: string) => {
   return format(
     value,
