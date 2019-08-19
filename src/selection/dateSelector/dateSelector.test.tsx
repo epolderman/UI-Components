@@ -3,6 +3,14 @@ import { DateSelector } from './dateSelector';
 import styled from '@emotion/styled-base';
 import { Flex, Box } from '@rebass/grid/emotion';
 
+/* 
+
+  Date Selector Test File 
+  1. Shrinking to Small Vs Large Size
+  2. Un-mounting while animating
+
+*/
+
 const DIMENSION_THRESHOLD = 700;
 
 const DateWrapper = styled(Box)<{ isSmall: boolean }>`

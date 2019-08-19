@@ -27,7 +27,7 @@ import { Flex } from '@rebass/grid/emotion';
     & and the communication between the two
 
     todo: 
-    1. add protection & cleanup on animations for unmounting during so
+    1. add protection & cleanup on animations for unmounting during animations
     2. solidify logic around when we should animate vs not
     3. performance tuning
     4. style cleanup
