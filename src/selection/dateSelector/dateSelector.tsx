@@ -25,6 +25,13 @@ import { Flex } from '@rebass/grid/emotion';
 /* 
     Parent Component that controls the Date Selector + Date Text Field
     & and the communication between the two
+
+    todo: 
+    1. add protection & cleanup on animations for unmounting during so
+    2. solidify logic around when we should animate vs not
+    3. performance tuning
+    4. style cleanup
+    5. release
 */
 
 const TEXT_FIELD_HEIGHT = 31;
@@ -63,8 +70,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     });
 
+    // update date logic
     useEffect(() => {
-      // passed our protection functions, controller has been updated, new date coming in
       if (prevDate !== value) {
         const differenceInMonths = calculateMonthOffset(
           initialDate,
@@ -77,6 +84,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [value, monthOffset, prevDate, isVisible, initialDate]);
 
+    // shrinking size logic
     useEffect(() => setDateTyped(formatDate(value, isSmall, dateFormat)), [
       isSmall,
       dateFormat,
@@ -115,8 +123,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (isGridAnimating.current) {
           return;
         }
-        const monthValue = increment === 'next' ? 1 : -1;
-        setMonthOffset(monthOffset + monthValue);
+        setMonthOffset(monthOffset + increment === 'next' ? 1 : -1);
       },
       [monthOffset]
     );
@@ -223,6 +230,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 style={{ overflow: 'hidden' }}
                 onAnimationStart={() => (isGridAnimating.current = true)}
                 onAnimationEnd={onAnimationEnd}
+                durationOfAnimation={400}
               />
               <ControlsContainer>
                 <Button
