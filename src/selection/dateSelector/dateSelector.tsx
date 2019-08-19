@@ -123,7 +123,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (isGridAnimating.current) {
           return;
         }
-        setMonthOffset(monthOffset + increment === 'next' ? 1 : -1);
+        const monthAddition = increment === 'next' ? 1 : -1;
+        setMonthOffset(monthOffset + monthAddition);
       },
       [monthOffset]
     );
