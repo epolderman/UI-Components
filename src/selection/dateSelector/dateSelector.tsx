@@ -50,7 +50,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [isActiveError, setError] = useState(false);
     const [initialDate, setInitialDate] = useState(new Date());
     const [dateTyped, setDateTyped] = useState(
-      format(value, dateFormat || DEFAULT_DATE_FORMAT)
+      formatDate(value, isSmall, dateFormat)
     );
     const inputRef = useRef<HTMLInputElement>(null);
     const prevDate = usePrevious<Date>(value);
