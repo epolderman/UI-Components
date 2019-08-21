@@ -54,7 +54,7 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
           onClick={onCalendarIconClick}
           onMouseDown={e => e.preventDefault()}
         />
-        <Input type='text' ref={ref} isSmall={isSmall} {...textInputProps} />
+        <Input type='text' ref={ref} {...textInputProps} />
       </AnimatedWrapper>
     );
   }
@@ -64,9 +64,7 @@ const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 const BRAND_PRIMARY = 'rgb(74,175,227)';
 const BRAND_RED = 'rgb(231,54,49)';
 
-const Input = styled.input<{
-  isSmall: boolean;
-}>`
+const Input = styled.input`
   display: flex;
   flex: 1 1 0%;
   justify-content: center;
@@ -78,10 +76,10 @@ const Input = styled.input<{
   text-align: center;
   font-family: 'Open Sans', sans-serif, monospace;
   text-overflow: ellipsis;
-  /* input elements have min width auto by default so it refuses to shrink */
   min-width: 0;
   font-size: 14px;
   background-color: ${BACKGROUND_EMPTY};
+  outline: none;
 `;
 
 const AnimatedWrapper = styled(animated.div, {
@@ -97,8 +95,4 @@ const AnimatedWrapper = styled(animated.div, {
   z-index: 99;
   border-radius: 4px;
   background-color: ${BACKGROUND_EMPTY};
-
-  input {
-    outline: none;
-  }
 `;

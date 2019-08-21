@@ -236,6 +236,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
               />
               <ControlsContainer>
                 <Button
+                  disableRipple
                   onClick={() => toMonth('prev')}
                   /* Event Chain OnMouseDown -> onFocus/onBlur -> OnMouseUp -> Click */
                   /* Cancel the focus event with e.preventDefualt on mouse down on the button */
@@ -244,6 +245,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                   <KeyboardArrowLeft />
                 </Button>
                 <Button
+                  disableRipple
                   onClick={() => toMonth('next')}
                   onMouseDown={e => e.preventDefault()}
                 >
@@ -279,15 +281,18 @@ const ControlsContainer = styled(Flex)`
   flex: 1 1 0%;
   position: absolute;
   top: 0px;
-  left: 2px;
-  right: 2px;
+  left: 0px;
+  right: 0px;
 
-  /* overrides: Dimensions Match our Flex Rows Buttons in Calendar Month */
+  /* overrides: sync with title animation */
   button {
     width: 39px;
     height: 34px;
     padding: 0 0;
     min-width: 0;
+    &:hover {
+      background-color: transparent;
+    }
   }
 `;
 

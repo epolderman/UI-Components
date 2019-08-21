@@ -84,7 +84,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       () => (
         <CalendarRow>
           {map(DAYS, (day, index) => (
-            <DayNameBlocks key={index}>
+            <DayNameBlocks key={day}>
               <Typography style={{ fontSize: '14px' }} color='textPrimary'>
                 {day.slice(0, 3)}
               </Typography>
