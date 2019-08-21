@@ -55,6 +55,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const inputRef = useRef<HTMLInputElement>(null);
     const prevDate = usePrevious<Date>(value);
     const isGridAnimating = useRef(false);
+    // @todo: Refactor when spring hits v9 to take into account isSmall.
     const openCloseAnimation = useSpring({
       transform: isVisible
         ? `translateY(0) scale(1)`
