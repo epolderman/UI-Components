@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { Button, Typography } from '@material-ui/core';
-import { format, isSameMonth, isThisMonth } from 'date-fns';
+import { format, isSameMonth } from 'date-fns';
 import { map, range } from 'lodash';
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
@@ -12,7 +12,6 @@ import {
   MAX_NUMBER_WEEKS_SHOWN
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
-import { usePrevious } from '../../utils/hooks';
 
 /*
    Calculation of calendar month data / Selection of calendar day
@@ -23,21 +22,10 @@ export interface CalendarMonthProps {
   selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
   isLoading: boolean;
-  onLoadCallback?: () => void;
 }
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
-  ({ month, selectedDate, isLoading, onSelect, onLoadCallback }) => {
-    const prevLoadinState = usePrevious(isLoading);
-
-    useEffect(() => {
-      const shouldCloseFlagCallback =
-        prevLoadinState && !isLoading && isThisMonth(selectedDate);
-      if (shouldCloseFlagCallback) {
-        onLoadCallback();
-      }
-    }, [onLoadCallback, isLoading, prevLoadinState, selectedDate]);
-
+  ({ month, selectedDate, isLoading, onSelect }) => {
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {

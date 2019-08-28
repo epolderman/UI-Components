@@ -205,12 +205,11 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
               month={itemDate}
               selectedDate={value}
               isLoading={isScrolling}
-              onLoadCallback={onAnimationEnd}
             />
           </div>
         );
       },
-      [updateDate, value, initialDate, onAnimationEnd]
+      [updateDate, value, initialDate]
     );
 
     return (
