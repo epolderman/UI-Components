@@ -54,6 +54,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePrevious<Date>(value);
     const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
+    // flag to not close
     const isSelectingMonth = useRef(false);
     // @todo: Refactor when spring hits v9 to take into account isSmall.
     const openCloseAnimation = useSpring({
@@ -79,10 +80,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           monthOffset - MIDDLE_INDEX,
           value
         );
+        // need to animate
         if (differenceInMonths !== 0) {
           isSelectingMonth.current = false;
           setMonthOffset(m => m + differenceInMonths);
         } else {
+          // selected in our current month thats active
           setVisibility(false);
         }
       }
