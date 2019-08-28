@@ -85,7 +85,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           isSelectingMonth.current = false;
           setMonthOffset(m => m + differenceInMonths);
         } else {
-          // selected in our current month thats active
+          // no animation
           setVisibility(false);
         }
       }
@@ -174,7 +174,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const onAnimationEnd = useCallback(() => {
       isGridAnimating.current = false;
-      if (isSelectingMonth.current === false) {
+      if (!isSelectingMonth.current) {
         setVisibility(false);
       }
     }, [isSelectingMonth]);
