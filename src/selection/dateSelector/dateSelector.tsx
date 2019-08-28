@@ -18,7 +18,8 @@ import {
   hasDateReachedLimit,
   MAX_TIME_SPAN,
   MIDDLE_INDEX,
-  calculateMonthOffset
+  calculateMonthOffset,
+  isSameDate
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
@@ -48,12 +49,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
     const [isVisible, setVisibility] = useState(false);
     const [isActiveError, setError] = useState(false);
-    const [initialDate, setInitialDate] = useState(new Date());
     const [dateTyped, setDateTyped] = useState(
       formatDate(value, isSmall, dateFormat)
     );
     const inputRef = useRef<HTMLInputElement>(null);
     const prevDate = usePrevious<Date>(value);
+    const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
     // @todo: Refactor when spring hits v9 to take into account isSmall.
     const openCloseAnimation = useSpring({
@@ -75,11 +76,12 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     useEffect(() => {
       if (prevDate !== value) {
         const differenceInMonths = calculateMonthOffset(
-          initialDate,
+          initialDate.current,
           monthOffset - MIDDLE_INDEX,
           value
         );
         if (differenceInMonths !== 0) {
+          console.log('firing setMonthOffset');
           setMonthOffset(m => m + differenceInMonths);
         }
       }
@@ -96,7 +98,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       (incomingDate: Date) => {
         const validDateChange =
           hasDateChanged(value, incomingDate) &&
-          !hasDateReachedLimit(initialDate, incomingDate);
+          !hasDateReachedLimit(initialDate.current, incomingDate);
 
         if (validDateChange) {
           onChange(incomingDate);
@@ -178,7 +180,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         isScrolling: boolean;
       }) => {
         const itemOffset = columnIndex - MIDDLE_INDEX;
-        const itemDate = addMonths(initialDate, itemOffset);
+        const itemDate = addMonths(initialDate.current, itemOffset);
         return (
           <div style={{ ...style, display: 'flex' }} key={key}>
             <CalendarMonth
@@ -195,10 +197,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const onAnimationEnd = useCallback(() => {
       isGridAnimating.current = false;
-      if (prevDate !== value) {
+      const validClose = !isSameDate(value, prevDate) && isVisible;
+      if (validClose) {
         setVisibility(false);
       }
-    }, [value, prevDate]);
+    }, [value, prevDate, isVisible]);
+
+    const onAnimationStart = useCallback(
+      () => (isGridAnimating.current = true),
+      []
+    );
 
     return (
       <DateSelectorContainer>
@@ -230,9 +238,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnCount={MAX_TIME_SPAN}
                 columnWidth={CALENDAR_DIMENSIONS}
                 style={{ overflow: 'hidden' }}
-                onAnimationStart={() => (isGridAnimating.current = true)}
+                onAnimationStart={onAnimationStart}
                 onAnimationEnd={onAnimationEnd}
-                durationOfAnimation={400}
               />
               <ControlsContainer>
                 <Button

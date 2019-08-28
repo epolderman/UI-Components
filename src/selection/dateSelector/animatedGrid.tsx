@@ -68,6 +68,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       scrollLeftFinal.current = gridRef.current.getOffsetForCell({
         columnIndex: column
       }).scrollLeft;
+      setScrollLeft(scrollLeftFinal.current);
       isAnimating.current = true;
       animationStartTime.current = performance.now();
       requestRef.current = requestAnimationFrame(animateToOffset);
