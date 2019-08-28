@@ -18,19 +18,13 @@ import {
   hasDateReachedLimit,
   MAX_TIME_SPAN,
   MIDDLE_INDEX,
-  calculateMonthOffset,
-  isSameDate
+  calculateMonthOffset
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
     & and the communication between the two
-
-    todo: 
-    1. performance tuning - WIP
-    2. style cleanup
-    3. release
 */
 
 const TEXT_FIELD_HEIGHT = 31;
