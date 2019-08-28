@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { DateSelector } from './dateSelector';
 import styled from '@emotion/styled-base';
 import { Flex, Box } from '@rebass/grid/emotion';
+import { Button } from '@material-ui/core';
 
 /* 
 
@@ -22,6 +23,7 @@ const DateWrapper = styled(Box)<{ isSmall: boolean }>`
 
 export const DateExample: React.FC = () => {
   const [currentDate, setDate] = useState(new Date());
+  const [isRemoved, setIsRemoved] = useState(false);
   const onChange = useCallback(
     (incomingDate: Date) => setDate(incomingDate),
     []
@@ -41,14 +43,22 @@ export const DateExample: React.FC = () => {
   }, [checkWindowSize]);
 
   return (
-    <Flex flex='1 1 0%' justifyContent='center' alignItems='center' bg='black'>
-      <DateWrapper isSmall={isPastDimensionThreshold}>
-        <DateSelector
-          value={currentDate}
-          onChange={onChange}
-          isSmall={isPastDimensionThreshold}
-        />
-      </DateWrapper>
+    <Flex flex='1 1 0%' justifyContent='center' alignItems='center'>
+      <Button
+        variant='contained'
+        onClick={() => setIsRemoved(removed => !removed)}
+      >
+        {isRemoved ? 'Mount' : 'Unmount'}
+      </Button>
+      {isRemoved ? null : (
+        <DateWrapper isSmall={isPastDimensionThreshold}>
+          <DateSelector
+            value={currentDate}
+            onChange={onChange}
+            isSmall={isPastDimensionThreshold}
+          />
+        </DateWrapper>
+      )}
     </Flex>
   );
 };

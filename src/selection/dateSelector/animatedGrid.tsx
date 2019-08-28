@@ -34,45 +34,44 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
     const scrollLeftFinal = useRef(0);
     const isAnimating = useRef(false);
     const animationStartTime = useRef(0);
+    const requestRef = useRef(null);
     const animationDuration = useRef(
       durationOfAnimation || DEFAULT_DURATION_ANIMATION
     );
 
     const animateToOffset = useCallback(() => {
-      requestAnimationFrame(() => {
-        const now = performance.now();
-        const elapsedTime = now - animationStartTime.current;
-        const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
-        const easing = Easing.Cubic.InOut(
-          Math.min(1, elapsedTime / animationDuration.current)
-        );
-        const scrollLeft = scrollLeftStart.current + scrollDelta * easing;
-        setScrollLeft(scrollLeft);
+      const now = performance.now();
+      const elapsedTime = now - animationStartTime.current;
+      const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
+      const easing = Easing.Cubic.InOut(
+        Math.min(1, elapsedTime / animationDuration.current)
+      );
+      const scrollLeft = scrollLeftStart.current + scrollDelta * easing;
+      setScrollLeft(scrollLeft);
 
-        if (elapsedTime < animationDuration.current) {
-          animateToOffset();
-        } else {
-          animationStartTime.current = 0;
-          scrollLeftStart.current = scrollLeftFinal.current;
-          isAnimating.current = false;
-          if (onAnimationEnd) {
-            onAnimationEnd();
-          }
+      if (elapsedTime < animationDuration.current) {
+        requestRef.current = requestAnimationFrame(animateToOffset);
+      } else {
+        animationStartTime.current = 0;
+        scrollLeftStart.current = scrollLeftFinal.current;
+        isAnimating.current = false;
+        if (onAnimationEnd) {
+          onAnimationEnd();
         }
-      });
+      }
     }, [onAnimationEnd, animationDuration]);
 
     useEffect(() => {
       if (onAnimationStart) {
         onAnimationStart();
       }
-      animationStartTime.current = performance.now();
       scrollLeftFinal.current = gridRef.current.getOffsetForCell({
         columnIndex: column
       }).scrollLeft;
-      setScrollLeft(scrollLeftFinal.current);
       isAnimating.current = true;
-      animateToOffset();
+      animationStartTime.current = performance.now();
+      requestRef.current = requestAnimationFrame(animateToOffset);
+      return () => cancelAnimationFrame(requestRef.current);
     }, [column, animateToOffset, onAnimationStart]);
 
     return (
