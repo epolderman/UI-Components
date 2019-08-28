@@ -5,7 +5,7 @@ import { addMonths, format, isValid, parse } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../common/elevation';
-import { AnimatedGrid as VirtualizedGrid } from './animatedGrid';
+import { AnimatedGrid } from './animatedGrid';
 import { CalendarMonth } from './calendarMonth';
 import { usePrevious } from '../../utils/hooks';
 import { DateTextField } from './dateTextField';
@@ -28,11 +28,9 @@ import { Flex } from '@rebass/grid/emotion';
     & and the communication between the two
 
     todo: 
-    1. add protection & cleanup on animations for unmounting during animations - WIP
-    2. solidify logic around when we should animate vs not - WIP
-    3. performance tuning - WIP
-    4. style cleanup
-    5. release
+    1. performance tuning - WIP
+    2. style cleanup
+    3. release
 */
 
 const TEXT_FIELD_HEIGHT = 31;
@@ -56,6 +54,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePrevious<Date>(value);
     const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
+    const isSelectingMonth = useRef(false);
     // @todo: Refactor when spring hits v9 to take into account isSmall.
     const openCloseAnimation = useSpring({
       transform: isVisible
@@ -81,8 +80,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           value
         );
         if (differenceInMonths !== 0) {
-          console.log('firing setMonthOffset');
+          isSelectingMonth.current = false;
           setMonthOffset(m => m + differenceInMonths);
+        } else {
+          setVisibility(false);
         }
       }
     }, [value, monthOffset, prevDate, isVisible, initialDate]);
@@ -126,6 +127,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (isGridAnimating.current) {
           return;
         }
+        isSelectingMonth.current = true;
         const monthAddition = increment === 'next' ? 1 : -1;
         setMonthOffset(monthOffset + monthAddition);
       },
@@ -167,6 +169,18 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       }
     }, [isVisible]);
 
+    const onAnimationEnd = useCallback(() => {
+      isGridAnimating.current = false;
+      if (isSelectingMonth.current === false) {
+        setVisibility(false);
+      }
+    }, [isSelectingMonth]);
+
+    const onAnimationStart = useCallback(
+      () => (isGridAnimating.current = true),
+      []
+    );
+
     const cellRenderer = useCallback(
       ({
         key,
@@ -187,25 +201,13 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
               onSelect={updateDate}
               month={itemDate}
               selectedDate={value}
-              skeleton={isScrolling}
+              isLoading={isScrolling}
+              onLoadCallback={onAnimationEnd}
             />
           </div>
         );
       },
-      [updateDate, value, initialDate]
-    );
-
-    const onAnimationEnd = useCallback(() => {
-      isGridAnimating.current = false;
-      const validClose = !isSameDate(value, prevDate) && isVisible;
-      if (validClose) {
-        setVisibility(false);
-      }
-    }, [value, prevDate, isVisible]);
-
-    const onAnimationStart = useCallback(
-      () => (isGridAnimating.current = true),
-      []
+      [updateDate, value, initialDate, onAnimationEnd]
     );
 
     return (
@@ -228,7 +230,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         >
           <AnimatedDivOpenClose style={openCloseAnimation}>
             <ElevatedWrapper>
-              <VirtualizedGrid
+              <AnimatedGrid
                 column={monthOffset}
                 cellRenderer={cellRenderer}
                 height={CALENDAR_DIMENSIONS}

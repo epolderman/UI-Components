@@ -75,13 +75,6 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       return () => cancelAnimationFrame(requestRef.current);
     }, [column, animateToOffset, onAnimationStart]);
 
-    return (
-      <Grid
-        {...gridProps}
-        ref={gridRef}
-        scrollToColumn={undefined}
-        scrollLeft={scrollLeft}
-      />
-    );
+    return <Grid {...gridProps} ref={gridRef} scrollLeft={scrollLeft} />;
   }
 );
