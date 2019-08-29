@@ -41,6 +41,17 @@ export const ENTER_KEY: number = 13;
 export const isValidDateObjectFromString = (date: string) =>
   isValid(parse(date));
 
+export const formatDate = (
+  value: Date,
+  isSmall: boolean,
+  dateFormat?: string
+) => {
+  return format(
+    value,
+    isSmall ? MONTH_DAY_YEAR_FORMAT : dateFormat || DEFAULT_DATE_FORMAT
+  );
+};
+
 interface CalendarMonthData {
   endIndex: number;
   beginIndex: number;

@@ -11,14 +11,14 @@ import { usePrevious } from '../../utils/hooks';
 import { DateTextField } from './dateTextField';
 import {
   CALENDAR_DIMENSIONS,
-  DEFAULT_DATE_FORMAT,
   MONTH_DAY_YEAR_FORMAT,
   ENTER_KEY,
   hasDateChanged,
   hasDateReachedLimit,
   MAX_TIME_SPAN,
   MIDDLE_INDEX,
-  calculateMonthOffset
+  calculateMonthOffset,
+  formatDate
 } from './dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
@@ -272,13 +272,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
   }
 );
-
-const formatDate = (value: Date, isSmall: boolean, dateFormat?: string) => {
-  return format(
-    value,
-    isSmall ? MONTH_DAY_YEAR_FORMAT : dateFormat || DEFAULT_DATE_FORMAT
-  );
-};
 
 const DateSelectorContainer = styled(Flex)`
   flex-direction: column;
