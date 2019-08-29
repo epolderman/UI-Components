@@ -48,8 +48,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const prevDate = usePrevious<Date>(value);
     const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
-    // flag to not close
-    const isSelectingMonth = useRef(false);
+    const noCloseFlag = useRef(false);
     // @todo: Refactor when spring hits v9 to take into account isSmall.
     const openCloseAnimation = useSpring({
       transform: isVisible
@@ -62,6 +61,15 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           inputRef.current.blur();
           setDateTyped(formatDate(value, isSmall, dateFormat));
           setError(false);
+          // transition back to the currently selected date month after close
+          const differenceInMonths = calculateMonthOffset(
+            initialDate.current,
+            monthOffset - MIDDLE_INDEX,
+            value
+          );
+          if (differenceInMonths !== 0) {
+            setMonthOffset(monthOffset => monthOffset + differenceInMonths);
+          }
         }
       }
     });
@@ -76,8 +84,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         );
         // need to animate
         if (differenceInMonths !== 0) {
-          isSelectingMonth.current = false;
-          setMonthOffset(m => m + differenceInMonths);
+          noCloseFlag.current = false;
+          setMonthOffset(monthOffset => monthOffset + differenceInMonths);
         } else {
           // no animation
           setVisibility(false);
@@ -124,7 +132,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (isGridAnimating.current) {
           return;
         }
-        isSelectingMonth.current = true;
+        noCloseFlag.current = true;
         const monthAddition = increment === 'next' ? 1 : -1;
         setMonthOffset(monthOffset + monthAddition);
       },
@@ -168,10 +176,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     const onAnimationEnd = useCallback(() => {
       isGridAnimating.current = false;
-      if (!isSelectingMonth.current) {
+      if (!noCloseFlag.current) {
         setVisibility(false);
       }
-    }, [isSelectingMonth]);
+    }, [noCloseFlag]);
 
     const onAnimationStart = useCallback(
       () => (isGridAnimating.current = true),
