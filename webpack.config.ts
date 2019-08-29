@@ -64,7 +64,7 @@ const webpackConfigs: webpack.Configuration[] = [
     },
     output: {
       path: path.resolve(__dirname, 'lib'),
-      filename: '[name].js',
+      filename: 'webComponents.js',
       library: 'WebComponents',
       libraryTarget: 'umd',
       umdNamedDefine: true
