@@ -49,7 +49,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
     const noCloseFlag = useRef(false);
-    // @todo: Refactor when spring hits v9 to take into account isSmall.
+    // @todo: Refactor when spring hits v9 to take
+    // into account isSmall + different animation.
     const openCloseAnimation = useSpring({
       transform: isVisible
         ? `translateY(0) scale(1)`
@@ -62,6 +63,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           setDateTyped(formatDate(value, isSmall, dateFormat));
           setError(false);
           // transition back to the currently selected date month after close
+          // if we navigated away during open state
           const differenceInMonths = calculateMonthOffset(
             initialDate.current,
             monthOffset - MIDDLE_INDEX,
