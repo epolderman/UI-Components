@@ -5,21 +5,12 @@ import { Flex, Box } from '@rebass/grid/emotion';
 import { Button } from '@material-ui/core';
 
 /* 
-
   Date Selector Test File 
   1. Shrinking to Small Vs Large Size
   2. Un-mounting while animating
-
 */
 
 const DIMENSION_THRESHOLD = 700;
-
-const DateWrapper = styled(Box)<{ isSmall: boolean }>`
-  width: ${({ isSmall }) => (isSmall ? `100px` : `300px`)};
-  justify-content: stretch;
-  align-items: stretch;
-  padding: 0 2px;
-`;
 
 export const DateExample: React.FC = () => {
   const [currentDate, setDate] = useState(new Date());
@@ -62,3 +53,10 @@ export const DateExample: React.FC = () => {
     </Flex>
   );
 };
+
+const DateWrapper = styled(Box)<{ isSmall: boolean }>`
+  width: ${({ isSmall }) => (isSmall ? `100px` : `300px`)};
+  justify-content: stretch;
+  align-items: stretch;
+  padding: 0 2px;
+`;
