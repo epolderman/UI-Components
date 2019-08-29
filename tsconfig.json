@@ -5,6 +5,7 @@
     "sourceMap": true,
     "strict": true,
     "noImplicitAny": true,
+    "strictNullChecks": false,
     "declaration": true,
     "module": "commonjs",
     "target": "es5",

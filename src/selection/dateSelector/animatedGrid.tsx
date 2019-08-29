@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Grid } from 'react-virtualized';
 import { GridProps } from 'react-virtualized/dist/es/Grid';
-import Easing from 'easing-functions';
+import { EasingFunctions } from '../../utils/easing';
 
 /* 
    Handles virtualization via windowing
@@ -42,7 +42,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       const now = performance.now();
       const elapsedTime = now - animationStartTime.current;
       const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
-      const easing = Easing.Cubic.InOut(
+      const easing = EasingFunctions.easeInOutCubic(
         Math.min(1, elapsedTime / animationDuration.current)
       );
       const scrollLeft = scrollLeftStart.current + scrollDelta * easing;

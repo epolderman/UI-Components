@@ -64,7 +64,7 @@ const webpackConfigs: webpack.Configuration[] = [
     },
     output: {
       path: path.resolve(__dirname, 'lib'),
-      filename: 'webComponents.js',
+      filename: '[name].js',
       library: 'WebComponents',
       libraryTarget: 'umd',
       umdNamedDefine: true
@@ -81,6 +81,15 @@ const webpackConfigs: webpack.Configuration[] = [
         commonjs2: './react-dom',
         commonjs: ['./react-dom'],
         amd: 'react-dom'
+      },
+      'material-ui/core': {
+        commonjs: 'material-ui',
+        commonjs2: 'material-ui'
+      }
+    },
+    optimization: {
+      splitChunks: {
+        chunks: 'all'
       }
     }
   }

@@ -13,6 +13,8 @@ export interface DateTextFieldProps {
   isSmall: boolean;
   isActiveError: boolean;
   onCalendarIconClick: () => void;
+  /* Typings get fucked without this prop, investigate */
+  ref?: React.RefObject<HTMLInputElement>;
 }
 
 type CombinedProps = DateTextFieldProps &
