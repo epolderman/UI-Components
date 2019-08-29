@@ -30,3 +30,27 @@
     "lib"
   ]
 }
+
+/*
+exporting library key values:
+
+  "module": "commonjs"
+  We tell the compiler that by default we want our module declaration to be in commonjs syntax. This will compile every import and export into require() and module.exports declarations, the default syntax in a Node environment.
+
+  "target": "es5"
+  The target source will be in ES5 since, as we previously explained, we need to provide code that can be run without further compilation/transformation.
+
+  "lib": [ "es2015", "dom" ]
+  The lib is a special declaration file included by TS. It contains ambient declarations for common JS constructs that are present in runtimes and the DOM.
+
+  Based on the target, TS automatically includes typings for the dom and the ES5 syntax. That’s why we need to specify ourselves we want typings for es2015 and the dom.
+
+  This way we have all the es6 typings while targeting es5.
+
+  "outDir": "lib"
+  The compiled source is going to be saved into the lib folder as previously mentioned.
+
+  "sourceMap": true & "declaration": true
+  We want both the source maps and the declaration files from our source code.
+
+*/

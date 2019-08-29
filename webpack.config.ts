@@ -71,8 +71,7 @@ const webpackConfigs: webpack.Configuration[] = [
     },
     externals: {
       react: 'React',
-      'react-dom': 'ReactDOM',
-      'styled-components': 'styled'
+      'react-dom': 'ReactDOM'
     }
   }
 ];
