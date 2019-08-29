@@ -34,7 +34,7 @@ export const DateExample: React.FC = () => {
   }, [checkWindowSize]);
 
   return (
-    <Flex flex='1 1 0%' justifyContent='center' alignItems='center'>
+    <Flex flex='1 1 0%' justifyContent='space-evenly' alignItems='center'>
       <Button
         variant='contained'
         onClick={() => setIsRemoved(removed => !removed)}

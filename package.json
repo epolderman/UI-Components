@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf node_modules/ lib/ dist/",
     "prestart": "webpack -p",
-    "build:lib": "webpack --config-name library && tsc",
+    "build": "webpack --config-name library && tsc",
     "start:dev": "webpack-dev-server --mode development"
   },
   "author": "erik polderman",
