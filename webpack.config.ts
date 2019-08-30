@@ -13,11 +13,6 @@ const webpackConfigs: webpack.Configuration[] = [
         {
           test: /\.tsx?$/,
           loader: 'babel-loader'
-        },
-        {
-          test: /\.js$/,
-          use: ['source-map-loader'],
-          enforce: 'pre'
         }
       ]
     },
@@ -45,17 +40,12 @@ const webpackConfigs: webpack.Configuration[] = [
   {
     name: 'library',
     mode: 'production',
-    entry: './src/index.tsx',
+    entry: './src/index.ts',
     module: {
       rules: [
         {
           test: /\.tsx?$/,
           loader: 'babel-loader'
-        },
-        {
-          test: /\.js$/,
-          use: ['source-map-loader'],
-          enforce: 'pre'
         }
       ]
     },
@@ -64,8 +54,7 @@ const webpackConfigs: webpack.Configuration[] = [
     },
     output: {
       path: path.resolve(__dirname, 'lib'),
-      filename: 'webComponents.js',
-      library: 'WebComponents',
+      filename: 'index.js',
       libraryTarget: 'umd',
       umdNamedDefine: true
     },
@@ -85,8 +74,15 @@ const webpackConfigs: webpack.Configuration[] = [
       'material-ui/core': {
         commonjs: 'material-ui',
         commonjs2: 'material-ui'
+      },
+      lodash: {
+        root: 'lodash',
+        commonjs: ['lodash'],
+        commonjs2: 'lodash',
+        amd: 'lodash'
       }
     },
+    devtool: 'source-map',
     optimization: {
       splitChunks: {
         chunks: 'all'
