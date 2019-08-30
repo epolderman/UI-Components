@@ -2,7 +2,12 @@ import webpack from 'webpack';
 import htmlwebpackplugin from 'html-webpack-plugin';
 import path from 'path';
 const htmlWebPackRootPlugin = require('html-webpack-root-plugin');
-
+const resolveLoader = {
+  modules: ['node_modules', path.resolve(__dirname, 'loaders')]
+};
+const resolve = {
+  extensions: ['.tsx', '.ts', '.js']
+};
 const webpackConfigs: webpack.Configuration[] = [
   {
     name: 'development',
@@ -16,9 +21,8 @@ const webpackConfigs: webpack.Configuration[] = [
         }
       ]
     },
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js']
-    },
+    resolveLoader,
+    resolve,
     output: {
       path: path.resolve(__dirname, './dist'),
       publicPath: '/',
@@ -49,15 +53,14 @@ const webpackConfigs: webpack.Configuration[] = [
         }
       ]
     },
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js']
-    },
+    resolve,
     output: {
       path: path.resolve(__dirname, 'lib'),
       filename: 'index.js',
       libraryTarget: 'umd',
       umdNamedDefine: true
     },
+    resolveLoader,
     externals: {
       react: {
         root: 'React',
@@ -74,6 +77,10 @@ const webpackConfigs: webpack.Configuration[] = [
       'material-ui/core': {
         commonjs: 'material-ui',
         commonjs2: 'material-ui'
+      },
+      'material-ui/icons': {
+        commonjs: 'material-ui/icons',
+        commonjs2: 'material-ui/icons'
       },
       lodash: {
         root: 'lodash',
