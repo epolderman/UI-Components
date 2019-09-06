@@ -89,12 +89,7 @@ const webpackConfigs: webpack.Configuration[] = [
         amd: 'lodash'
       }
     },
-    devtool: 'source-map',
-    optimization: {
-      splitChunks: {
-        chunks: 'all'
-      }
-    }
+    devtool: 'source-map'
   }
 ];
 
