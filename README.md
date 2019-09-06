@@ -11,3 +11,14 @@
 #### Components
 
 - Date Selector: Supports +41 / -41 years in the future/past. Animations in the calendar via Windowing. React Spring for open close / error animations. Supports text field & mouse date selection.
+
+- Fold View: WIP
+
+#### Development
+
+- Run `npm i`
+- Then run `npm run dev`
+
+#### Library
+
+- Run `npm run build`
