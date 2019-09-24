@@ -1,17 +1,25 @@
-import styled from '@emotion/styled';
 import { Button, Typography } from '@material-ui/core';
 import { format, isSameMonth } from 'date-fns';
-import { map, range } from 'lodash';
+import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
   DAYS,
-  isSameDate,
-  MAX_NUMBER_WEEKS_SHOWN
-} from './dateUtils';
-import { Flex } from '@rebass/grid/emotion';
+  isSameDate
+} from '../dateUtils';
+import {
+  BACKGROUND_EMPTY,
+  BRAND_PRIMARY,
+  CalendarContents,
+  CalendarHeader,
+  CalendarRow,
+  Container,
+  DayNameBlocks,
+  getSkeletonMonth,
+  renderSkeletonWeek
+} from './monthUtils';
 
 /*
    Calculation of calendar month data / Selection of calendar day
@@ -100,7 +108,10 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
         <CalendarHeader>
           <CalendarRow hasText>
             <Typography
-              style={{ fontSize: '16px', marginTop: '-10px' }}
+              style={{
+                fontSize: '16px',
+                marginTop: '-10px'
+              }}
               color='textPrimary'
             >
               {format(month, 'MMM YYYY')}
@@ -115,74 +126,3 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     );
   }
 );
-
-const getSkeletonMonth = () => {
-  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() =>
-    new Array(DAYS.length).fill(null)
-  );
-};
-
-const renderSkeletonWeek = (week: any[]) => {
-  return map(week, (_, index) => (
-    <Button style={{ backgroundColor: BACKGROUND_EMPTY }} key={index}>
-      <Typography color='primary'>{null}</Typography>
-    </Button>
-  ));
-};
-
-const BACKGROUND_EMPTY = 'rgb(238,238,238)';
-const BRAND_PRIMARY = 'rgb(74,175,227)';
-
-const Container = styled(Flex)`
-  flex: 1 1 0%;
-  flex-direction: column;
-  justify-content: stretch;
-  align-content: stretch;
-  position: relative;
-`;
-
-/* Contains Month Name Row + Day Names Row */
-const CalendarHeader = styled(Flex)`
-  max-height: 75px; /* 2 Rows = 2 * 37.5 */
-  flex-direction: column;
-  flex: 1 1 0%;
-`;
-
-const CalendarContents = styled(Flex)`
-  flex: 1 1 0%;
-  top: 75px; /* 2 Rows = 2 * 37.5 */
-  flex-direction: column;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  position: absolute;
-`;
-
-const CalendarRow = styled(Flex)<{ hasText?: boolean }>`
-  flex: 1 1 0%;
-  flex-direction: row;
-  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
-  align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
-  padding: 2px 0;
-
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1 1 0%;
-    min-width: 0;
-    padding: 0 0;
-    margin: 0 2px;
-    border-radius: 2.5px;
-  }
-`;
-
-const DayNameBlocks = styled(Flex)`
-  justify-content: center;
-  align-items: center;
-  flex: 1 1 0%;
-  min-width: 0;
-  padding: 0 0;
-  margin: 0 2px;
-  border-radius: 2.5px;
-`;

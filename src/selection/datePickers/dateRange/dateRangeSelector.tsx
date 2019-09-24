@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { AnimatedGrid } from '../dateSelector/animatedGrid';
+import { AnimatedGrid } from '../animatedGrid';
 import { Flex } from '@rebass/grid/emotion';
 import { Typography, Button } from '@material-ui/core';
 import {
@@ -7,12 +7,12 @@ import {
   CALENDAR_DIMENSIONS_RANGE,
   CALENDAR_DIMENSIONS,
   MAX_TIME_SPAN
-} from '../dateSelector/dateUtils';
-import { usePrevious } from '../../utils/hooks';
+} from '../dateUtils';
+import { usePrevious } from '../../../utils/hooks';
 import { addMonths, format } from 'date-fns';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import styled from '@emotion/styled';
-import { CalendarMonth } from '../dateSelector/calendarMonth';
+import { CalendarMonthRange } from '../calendar/calendarMonthRange';
 
 /* 
   Date Range Selector Todo
@@ -22,7 +22,7 @@ import { CalendarMonth } from '../dateSelector/calendarMonth';
 export interface DateRangeSelector {
   onChange: (incomingDate: Date) => void;
   startDate: Date;
-  endDate?: Date;
+  endDate: Date;
 }
 
 export const DateRangeSelector: React.FC<DateRangeSelector> = ({
@@ -63,13 +63,13 @@ export const DateRangeSelector: React.FC<DateRangeSelector> = ({
       const itemNextDate = addMonths(initialDate.current, itemOffset + 1);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
-          <CalendarMonth
+          <CalendarMonthRange
             month={itemDate}
             isLoading={isScrolling}
             selectedDate={startDate}
             onSelect={onChange}
           />
-          <CalendarMonth
+          <CalendarMonthRange
             month={itemNextDate}
             isLoading={isScrolling}
             selectedDate={endDate}
@@ -138,7 +138,6 @@ const ControlsContainer = styled(Flex)`
   left: 0px;
   right: 0px;
 
-  /* overrides: sync with title animation */
   button {
     width: 39px;
     height: 34px;

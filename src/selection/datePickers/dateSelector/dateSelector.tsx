@@ -4,10 +4,10 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { addMonths, format, isValid, parse } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { animated, useSpring, config } from 'react-spring';
-import { ELEVATIONS, makeShadow } from '../../common/elevation';
-import { AnimatedGrid } from './animatedGrid';
-import { CalendarMonth } from './calendarMonth';
-import { usePrevious } from '../../utils/hooks';
+import { ELEVATIONS, makeShadow } from '../../../common/elevation';
+import { AnimatedGrid } from '../animatedGrid';
+import { CalendarMonth } from '../calendar/calendarMonth';
+import { usePrevious } from '../../../utils/hooks';
 import { DateTextField } from './dateTextField';
 import {
   CALENDAR_DIMENSIONS,
@@ -19,7 +19,7 @@ import {
   MIDDLE_INDEX,
   calculateMonthOffset,
   formatDate
-} from './dateUtils';
+} from '../dateUtils';
 import { Flex } from '@rebass/grid/emotion';
 
 /* 

@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { theme } from '../src/theme/theme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { Flex, Box } from '@rebass/grid/emotion';
-import { DateExample } from './selection/dateSelector/dateSelector.example';
+import { DateExample } from './selection/datePickers/dateSelector/dateSelector.example';
 import { FoldViewExample } from './layout/foldView/foldView.example';
-import { DateRangeExample } from './selection/dateRange/dateRange.example';
+import { DateRangeExample } from './selection/datePickers/dateRange/dateRange.example';
 
 const App: React.FC = () => (
   <MuiThemeProvider theme={theme}>
