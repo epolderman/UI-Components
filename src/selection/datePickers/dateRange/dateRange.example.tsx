@@ -1,5 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { DateRangeSelector } from './dateRangeSelector';
+import { addMonths } from 'date-fns';
+
+const endDate = addMonths(new Date(), 1);
 
 export const DateRangeExample: React.FC = () => {
   const [currentDate, setDate] = useState(new Date());
@@ -11,7 +14,7 @@ export const DateRangeExample: React.FC = () => {
   return (
     <DateRangeSelector
       startDate={currentDate}
-      endDate={currentDate}
+      endDate={endDate}
       onChange={onChange}
     />
   );

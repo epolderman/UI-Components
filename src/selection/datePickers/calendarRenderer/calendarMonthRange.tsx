@@ -1,5 +1,5 @@
 import { Button, Typography, withStyles } from '@material-ui/core';
-import { format, isSameMonth } from 'date-fns';
+import { format, isSameMonth, isWithinRange } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -29,15 +29,17 @@ export interface CalendarMonthRangeProps {
   month: Date;
   selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
-  ({ month, selectedDate, onSelect }) => {
+  ({ month, selectedDate, onSelect, startDate, endDate }) => {
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
           const dispatchSelect = () => onSelect(date);
-          if (isSameDate(date, selectedDate)) {
+          if (isWithinRange(date, startDate, endDate)) {
             return (
               <Button
                 variant='contained'
@@ -68,7 +70,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           }
         }),
-      [onSelect, selectedDate, month]
+      [onSelect, month, startDate, endDate]
     );
 
     const monthJSX = useMemo(() => {
