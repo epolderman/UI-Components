@@ -10,9 +10,9 @@
 
 #### Components
 
-- Date Selector: Supports +41 / -41 years in the future/past. Animations in the calendar via Windowing. React Spring for open close / error animations. Supports text field & mouse date selection.
+- Date Selector: Supports +41 / -41 years in the future/past. Animations in the calendar via virtualization. React Spring for open close / error animations. Supports text field & mouse date selection.
 
-- Date Range Selector: Supports +41 / -41 years in the future/past. Animations in the calendar via Windowing. Supports selection via ranges (WIP)
+- Date Range Selector: Supports +41 / -41 years in the future/past. Animations in the calendar via virtualization. Supports selection via ranges (WIP)
 
 - Fold View: WIP
 
