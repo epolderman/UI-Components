@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { AnimatedGrid } from '../animatedGrid';
 import { Flex } from '@rebass/grid/emotion';
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button, Divider } from '@material-ui/core';
 import {
   MIDDLE_INDEX,
   CALENDAR_DIMENSIONS_RANGE,
@@ -50,13 +50,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     ({
       key,
       style,
-      columnIndex,
-      isScrolling
+      columnIndex
     }: {
       key: string;
       style: React.CSSProperties;
       columnIndex: number;
-      isScrolling: boolean;
     }) => {
       const itemOffset = columnIndex - MIDDLE_INDEX;
       const itemDate = addMonths(initialDate.current, itemOffset);
@@ -65,13 +63,12 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonthRange
             month={itemDate}
-            // isLoading={isScrolling}
             selectedDate={startDate}
             onSelect={onChange}
           />
+          <Divider orientation='vertical' />
           <CalendarMonthRange
             month={itemNextDate}
-            // isLoading={isScrolling}
             selectedDate={endDate}
             onSelect={onChange}
           />

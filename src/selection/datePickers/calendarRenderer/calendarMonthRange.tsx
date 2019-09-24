@@ -1,4 +1,4 @@
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography, withStyles } from '@material-ui/core';
 import { format, isSameMonth } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -20,6 +20,7 @@ import {
   getSkeletonMonth,
   renderSkeletonWeek
 } from './monthUtils';
+import styled from '@emotion/styled';
 /*
    Calculation of calendar month data / Selection of calendar day
 */
@@ -28,11 +29,10 @@ export interface CalendarMonthRangeProps {
   month: Date;
   selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
-  isLoading?: boolean;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
-  ({ month, selectedDate, isLoading, onSelect }) => {
+  ({ month, selectedDate, onSelect }) => {
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
@@ -49,14 +49,12 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           } else if (!isSameMonth(month, date)) {
             return (
-              <Button
-                onClick={dispatchSelect}
+              <TransparentButton
                 onMouseDown={e => e.preventDefault()}
                 key={index}
-                style={{ backgroundColor: BACKGROUND_EMPTY }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
+              </TransparentButton>
             );
           } else {
             return (
@@ -118,10 +116,20 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           </CalendarRow>
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarContents>
-          {isLoading ? skeletonMonthJSX : monthJSX}
-        </CalendarContents>
+        <CalendarContents>{monthJSX}</CalendarContents>
       </Container>
     );
   }
 );
+
+// @todo: Find a better solution than this.
+const TransparentButton = withStyles({
+  root: {
+    backgroundColor: 'transparent',
+    color: 'transparent',
+    cursor: 'default',
+    '&:hover': {
+      backgroundColor: 'transparent'
+    }
+  }
+})(Button);
