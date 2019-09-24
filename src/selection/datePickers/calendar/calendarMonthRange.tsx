@@ -28,7 +28,7 @@ export interface CalendarMonthRangeProps {
   month: Date;
   selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(

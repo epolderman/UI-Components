@@ -19,13 +19,13 @@ import { CalendarMonthRange } from '../calendar/calendarMonthRange';
   1. Model Interface & Interaction / What can we re-use?
 */
 
-export interface DateRangeSelector {
+export interface DateRangeSelectorProps {
   onChange: (incomingDate: Date) => void;
   startDate: Date;
   endDate: Date;
 }
 
-export const DateRangeSelector: React.FC<DateRangeSelector> = ({
+export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   startDate,
   endDate,
   onChange
@@ -65,13 +65,13 @@ export const DateRangeSelector: React.FC<DateRangeSelector> = ({
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonthRange
             month={itemDate}
-            isLoading={isScrolling}
+            // isLoading={isScrolling}
             selectedDate={startDate}
             onSelect={onChange}
           />
           <CalendarMonthRange
             month={itemNextDate}
-            isLoading={isScrolling}
+            // isLoading={isScrolling}
             selectedDate={endDate}
             onSelect={onChange}
           />
