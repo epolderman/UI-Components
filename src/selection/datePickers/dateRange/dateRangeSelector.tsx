@@ -46,6 +46,16 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     [monthOffset]
   );
 
+  const onAnimationStart = useCallback(
+    () => (isGridAnimating.current = true),
+    []
+  );
+
+  const onAnimationEnd = useCallback(
+    () => (isGridAnimating.current = false),
+    []
+  );
+
   const cellRenderer = useCallback(
     ({
       key,
@@ -91,8 +101,8 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         columnWidth={CALENDAR_DIMENSIONS_RANGE}
         style={{ overflow: 'hidden', outline: 'none' }}
         durationOfAnimation={700}
-        // onAnimationStart={onAnimationStart}
-        // onAnimationEnd={onAnimationEnd}
+        onAnimationStart={onAnimationStart}
+        onAnimationEnd={onAnimationEnd}
       />
       <ControlsContainer>
         <Button disableRipple onClick={() => toMonth('prev')}>
