@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../../common/elevation';
 import { AnimatedGrid } from '../animatedGrid';
-import { CalendarMonth } from '../calendar/calendarMonth';
+import { CalendarMonth } from '../calendarRenderer/calendarMonth';
 import { usePrevious } from '../../../utils/hooks';
 import { DateTextField } from './dateTextField';
 import {

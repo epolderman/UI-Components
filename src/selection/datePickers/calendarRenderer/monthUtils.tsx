@@ -5,6 +5,8 @@ import { MAX_NUMBER_WEEKS_SHOWN, DAYS } from '../dateUtils';
 import { range, map } from 'lodash';
 import React from 'react';
 
+/* Shared Function / Styled Components between Calender Renderers */
+
 export const Container = styled(Flex)`
   flex: 1 1 0%;
   flex-direction: column;

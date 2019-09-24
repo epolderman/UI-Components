@@ -12,7 +12,7 @@ import { usePrevious } from '../../../utils/hooks';
 import { addMonths, format } from 'date-fns';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import styled from '@emotion/styled';
-import { CalendarMonthRange } from '../calendar/calendarMonthRange';
+import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
 
 /* 
   Date Range Selector Todo
