@@ -6,8 +6,7 @@ import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
-  DAYS,
-  isSameDate
+  DAYS
 } from '../dateUtils';
 import {
   BACKGROUND_EMPTY,
@@ -20,21 +19,19 @@ import {
   getSkeletonMonth,
   renderSkeletonWeek
 } from './monthUtils';
-import styled from '@emotion/styled';
 /*
    Calculation of calendar month data / Selection of calendar day
 */
 
 export interface CalendarMonthRangeProps {
   month: Date;
-  selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
   startDate?: Date;
   endDate?: Date;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
-  ({ month, selectedDate, onSelect, startDate, endDate }) => {
+  ({ month, onSelect, startDate, endDate }) => {
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
@@ -79,13 +76,6 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
       ));
     }, [month, renderWeek]);
-
-    const skeletonMonthJSX = useMemo(() => {
-      const month = getSkeletonMonth();
-      return map(month, (week, index) => (
-        <CalendarRow key={index}>{renderSkeletonWeek(week)}</CalendarRow>
-      ));
-    }, []);
 
     const dayNamesJSX = useMemo(
       () => (

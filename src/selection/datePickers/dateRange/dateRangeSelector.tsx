@@ -73,15 +73,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonthRange
             month={itemDate}
-            selectedDate={startDate}
             onSelect={onChange}
             startDate={startDate}
             endDate={endDate}
           />
-          <Divider orientation='vertical' />
+          <Divider orientation='vertical' style={{ margin: '0 4px' }} />
           <CalendarMonthRange
             month={itemNextDate}
-            selectedDate={endDate}
             onSelect={onChange}
             startDate={startDate}
             endDate={endDate}
