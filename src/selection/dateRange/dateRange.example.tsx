@@ -8,5 +8,11 @@ export const DateRangeExample: React.FC = () => {
     (incomingDate: Date) => setDate(incomingDate),
     []
   );
-  return <DateRangeSelector startDate={currentDate} onChange={onChange} />;
+  return (
+    <DateRangeSelector
+      startDate={currentDate}
+      endDate={currentDate}
+      onChange={onChange}
+    />
+  );
 };

@@ -312,7 +312,7 @@ const ElevatedWrapper = styled(Flex)`
   margin: 4px 8px 16px 8px;
   border-radius: 2.5px;
   ${makeShadow(ELEVATIONS.MENU)};
-  background-color: 'rgb(255,255,255)';
+  background-color: rgb(255, 255, 255);
 `;
 
 const AnimatedDivOpenClose = styled(animated.div)`

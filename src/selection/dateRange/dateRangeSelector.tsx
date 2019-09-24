@@ -12,6 +12,7 @@ import { usePrevious } from '../../utils/hooks';
 import { addMonths, format } from 'date-fns';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import styled from '@emotion/styled';
+import { CalendarMonth } from '../dateSelector/calendarMonth';
 
 /* 
   Date Range Selector Todo
@@ -62,30 +63,22 @@ export const DateRangeSelector: React.FC<DateRangeSelector> = ({
       const itemNextDate = addMonths(initialDate.current, itemOffset + 1);
       return (
         <div style={{ ...style, display: 'flex' }} key={key}>
-          <Typography
-            align='center'
-            style={{
-              boxSizing: 'border-box',
-              width: 300,
-              backgroundColor: 'blue'
-            }}
-          >
-            {format(itemDate, 'MM/DD/YYYY')}
-          </Typography>
-          <Typography
-            align='center'
-            style={{
-              boxSizing: 'border-box',
-              width: 300,
-              backgroundColor: 'green'
-            }}
-          >
-            {format(itemNextDate, 'MM/DD/YYYY')}
-          </Typography>
+          <CalendarMonth
+            month={itemDate}
+            isLoading={isScrolling}
+            selectedDate={startDate}
+            onSelect={onChange}
+          />
+          <CalendarMonth
+            month={itemNextDate}
+            isLoading={isScrolling}
+            selectedDate={endDate}
+            onSelect={onChange}
+          />
         </div>
       );
     },
-    [initialDate]
+    [initialDate, startDate, endDate, onChange]
   );
 
   return (
@@ -100,6 +93,7 @@ export const DateRangeSelector: React.FC<DateRangeSelector> = ({
         columnCount={MAX_TIME_SPAN}
         columnWidth={CALENDAR_DIMENSIONS_RANGE}
         style={{ overflow: 'hidden', outline: 'none' }}
+        durationOfAnimation={700}
         // onAnimationStart={onAnimationStart}
         // onAnimationEnd={onAnimationEnd}
       />
@@ -115,6 +109,16 @@ export const DateRangeSelector: React.FC<DateRangeSelector> = ({
   );
 };
 
+const background = {
+  content: {
+    primary: 'rgb(255,255,255)',
+    secondary: 'rgb(248,248,248)'
+  },
+  empty: 'rgb(238,238,238)',
+  error: '#323232',
+  barren: 'rgb(220,220,220)'
+};
+
 const DateRangeContainer = styled(Flex)`
   flex-direction: column;
   flex: 1 1 0%;
@@ -122,6 +126,7 @@ const DateRangeContainer = styled(Flex)`
   justify-content: stretch;
   align-items: stretch;
   position: relative;
+  background-color: ${background.content.primary};
 `;
 
 const ControlsContainer = styled(Flex)`
