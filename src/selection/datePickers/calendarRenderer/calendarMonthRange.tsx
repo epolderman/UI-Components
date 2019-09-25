@@ -21,7 +21,7 @@ import {
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
 
 /*
-   Calculation of calendar month data / Selection of calendar day
+   Calculation of calendar month data + date ranges information
 */
 
 export interface CalendarMonthRangeProps {
@@ -29,7 +29,7 @@ export interface CalendarMonthRangeProps {
   dateRange: DateRangeTuple;
   isSelecting: boolean;
   hoverDate: Date;
-  onHoverDateAssign: (hoverDate: Date) => void;
+  onSelectHoverRange: (hoverDate: Date) => void;
   onSelectRange: (incomingDate: Date) => void;
 }
 
@@ -38,7 +38,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     month,
     onSelectRange,
     isSelecting,
-    onHoverDateAssign,
+    onSelectHoverRange,
     hoverDate,
     dateRange
   }) => {
@@ -72,6 +72,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
             );
+            // render blue range selection blocks
           } else if (
             isDateRangeValid &&
             isWithinRange(date, dateRange[0], dateRange[1])
@@ -81,12 +82,13 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 variant='contained'
                 key={index}
                 onClick={dispatchSelect}
-                onMouseEnter={() => isSelecting && onHoverDateAssign(date)}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
                 style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
             );
+            // render light blue hover date range blocks
           } else if (
             isSelecting &&
             hoverDate != null &&
@@ -97,7 +99,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
-                onMouseEnter={() => isSelecting && onHoverDateAssign(date)}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
                 style={{
                   backgroundColor: BRAND_PRIMARY_LIGHT,
                   color: 'white'
@@ -106,13 +108,14 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
             );
+            // render default blocks non selected
           } else {
             return (
               <Button
                 onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
-                onMouseEnter={() => isSelecting && onHoverDateAssign(date)}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
@@ -126,7 +129,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         isDateRangeValid,
         hoverDate,
         isSelecting,
-        onHoverDateAssign
+        onSelectHoverRange
       ]
     );
 

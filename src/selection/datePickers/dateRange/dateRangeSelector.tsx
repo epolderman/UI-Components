@@ -1,20 +1,17 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { AnimatedGrid } from '../animatedGrid';
-import { Flex } from '@rebass/grid/emotion';
-import { Typography, Button, Divider } from '@material-ui/core';
-import {
-  MIDDLE_INDEX,
-  CALENDAR_DIMENSIONS_RANGE,
-  CALENDAR_DIMENSIONS,
-  MAX_TIME_SPAN,
-  hasDateReachedLimit,
-  hasDateChanged
-} from '../dateUtils';
-import { usePrevious } from '../../../utils/hooks';
-import { addMonths, format, isBefore, isAfter } from 'date-fns';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import styled from '@emotion/styled';
+import { Button, Divider } from '@material-ui/core';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import { Flex } from '@rebass/grid/emotion';
+import { addMonths, isAfter, isBefore } from 'date-fns';
+import React, { useCallback, useRef, useState } from 'react';
+import { AnimatedGrid } from '../animatedGrid';
 import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
+import {
+  CALENDAR_DIMENSIONS,
+  CALENDAR_DIMENSIONS_RANGE,
+  MAX_TIME_SPAN,
+  MIDDLE_INDEX
+} from '../dateUtils';
 
 /* 
   Date Range Selector Todo
@@ -80,7 +77,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     [onChange, dateRange, isSelecting]
   );
 
-  const onHoverDateAssign = useCallback(
+  const onSelectHoverRange = useCallback(
     (incomingDate: Date) => {
       if (isAfter(incomingDate, dateRange[0])) {
         setHoverDate(incomingDate);
@@ -100,38 +97,33 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       key: string;
       style: React.CSSProperties;
       columnIndex: number;
-    }) => {
-      const itemOffset = columnIndex - MIDDLE_INDEX;
-      const itemDate = addMonths(initialDate.current, itemOffset);
-      const itemNextDate = addMonths(initialDate.current, itemOffset + 1);
-      return (
-        <div style={{ ...style, display: 'flex' }} key={key}>
-          <CalendarMonthRange
-            month={itemDate}
-            onSelectRange={updateDateRange}
-            isSelecting={isSelecting}
-            hoverDate={hoverDate}
-            onHoverDateAssign={onHoverDateAssign}
-            dateRange={dateRange}
-          />
-          <Divider orientation='vertical' style={{ margin: '0 4px' }} />
-          <CalendarMonthRange
-            month={itemNextDate}
-            onSelectRange={updateDateRange}
-            isSelecting={isSelecting}
-            hoverDate={hoverDate}
-            onHoverDateAssign={onHoverDateAssign}
-            dateRange={dateRange}
-          />
-        </div>
-      );
-    },
+    }) => (
+      <div style={{ ...style, display: 'flex' }} key={key}>
+        <CalendarMonthRange
+          month={addMonths(initialDate.current, columnIndex - MIDDLE_INDEX)}
+          onSelectRange={updateDateRange}
+          isSelecting={isSelecting}
+          hoverDate={hoverDate}
+          onSelectHoverRange={onSelectHoverRange}
+          dateRange={dateRange}
+        />
+        <Divider orientation='vertical' style={{ margin: '0 4px' }} />
+        <CalendarMonthRange
+          month={addMonths(initialDate.current, columnIndex - MIDDLE_INDEX + 1)}
+          onSelectRange={updateDateRange}
+          isSelecting={isSelecting}
+          hoverDate={hoverDate}
+          onSelectHoverRange={onSelectHoverRange}
+          dateRange={dateRange}
+        />
+      </div>
+    ),
     [
       initialDate,
       dateRange,
       updateDateRange,
       isSelecting,
-      onHoverDateAssign,
+      onSelectHoverRange,
       hoverDate
     ]
   );
