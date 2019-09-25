@@ -42,7 +42,7 @@ export const AnimatedGrid: React.FC<CombinedProps> = React.memo(
       const now = performance.now();
       const elapsedTime = now - animationStartTime.current;
       const scrollDelta = scrollLeftFinal.current - scrollLeftStart.current;
-      const easing = EasingFunctions.easeInOutCubic(
+      const easing = EasingFunctions.easeInOutQuart(
         Math.min(1, elapsedTime / animationDuration.current)
       );
       const scrollLeft = scrollLeftStart.current + scrollDelta * easing;

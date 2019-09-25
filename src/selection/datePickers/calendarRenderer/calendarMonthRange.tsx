@@ -21,14 +21,14 @@ import {
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
 
 /*
-   Calculation of calendar month data + date ranges information
+   Calculation of calendar month data + date range rendering 
 */
 
 export interface CalendarMonthRangeProps {
-  month: Date;
-  dateRange: DateRangeTuple;
-  isSelecting: boolean;
-  hoverDate: Date;
+  month: Date; // current month being shown
+  dateRange: DateRangeTuple; // data set for our range
+  isSelecting: boolean; // are we selecting a new range?
+  hoverDate: Date; // latest hovered date
   onSelectHoverRange: (hoverDate: Date) => void;
   onSelectRange: (incomingDate: Date) => void;
 }

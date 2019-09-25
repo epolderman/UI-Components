@@ -15,7 +15,10 @@ import {
 
 /* 
   Date Range Selector Todo
-  1. Model Interface & Interaction / What can we re-use?
+  1. Add StartDate logic to move to different calendar month
+  2. CalendarMonthRange needs styles update to match mockups.
+  3. Wire in text field date ranges to this component.
+  4. Wire up isSmall prop to respond to smaller dimension threshold.
 */
 
 export interface DateRangeSelectorProps {
@@ -45,16 +48,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       setMonthOffset(monthOffset + monthAddition);
     },
     [monthOffset]
-  );
-
-  const onAnimationStart = useCallback(
-    () => (isGridAnimating.current = true),
-    []
-  );
-
-  const onAnimationEnd = useCallback(
-    () => (isGridAnimating.current = false),
-    []
   );
 
   const updateDateRange = useCallback(
@@ -126,6 +119,16 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       onSelectHoverRange,
       hoverDate
     ]
+  );
+
+  const onAnimationStart = useCallback(
+    () => (isGridAnimating.current = true),
+    []
+  );
+
+  const onAnimationEnd = useCallback(
+    () => (isGridAnimating.current = false),
+    []
   );
 
   return (
