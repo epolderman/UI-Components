@@ -15,7 +15,7 @@ import {
 
 /* 
   Date Range Selector Todo
-  1. Add StartDate logic to move to different calendar month
+  1. Add StartDate logic to move to different calendar month if suppplied by user.
   2. CalendarMonthRange needs styles update to match mockups.
   3. Wire in text field date ranges to this component.
   4. Wire up isSmall prop to respond to smaller dimension threshold.
@@ -57,14 +57,14 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
       if (isSelecting && isBeforeStart) {
         setHoverDate(null);
-        return onChange([incomingDate, null]);
+        onChange([incomingDate, null]);
       } else if (isSelecting && isAfterStart) {
         setSelecting(false);
         setHoverDate(null);
-        return onChange([dateRange[0], incomingDate]);
+        onChange([dateRange[0], incomingDate]);
       } else {
         setSelecting(true);
-        return onChange([incomingDate, null]);
+        onChange([incomingDate, null]);
       }
     },
     [onChange, dateRange, isSelecting]
