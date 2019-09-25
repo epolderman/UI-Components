@@ -1,11 +1,7 @@
 import styled from '@emotion/styled';
 import { Flex } from '@rebass/grid/emotion';
-import { Button, Typography } from '@material-ui/core';
-import { MAX_NUMBER_WEEKS_SHOWN, DAYS } from '../dateUtils';
-import { range, map } from 'lodash';
-import React from 'react';
 
-/* Shared Functions / Styled Components between Calender Renderers */
+/* Shared Styled Components between Calender Renderers */
 
 export const Container = styled(Flex)`
   flex: 1 1 0%;
@@ -60,20 +56,6 @@ export const DayNameBlocks = styled(Flex)`
   margin: 0 2px;
   border-radius: 2.5px;
 `;
-
-export const getSkeletonMonth = () => {
-  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() =>
-    new Array(DAYS.length).fill(null)
-  );
-};
-
-export const renderSkeletonWeek = (week: any[]) => {
-  return map(week, (_, index) => (
-    <Button style={{ backgroundColor: BACKGROUND_EMPTY }} key={index}>
-      <Typography color='primary'>{null}</Typography>
-    </Button>
-  ));
-};
 
 export const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 export const BRAND_PRIMARY = 'rgb(74,175,227)';

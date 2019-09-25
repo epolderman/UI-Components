@@ -1,13 +1,14 @@
 import { Button, Typography } from '@material-ui/core';
 import { format, isSameMonth } from 'date-fns';
-import { map } from 'lodash';
+import { map, range } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
   DAYS,
-  isSameDate
+  isSameDate,
+  MAX_NUMBER_WEEKS_SHOWN
 } from '../dateUtils';
 import {
   BACKGROUND_EMPTY,
@@ -16,9 +17,7 @@ import {
   CalendarHeader,
   CalendarRow,
   Container,
-  DayNameBlocks,
-  getSkeletonMonth,
-  renderSkeletonWeek
+  DayNameBlocks
 } from './monthUtils';
 
 /*
@@ -126,3 +125,17 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     );
   }
 );
+
+const getSkeletonMonth = () => {
+  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() =>
+    new Array(DAYS.length).fill(null)
+  );
+};
+
+const renderSkeletonWeek = (week: any[]) => {
+  return map(week, (_, index) => (
+    <Button style={{ backgroundColor: BACKGROUND_EMPTY }} key={index}>
+      <Typography color='primary'>{null}</Typography>
+    </Button>
+  ));
+};
