@@ -1,22 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { DateRangeSelector } from './dateRangeSelector';
-import { addMonths } from 'date-fns';
-
-const endDate = addMonths(new Date(), 1);
-
-type DateTuple = [Date, Date];
+import { DateRangeSelector, DateRangeTuple } from './dateRangeSelector';
 
 export const DateRangeExample: React.FC = () => {
-  const [dateRange, setDateRange] = useState<DateTuple>([new Date(), endDate]);
+  const [dateRange, setDateRange] = useState<DateRangeTuple>([null, null]);
 
-  const onChange = useCallback((incomingDateRange: DateTuple) => {
+  const onChange = useCallback((incomingDateRange: DateRangeTuple) => {
     setDateRange(incomingDateRange);
   }, []);
-  return (
-    <DateRangeSelector
-      startDate={dateRange[0]}
-      endDate={dateRange[1]}
-      onChange={onChange}
-    />
-  );
+  return <DateRangeSelector onChange={onChange} dateRange={dateRange} />;
 };
