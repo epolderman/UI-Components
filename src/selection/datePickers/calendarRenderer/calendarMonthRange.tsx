@@ -1,24 +1,32 @@
 import { Button, Typography, withStyles } from '@material-ui/core';
-import { format, isSameMonth, isWithinRange } from 'date-fns';
+import {
+  format,
+  isSameMonth,
+  isWithinRange,
+  isSameDay,
+  lastDayOfMonth,
+  isBefore,
+  isAfter
+} from 'date-fns';
 import { map } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
-  DAYS
+  DAYS,
+  isSameDate
 } from '../dateUtils';
 import {
-  BACKGROUND_EMPTY,
   BRAND_PRIMARY,
   CalendarContents,
   CalendarHeader,
   CalendarRow,
   Container,
   DayNameBlocks,
-  getSkeletonMonth,
-  renderSkeletonWeek
+  BRAND_PRIMARY_DARK
 } from './monthUtils';
+
 /*
    Calculation of calendar month data / Selection of calendar day
 */
@@ -28,25 +36,29 @@ export interface CalendarMonthRangeProps {
   onSelect: (incomingDate: Date) => void;
   startDate?: Date;
   endDate?: Date;
+  isSelecting?: boolean;
+  hoverDate?: Date;
+  assignHoverDate?: (hoverDate: Date) => void;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
-  ({ month, onSelect, startDate, endDate }) => {
+  ({
+    month,
+    onSelect,
+    startDate,
+    endDate,
+    isSelecting,
+    assignHoverDate,
+    hoverDate
+  }) => {
+    const isDateRangeValid = startDate != null && endDate != null;
+
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
           const dispatchSelect = () => onSelect(date);
-          if (isWithinRange(date, startDate, endDate)) {
-            return (
-              <Button
-                variant='contained'
-                key={index}
-                style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
-              >
-                {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
-            );
-          } else if (!isSameMonth(month, date)) {
+          // render nothing
+          if (!isSameMonth(month, date)) {
             return (
               <TransparentButton
                 onMouseDown={e => e.preventDefault()}
@@ -55,19 +67,80 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 {format(date, CALENDAR_DAY_FORMAT)}
               </TransparentButton>
             );
+            // render dark blue selected blocks
+          } else if (isSameDay(startDate, date) || isSameDay(endDate, date)) {
+            return (
+              <Button
+                // onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                style={{ backgroundColor: BRAND_PRIMARY_DARK, color: 'white' }}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+            // render light blue range blocks w/ opcity
+          } else if (
+            isSelecting &&
+            hoverDate != null &&
+            isWithinRange(date, startDate, hoverDate)
+          ) {
+            return (
+              <Button
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && assignHoverDate(date)}
+                style={{
+                  backgroundColor: BRAND_PRIMARY,
+                  opacity: 0.5,
+                  color: 'white'
+                }}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+            // render range blocks without opacity
+          } else if (
+            isDateRangeValid &&
+            !isSelecting &&
+            isWithinRange(date, startDate, endDate)
+          ) {
+            return (
+              <Button
+                variant='contained'
+                key={index}
+                onClick={dispatchSelect}
+                onMouseEnter={() => isSelecting && assignHoverDate(date)}
+                style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+            // default render, no selected day
           } else {
             return (
               <Button
                 onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && assignHoverDate(date)}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
               </Button>
             );
           }
         }),
-      [onSelect, month, startDate, endDate]
+      [
+        onSelect,
+        month,
+        startDate,
+        endDate,
+        isDateRangeValid,
+        hoverDate,
+        isSelecting,
+        assignHoverDate
+      ]
     );
 
     const monthJSX = useMemo(() => {

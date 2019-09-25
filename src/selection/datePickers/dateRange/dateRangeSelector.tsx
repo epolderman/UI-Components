@@ -6,10 +6,12 @@ import {
   MIDDLE_INDEX,
   CALENDAR_DIMENSIONS_RANGE,
   CALENDAR_DIMENSIONS,
-  MAX_TIME_SPAN
+  MAX_TIME_SPAN,
+  hasDateReachedLimit,
+  hasDateChanged
 } from '../dateUtils';
 import { usePrevious } from '../../../utils/hooks';
-import { addMonths, format } from 'date-fns';
+import { addMonths, format, isBefore, isAfter } from 'date-fns';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import styled from '@emotion/styled';
 import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
@@ -20,10 +22,12 @@ import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
 */
 
 export interface DateRangeSelectorProps {
-  onChange: (incomingDate: Date) => void;
+  onChange: (incomingDate: DateTuple) => void;
   startDate: Date;
   endDate: Date;
 }
+
+type DateTuple = [Date, Date];
 
 export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   startDate,
@@ -31,9 +35,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   onChange
 }) => {
   const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
+  const [isSelecting, setSelecting] = useState(false);
   // const prevDate = usePrevious<Date>(value);
   const initialDate = useRef<Date>(new Date());
   const isGridAnimating = useRef(false);
+  const [hoverDate, setHoverDate] = useState<Date>(null);
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
@@ -56,6 +62,46 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     []
   );
 
+  const updateDate = useCallback(
+    (incomingDate: Date) => {
+      /// selecting start date state
+      // just a click
+
+      /// selecting end date state
+      /// you can still select start date if it is before our current startDate
+
+      //
+
+      const isBeforeStart = isBefore(incomingDate, startDate);
+      const isAfterStart = isAfter(incomingDate, startDate);
+
+      if (isSelecting && isBeforeStart) {
+        setHoverDate(null);
+        return onChange([incomingDate, null]);
+      } else if (isSelecting && isAfterStart) {
+        setSelecting(false);
+        setHoverDate(null);
+        return onChange([startDate, incomingDate]);
+      } else {
+        setSelecting(true);
+        console.log('case 3 invoked');
+        return onChange([incomingDate, null]);
+      }
+    },
+    [onChange, startDate, isSelecting]
+  );
+
+  const assignHoverDate = useCallback(
+    (incomingDate: Date) => {
+      if (isAfter(incomingDate, startDate)) {
+        setHoverDate(incomingDate);
+      } else {
+        setHoverDate(null);
+      }
+    },
+    [startDate]
+  );
+
   const cellRenderer = useCallback(
     ({
       key,
@@ -73,21 +119,35 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <div style={{ ...style, display: 'flex' }} key={key}>
           <CalendarMonthRange
             month={itemDate}
-            onSelect={onChange}
+            onSelect={updateDate}
             startDate={startDate}
             endDate={endDate}
+            isSelecting={isSelecting}
+            hoverDate={hoverDate}
+            assignHoverDate={assignHoverDate}
           />
           <Divider orientation='vertical' style={{ margin: '0 4px' }} />
           <CalendarMonthRange
             month={itemNextDate}
-            onSelect={onChange}
+            onSelect={updateDate}
             startDate={startDate}
             endDate={endDate}
+            isSelecting={isSelecting}
+            hoverDate={hoverDate}
+            assignHoverDate={assignHoverDate}
           />
         </div>
       );
     },
-    [initialDate, startDate, endDate, onChange]
+    [
+      initialDate,
+      startDate,
+      endDate,
+      updateDate,
+      isSelecting,
+      assignHoverDate,
+      hoverDate
+    ]
   );
 
   return (

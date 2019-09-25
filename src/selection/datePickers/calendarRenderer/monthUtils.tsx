@@ -77,3 +77,4 @@ export const renderSkeletonWeek = (week: any[]) => {
 
 export const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 export const BRAND_PRIMARY = 'rgb(74,175,227)';
+export const BRAND_PRIMARY_DARK = 'rgb(74,99,227)';

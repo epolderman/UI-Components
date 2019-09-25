@@ -4,17 +4,18 @@ import { addMonths } from 'date-fns';
 
 const endDate = addMonths(new Date(), 1);
 
-export const DateRangeExample: React.FC = () => {
-  const [currentDate, setDate] = useState(new Date());
+type DateTuple = [Date, Date];
 
-  const onChange = useCallback(
-    (incomingDate: Date) => setDate(incomingDate),
-    []
-  );
+export const DateRangeExample: React.FC = () => {
+  const [dateRange, setDateRange] = useState<DateTuple>([new Date(), endDate]);
+
+  const onChange = useCallback((incomingDateRange: DateTuple) => {
+    setDateRange(incomingDateRange);
+  }, []);
   return (
     <DateRangeSelector
-      startDate={currentDate}
-      endDate={endDate}
+      startDate={dateRange[0]}
+      endDate={dateRange[1]}
       onChange={onChange}
     />
   );
