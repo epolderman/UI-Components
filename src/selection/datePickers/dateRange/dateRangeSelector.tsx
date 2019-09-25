@@ -3,7 +3,7 @@ import { Button, Divider } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
 import { addMonths, isAfter, isBefore } from 'date-fns';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useReducer } from 'react';
 import { AnimatedGrid } from '../animatedGrid';
 import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
 import {
@@ -21,6 +21,43 @@ import {
   4. Wire up isSmall prop to respond to smaller dimension threshold.
 */
 
+interface DateRangeState {
+  monthOffset: number;
+  isSelecting: boolean;
+  hoverDate: Date;
+}
+
+const initialState: DateRangeState = {
+  monthOffset: MIDDLE_INDEX,
+  isSelecting: false,
+  hoverDate: null
+};
+
+type DateRangeActions =
+  | { type: 'UPDATE_MONTH_OFFSET'; payload: number }
+  | { type: 'UPDATE_HOVER_DATE'; payload: Date }
+  | { type: 'UPDATE_SELECTION_STATE'; payload: boolean }
+  | { type: 'CLEAR_SELECTION_STATE' }
+  | { type: 'CLEAR_HOVER_DATE' };
+
+function reducer(
+  state: DateRangeState,
+  action: DateRangeActions
+): DateRangeState {
+  switch (action.type) {
+    case 'UPDATE_MONTH_OFFSET':
+      return { ...state, monthOffset: action.payload };
+    case 'UPDATE_SELECTION_STATE':
+      return { ...state, isSelecting: action.payload };
+    case 'CLEAR_SELECTION_STATE':
+      return { ...state, isSelecting: false, hoverDate: null };
+    case 'UPDATE_HOVER_DATE':
+      return { ...state, hoverDate: action.payload };
+    case 'CLEAR_HOVER_DATE':
+      return { ...state, hoverDate: null };
+  }
+}
+
 export interface DateRangeSelectorProps {
   onChange: (incomingDate: DateRangeTuple) => void;
   dateRange: DateRangeTuple;
@@ -32,12 +69,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   onChange,
   dateRange
 }) => {
-  const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
-  const [isSelecting, setSelecting] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
   // const prevDate = usePrevious<Date>(value);
   const initialDate = useRef<Date>(new Date());
   const isGridAnimating = useRef(false);
-  const [hoverDate, setHoverDate] = useState<Date>(null);
+  const { monthOffset, hoverDate, isSelecting } = state;
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
@@ -45,7 +81,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         return;
       }
       const monthAddition = increment === 'next' ? 1 : -1;
-      setMonthOffset(monthOffset + monthAddition);
+      dispatch({
+        type: 'UPDATE_MONTH_OFFSET',
+        payload: monthOffset + monthAddition
+      });
     },
     [monthOffset]
   );
@@ -56,14 +95,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       const isAfterStart = isAfter(incomingDate, dateRange[0]);
 
       if (isSelecting && isBeforeStart) {
-        setHoverDate(null);
+        dispatch({ type: 'CLEAR_HOVER_DATE' });
         onChange([incomingDate, null]);
       } else if (isSelecting && isAfterStart) {
-        setSelecting(false);
-        setHoverDate(null);
+        dispatch({ type: 'CLEAR_SELECTION_STATE' });
         onChange([dateRange[0], incomingDate]);
       } else {
-        setSelecting(true);
+        dispatch({ type: 'UPDATE_SELECTION_STATE', payload: true });
         onChange([incomingDate, null]);
       }
     },
@@ -73,9 +111,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const onSelectHoverRange = useCallback(
     (incomingDate: Date) => {
       if (isAfter(incomingDate, dateRange[0])) {
-        setHoverDate(incomingDate);
+        dispatch({ type: 'UPDATE_HOVER_DATE', payload: incomingDate });
       } else {
-        setHoverDate(null);
+        dispatch({ type: 'CLEAR_HOVER_DATE' });
       }
     },
     [dateRange]
