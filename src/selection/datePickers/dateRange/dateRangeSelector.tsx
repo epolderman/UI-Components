@@ -19,6 +19,7 @@ import {
   2. CalendarMonthRange needs styles update to match mockups.
   3. Wire in text field date ranges to this component.
   4. Wire up isSmall prop to respond to smaller dimension threshold.
+  5. Add pallette colors and remove statics.
 */
 
 interface DateRangeState {
