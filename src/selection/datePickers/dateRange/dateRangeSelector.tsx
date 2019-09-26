@@ -211,7 +211,7 @@ const background = {
 const DateRangeContainer = styled(Flex)`
   flex-direction: column;
   flex: 1 1 0%;
-  max-width: 600px;
+  max-width: ${CALENDAR_DIMENSIONS_RANGE}px;
   justify-content: stretch;
   align-items: stretch;
   position: relative;
