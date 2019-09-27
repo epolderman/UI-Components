@@ -13,15 +13,15 @@ import {
   CalendarContents,
   CalendarHeader,
   CalendarRow,
-  Container,
   DayNameBlocks,
   BRAND_PRIMARY_DARK,
   BRAND_PRIMARY_LIGHT
 } from './monthUtils';
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
-// import styled from '@emotion/styled';
+import styled from '@emotion/styled';
 import { ButtonProps } from '@material-ui/core/Button';
-import { styled } from '@material-ui/styles';
+import { styled as matStyled } from '@material-ui/styles';
+import { Flex } from '@rebass/grid/emotion';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -121,46 +121,72 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     const monthJSX = useMemo(() => {
       const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => (
-        <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
+        <CalendarRowRange key={index}>{renderWeek(week)}</CalendarRowRange>
       ));
     }, [month, renderWeek]);
 
     const dayNamesJSX = useMemo(
       () => (
-        <CalendarRow>
+        <CalendarRowRange>
           {map(DAYS, day => (
             <DayNameBlocks key={day}>
-              <Typography style={{ fontSize: '14px' }} color='textPrimary'>
-                {day.slice(0, 3)}
+              <Typography style={{ fontSize: '14px' }} color='textSecondary'>
+                {day.slice(0, 1)}
               </Typography>
             </DayNameBlocks>
           ))}
-        </CalendarRow>
+        </CalendarRowRange>
       ),
       []
     );
 
     return (
-      <Container>
+      <MonthContainer>
         <CalendarHeader>
-          <CalendarRow hasText>
+          <CalendarRowRange hasText>
             <Typography
               style={{
                 fontSize: '16px',
-                marginTop: '-4px'
+                marginTop: '-2px'
               }}
               color='textPrimary'
             >
               {format(month, 'MMM YYYY')}
             </Typography>
-          </CalendarRow>
+          </CalendarRowRange>
           {dayNamesJSX}
         </CalendarHeader>
         <CalendarContents>{monthJSX}</CalendarContents>
-      </Container>
+      </MonthContainer>
     );
   }
 );
+
+const CalendarRowRange = styled(Flex)<{ hasText?: boolean }>`
+  flex: 1 1 0%;
+  flex-direction: row;
+  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  padding: 2px 0;
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: 0 0;
+  }
+`;
+
+const MonthContainer = styled(Flex)`
+  flex: 1 1 0%;
+  flex-direction: column;
+  justify-content: stretch;
+  align-content: stretch;
+  position: relative;
+  margin: 0 4px;
+`;
 
 // @todo: Find a better solution than this.
 const TransparentButton = withStyles({
@@ -168,8 +194,8 @@ const TransparentButton = withStyles({
     backgroundColor: 'transparent',
     color: 'transparent',
     borderRadius: '50% !important',
-    // width: '40px',
-    // height: '40px',
+    width: '44px',
+    height: '44px',
     cursor: 'default',
     '&:hover': {
       backgroundColor: 'transparent'
@@ -179,32 +205,41 @@ const TransparentButton = withStyles({
 
 const RoundButton = withStyles({
   root: {
-    borderRadius: '50% !important'
-    // width: '40px',
-    // height: '40px'
+    borderRadius: '50% !important',
+    width: '44px',
+    height: '44px',
+    '&:hover': {
+      backgroundColor: 'transparent'
+    }
     // backgroundColor: `${BRAND_PRIMARY_LIGHT}`,
     // color: 'white'
   }
 })(Button);
 
-// @todo: is this the proper way to pass props to mat ui components
-// too complex, woulld like to be more simple
+// isWithinRange + index = 1 <-> 5 + index - 1 && index + 1 is within range = square
+// isWithinRange + index = 0 => rounded radius on left
+// isWithinRange + index = 6 => rounded radius on right
+// selected => rounded radius full, different color, background range color?
+
 interface CalendarButtonProps {
-  color: 'selected' | 'range';
+  color: 'selected' | 'range' | 'rightRight' | 'rangeLeft';
 }
 
-const CalenderButton = styled(
-  ({
-    color,
-    ...other
-  }: CalendarButtonProps & Omit<ButtonProps, keyof CalendarButtonProps>) => (
-    <Button {...other} />
+type OmittedTypes = Omit<ButtonProps, keyof CalendarButtonProps>;
+
+const CalenderButton = matStyled(
+  ({ color, ...buttonProps }: CalendarButtonProps & OmittedTypes) => (
+    <Button {...buttonProps} />
   )
 )({
-  background: (props: CalendarButtonProps) =>
-    props.color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`,
+  background: ({ color }) =>
+    color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`,
   borderRadius: '50% !important',
   color: 'white',
-  height: 40,
-  width: 40
+  height: 44,
+  width: 44,
+  '&:hover': {
+    background: ({ color }) =>
+      color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`
+  }
 });
