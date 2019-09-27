@@ -19,6 +19,10 @@ import {
   BRAND_PRIMARY_LIGHT
 } from './monthUtils';
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
+// import styled from '@emotion/styled';
+import { ButtonProps } from '@material-ui/core/Button';
+import { Omit } from '@material-ui/types';
+import { styled } from '@material-ui/styles';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -64,16 +68,13 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSameDay(dateRange[1], date)
           ) {
             return (
-              <RoundButton
+              <CalenderButton
+                color='selected'
                 key={index}
                 onMouseDown={e => e.preventDefault()}
-                style={{
-                  backgroundColor: BRAND_PRIMARY_DARK,
-                  color: 'white'
-                }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </RoundButton>
+              </CalenderButton>
             );
             // render blue range selection blocks
           } else if (
@@ -83,18 +84,15 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               isWithinRange(date, dateRange[0], dateRange[1]))
           ) {
             return (
-              <RoundButton
+              <CalenderButton
+                color='range'
                 onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
                 onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
-                style={{
-                  backgroundColor: BRAND_PRIMARY_LIGHT,
-                  color: 'white'
-                }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </RoundButton>
+              </CalenderButton>
             );
             // render default blocks non selected
           } else {
@@ -189,3 +187,25 @@ const RoundButton = withStyles({
     // color: 'white'
   }
 })(Button);
+
+// @todo: is this the proper way to pass props to mat ui components
+// too complex, woulld like to be more simple
+interface CalendarButtonProps {
+  color: 'selected' | 'range';
+}
+
+const CalenderButton = styled(
+  ({
+    color,
+    ...other
+  }: CalendarButtonProps & Omit<ButtonProps, keyof CalendarButtonProps>) => (
+    <Button {...other} />
+  )
+)({
+  background: (props: CalendarButtonProps) =>
+    props.color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`,
+  borderRadius: '50% !important',
+  color: 'white',
+  height: 40,
+  width: 40
+});
