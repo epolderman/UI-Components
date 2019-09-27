@@ -21,7 +21,6 @@ import {
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
 // import styled from '@emotion/styled';
 import { ButtonProps } from '@material-ui/core/Button';
-import { Omit } from '@material-ui/types';
 import { styled } from '@material-ui/styles';
 
 /*
