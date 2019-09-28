@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Button, Divider } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
-import { addMonths, isAfter, isBefore } from 'date-fns';
+import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
 import React, { useCallback, useRef, useState, useReducer } from 'react';
 import { AnimatedGrid } from '../animatedGrid';
 import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
@@ -95,8 +95,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     (incomingDate: Date) => {
       const isBeforeStart = isBefore(incomingDate, dateRange[0]);
       const isAfterStart = isAfter(incomingDate, dateRange[0]);
+      const isSameStart = isSameDay(incomingDate, dateRange[0]);
 
-      if (isSelecting && isBeforeStart) {
+      if (isSelecting && (isBeforeStart || isSameStart)) {
         dispatch({ type: 'CLEAR_HOVER_DATE' });
         onChange([incomingDate, null]);
       } else if (isSelecting && isAfterStart) {

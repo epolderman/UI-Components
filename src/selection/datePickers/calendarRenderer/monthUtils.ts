@@ -13,14 +13,14 @@ export const Container = styled(Flex)`
 
 /* Contains Month Name Row + Day Names Row */
 export const CalendarHeader = styled(Flex)`
-  max-height: 96px; /* 2 Rows = 2 * 48 */
+  max-height: 75px; /* 2 Rows = 2 * 37.5 */
   flex-direction: column;
   flex: 1 1 0%;
 `;
 
 export const CalendarContents = styled(Flex)`
   flex: 1 1 0%;
-  top: 96px; /* 2 Rows = 2 * 48 */
+  top: 75px; /* 2 Rows = 2 * 37.5 */
   flex-direction: column;
   left: 0;
   right: 0;
