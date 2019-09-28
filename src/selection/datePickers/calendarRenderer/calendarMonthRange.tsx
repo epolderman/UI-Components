@@ -1,5 +1,12 @@
 import { Button, Typography, withStyles } from '@material-ui/core';
-import { format, isSameMonth, isWithinRange, isSameDay } from 'date-fns';
+import {
+  format,
+  isSameMonth,
+  isWithinRange,
+  isSameDay,
+  addDays,
+  isAfter
+} from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -10,21 +17,19 @@ import {
 } from '../dateUtils';
 import {
   BRAND_PRIMARY,
-  CalendarContents,
-  CalendarHeader,
-  CalendarRow,
-  Container,
   DayNameBlocks,
   BRAND_PRIMARY_DARK,
   BRAND_PRIMARY_LIGHT
 } from './monthUtils';
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
-// import styled from '@emotion/styled';
+import styled from '@emotion/styled';
 import { ButtonProps } from '@material-ui/core/Button';
-import { styled } from '@material-ui/styles';
+import { styled as matStyled } from '@material-ui/styles';
+import { Flex } from '@rebass/grid/emotion';
 
 /*
    Calculation of calendar month data + date range rendering 
+   @todo redo all styles
 */
 
 export interface CalendarMonthRangeProps {
@@ -51,6 +56,54 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       (week: Date[]) =>
         map(week, (date, index) => {
           const dispatchSelect = () => onSelectRange(date);
+          const isStartDate = isSameDay(dateRange[0], date);
+          const isEndDate = isSameDay(dateRange[1], date);
+          const notOnEndStartRange = !isStartDate && !isEndDate;
+          const endRangeEnd =
+            hoverDate != null &&
+            week[index + 1] != null &&
+            isAfter(week[index + 1], hoverDate);
+
+          const isWithinHoverRange =
+            hoverDate != null &&
+            notOnEndStartRange &&
+            isWithinRange(date, dateRange[0], hoverDate);
+
+          const isWithinHoverRangeEnd =
+            hoverDate != null &&
+            notOnEndStartRange &&
+            endRangeEnd &&
+            isWithinRange(date, dateRange[0], hoverDate);
+
+          const isWithinHoverRangeEndIndex =
+            hoverDate != null &&
+            notOnEndStartRange &&
+            index === 6 &&
+            isWithinRange(date, dateRange[0], hoverDate);
+
+          const isWithinHoverRangeBeginIndex =
+            hoverDate != null &&
+            notOnEndStartRange &&
+            index === 0 &&
+            isWithinRange(date, dateRange[0], hoverDate);
+
+          const isWithinRangeSelection =
+            isDateRangeValid &&
+            notOnEndStartRange &&
+            isWithinRange(date, dateRange[0], dateRange[1]);
+
+          const isWithinRangeSelectionEnd =
+            isDateRangeValid &&
+            notOnEndStartRange &&
+            index === 6 &&
+            isWithinRange(date, dateRange[0], dateRange[1]);
+
+          const isWithinRangeSelectionBegin =
+            isDateRangeValid &&
+            notOnEndStartRange &&
+            index === 0 &&
+            isWithinRange(date, dateRange[0], dateRange[1]);
+
           // render nothing
           if (!isSameMonth(month, date)) {
             return (
@@ -61,27 +114,99 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 {format(date, CALENDAR_DAY_FORMAT)}
               </TransparentButton>
             );
-            // render dark blue selected blocks
-          } else if (
-            isSameDay(dateRange[0], date) ||
-            isSameDay(dateRange[1], date)
-          ) {
+          } else if (isWithinHoverRangeEnd || isWithinHoverRangeEndIndex) {
             return (
-              <CalenderButton
-                color='selected'
+              <Button
+                style={{
+                  backgroundColor: BRAND_PRIMARY_LIGHT,
+                  borderTopRightRadius: '50%',
+                  borderBottomRightRadius: '50%',
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </CalenderButton>
+              </Button>
             );
-            // render blue range selection blocks
-          } else if (
-            (hoverDate != null &&
-              isWithinRange(date, dateRange[0], hoverDate)) ||
-            (isDateRangeValid &&
-              isWithinRange(date, dateRange[0], dateRange[1]))
-          ) {
+          } else if (isWithinHoverRangeBeginIndex) {
+            return (
+              <Button
+                style={{
+                  backgroundColor: BRAND_PRIMARY_LIGHT,
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                  borderTopLeftRadius: '50%',
+                  borderBottomLeftRadius: '50%',
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+          } else if (isWithinHoverRange) {
+            return (
+              <Button
+                style={{
+                  backgroundColor: BRAND_PRIMARY_LIGHT,
+                  borderRadius: 0,
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+          } else if (isWithinRangeSelectionEnd) {
+            return (
+              <Button
+                style={{
+                  backgroundColor: BRAND_PRIMARY_LIGHT,
+                  borderTopRightRadius: '50%',
+                  borderBottomRightRadius: '50%',
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+          } else if (isWithinRangeSelectionBegin) {
+            return (
+              <Button
+                style={{
+                  backgroundColor: BRAND_PRIMARY_LIGHT,
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                  borderTopLeftRadius: '50%',
+                  borderBottomLeftRadius: '50%',
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+          } else if (isWithinRangeSelection) {
             return (
               <CalenderButton
                 color='range'
@@ -93,7 +218,84 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 {format(date, CALENDAR_DAY_FORMAT)}
               </CalenderButton>
             );
-            // render default blocks non selected
+          } else if (isStartDate && hoverDate == null && dateRange[1] == null) {
+            return (
+              <Button
+                key={index}
+                style={{
+                  borderRadius: '50%',
+                  backgroundColor: BRAND_PRIMARY,
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
+          } else if (isStartDate) {
+            return (
+              <Flex
+                flex='1 1 0%'
+                alignItems='stretch'
+                justifyContent='stretch'
+                style={{
+                  position: 'relative'
+                }}
+                key={index}
+              >
+                <Flex
+                  flex='1 1 0%'
+                  style={{
+                    position: 'absolute',
+                    zIndex: 2,
+                    height: '44px',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0
+                  }}
+                >
+                  <Flex flex='1 1 0%' bg='white' />
+                  <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
+                </Flex>
+                <Button
+                  style={{
+                    zIndex: 3,
+                    position: 'absolute',
+                    borderRadius: '50%',
+                    width: '100%',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    backgroundColor: BRAND_PRIMARY,
+                    color: 'white'
+                  }}
+                  onClick={dispatchSelect}
+                  onMouseDown={e => e.preventDefault()}
+                  onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+                >
+                  {format(date, CALENDAR_DAY_FORMAT)}
+                </Button>
+              </Flex>
+            );
+          } else if (isEndDate) {
+            return (
+              <Button
+                style={{
+                  borderRadius: '50%',
+                  backgroundColor: BRAND_PRIMARY,
+                  color: 'white'
+                }}
+                onClick={dispatchSelect}
+                key={index}
+                onMouseDown={e => e.preventDefault()}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </Button>
+            );
           } else {
             return (
               <RoundButton
@@ -121,55 +323,96 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     const monthJSX = useMemo(() => {
       const currentMonth: DateMatrix = buildDateMatrix(month);
       return map(currentMonth, (week, index) => (
-        <CalendarRow key={index}>{renderWeek(week)}</CalendarRow>
+        <CalendarRowRange key={index}>{renderWeek(week)}</CalendarRowRange>
       ));
     }, [month, renderWeek]);
 
     const dayNamesJSX = useMemo(
       () => (
-        <CalendarRow>
+        <CalendarRowRange>
           {map(DAYS, day => (
             <DayNameBlocks key={day}>
-              <Typography style={{ fontSize: '14px' }} color='textPrimary'>
-                {day.slice(0, 3)}
+              <Typography style={{ fontSize: '14px' }} color='textSecondary'>
+                {day.slice(0, 1)}
               </Typography>
             </DayNameBlocks>
           ))}
-        </CalendarRow>
+        </CalendarRowRange>
       ),
       []
     );
 
     return (
-      <Container>
+      <MonthContainer>
         <CalendarHeader>
-          <CalendarRow hasText>
+          <CalendarRowRange hasText>
             <Typography
               style={{
                 fontSize: '16px',
-                marginTop: '-4px'
+                marginTop: '-2px'
               }}
               color='textPrimary'
             >
               {format(month, 'MMM YYYY')}
             </Typography>
-          </CalendarRow>
+          </CalendarRowRange>
           {dayNamesJSX}
         </CalendarHeader>
         <CalendarContents>{monthJSX}</CalendarContents>
-      </Container>
+      </MonthContainer>
     );
   }
 );
 
-// @todo: Find a better solution than this.
+const CalendarRowRange = styled(Flex)<{ hasText?: boolean }>`
+  flex: 1 1 0%;
+  flex-direction: row;
+  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  padding: 2px 0;
+
+  button {
+    display: flex;
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: 0 0;
+  }
+`;
+
+const MonthContainer = styled(Flex)`
+  flex: 1 1 0%;
+  flex-direction: column;
+  justify-content: stretch;
+  align-content: stretch;
+  position: relative;
+  margin: 0 8px;
+`;
+
+/* Contains Month Name Row + Day Names Row */
+const CalendarHeader = styled(Flex)`
+  max-height: 96px; /* 2 Rows = 2 * 44 */
+  flex-direction: column;
+  flex: 1 1 0%;
+`;
+
+const CalendarContents = styled(Flex)`
+  flex: 1 1 0%;
+  top: 96px; /* 2 Rows = 2 * 44 */
+  flex-direction: column;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+`;
+
+// @todo: Find a better solution than the ones below.
 const TransparentButton = withStyles({
   root: {
     backgroundColor: 'transparent',
     color: 'transparent',
     borderRadius: '50% !important',
-    // width: '40px',
-    // height: '40px',
+    width: '44px',
+    height: '44px',
     cursor: 'default',
     '&:hover': {
       backgroundColor: 'transparent'
@@ -179,32 +422,48 @@ const TransparentButton = withStyles({
 
 const RoundButton = withStyles({
   root: {
-    borderRadius: '50% !important'
-    // width: '40px',
-    // height: '40px'
-    // backgroundColor: `${BRAND_PRIMARY_LIGHT}`,
-    // color: 'white'
+    borderRadius: '50% !important',
+    width: '44px',
+    height: '44px',
+    '&:hover': {
+      backgroundColor: 'transparent'
+    }
   }
 })(Button);
 
-// @todo: is this the proper way to pass props to mat ui components
-// too complex, woulld like to be more simple
+// @todo find a better way to handle adding / removing styles depending on props
 interface CalendarButtonProps {
-  color: 'selected' | 'range';
+  color?: 'selected' | 'range' | 'rangeRight' | 'rangeLeft';
 }
 
-const CalenderButton = styled(
-  ({
-    color,
-    ...other
-  }: CalendarButtonProps & Omit<ButtonProps, keyof CalendarButtonProps>) => (
-    <Button {...other} />
+type OmittedTypes = Omit<ButtonProps, keyof CalendarButtonProps>;
+
+const CalenderButton = matStyled(
+  ({ color, ...buttonProps }: CalendarButtonProps & OmittedTypes) => (
+    <Button {...buttonProps} />
   )
 )({
-  background: (props: CalendarButtonProps) =>
-    props.color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`,
-  borderRadius: '50% !important',
+  background: ({ color }) =>
+    color === 'range'
+      ? `${BRAND_PRIMARY_LIGHT}`
+      : color === 'selected'
+      ? `${BRAND_PRIMARY}`
+      : 'white',
+  borderTopRightRadius: ({ color }) =>
+    color === 'rangeRight' ? '50% !important' : null,
+  borderBottomRightRadius: ({ color }) =>
+    color === 'rangeRight' ? '50% !important' : null,
+  borderTopLeftRadius: ({ color }) =>
+    color === 'rangeLeft' ? '50% !important' : null,
+  borderBottomLeftRadius: ({ color }) =>
+    color === 'rangeLeft' ? '50% !important' : null,
+  borderRadius: ({ color }) =>
+    color === 'range' ? '0px' : color === 'selected' ? '50% !important' : null,
   color: 'white',
-  height: 40,
-  width: 40
+  height: 44,
+  width: 44,
+  '&:hover': {
+    background: ({ color }) =>
+      color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`
+  }
 });

@@ -2,13 +2,14 @@ import styled from '@emotion/styled';
 import { Button, Divider } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
-import { addMonths, isAfter, isBefore } from 'date-fns';
+import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
 import React, { useCallback, useRef, useState, useReducer } from 'react';
 import { AnimatedGrid } from '../animatedGrid';
 import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
 import {
   CALENDAR_DIMENSIONS,
-  CALENDAR_DIMENSIONS_RANGE,
+  CALENDAR_DIMENSIONS_RANGE_HEIGHT,
+  CALENDAR_DIMENSIONS_RANGE_WIDTH,
   MAX_TIME_SPAN,
   MIDDLE_INDEX
 } from '../dateUtils';
@@ -94,8 +95,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     (incomingDate: Date) => {
       const isBeforeStart = isBefore(incomingDate, dateRange[0]);
       const isAfterStart = isAfter(incomingDate, dateRange[0]);
+      const isSameStart = isSameDay(incomingDate, dateRange[0]);
 
-      if (isSelecting && isBeforeStart) {
+      if (isSelecting && (isBeforeStart || isSameStart)) {
         dispatch({ type: 'CLEAR_HOVER_DATE' });
         onChange([incomingDate, null]);
       } else if (isSelecting && isAfterStart) {
@@ -130,7 +132,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       style: React.CSSProperties;
       columnIndex: number;
     }) => (
-      <div style={{ ...style, display: 'flex' }} key={key}>
+      <div
+        style={{
+          ...style,
+          display: 'flex'
+        }}
+        key={key}
+      >
         <CalendarMonthRange
           month={addMonths(initialDate.current, columnIndex - MIDDLE_INDEX)}
           onSelectRange={updateDateRange}
@@ -139,7 +147,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
         />
-        <Divider orientation='vertical' style={{ margin: '0 4px' }} />
+        <Divider orientation='vertical' />
         <CalendarMonthRange
           month={addMonths(initialDate.current, columnIndex - MIDDLE_INDEX + 1)}
           onSelectRange={updateDateRange}
@@ -175,12 +183,12 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       <AnimatedGrid
         column={monthOffset}
         cellRenderer={cellRenderer}
-        height={CALENDAR_DIMENSIONS}
-        width={CALENDAR_DIMENSIONS_RANGE}
-        rowHeight={CALENDAR_DIMENSIONS}
+        height={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
+        width={CALENDAR_DIMENSIONS_RANGE_WIDTH}
+        rowHeight={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
         rowCount={1}
         columnCount={MAX_TIME_SPAN}
-        columnWidth={CALENDAR_DIMENSIONS_RANGE}
+        columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
         style={{ overflow: 'hidden', outline: 'none' }}
         durationOfAnimation={800}
         onAnimationStart={onAnimationStart}
@@ -211,7 +219,7 @@ const background = {
 const DateRangeContainer = styled(Flex)`
   flex-direction: column;
   flex: 1 1 0%;
-  max-width: ${CALENDAR_DIMENSIONS_RANGE}px;
+  max-width: ${CALENDAR_DIMENSIONS_RANGE_WIDTH}px;
   justify-content: stretch;
   align-items: stretch;
   position: relative;
@@ -224,8 +232,9 @@ const ControlsContainer = styled(Flex)`
   flex: 1 1 0%;
   position: absolute;
   top: 0px;
-  left: 0px;
-  right: 0px;
+  left: 4px;
+  right: 4px;
+  height: 44px;
 
   button {
     width: 39px;

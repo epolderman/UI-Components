@@ -24,10 +24,11 @@ export const MONTH_DAY_YEAR_FORMAT = 'M/D/YY';
 
 export const MAX_NUMBER_WEEKS_SHOWN: number = 6;
 export const CALENDAR_DIMENSIONS: number = 300;
-/* 300(calenderMonthRange) + 300(calendarMonthRange) + 
-    9(Divider = 1px + 4px (padding on each side)) = 609 
+/* 308(calenderMonthRange) + 308(calendarMonthRange) + 
+    9(Divider = 1px + 4px (padding on each side)) = 625 
 */
-export const CALENDAR_DIMENSIONS_RANGE: number = 609;
+export const CALENDAR_DIMENSIONS_RANGE_WIDTH: number = 625;
+export const CALENDAR_DIMENSIONS_RANGE_HEIGHT: number = 384;
 export const MAX_TIME_SPAN: number = 1000;
 export const MIDDLE_INDEX: number = 500;
 export const CALENDAR_DAY_FORMAT = 'D';

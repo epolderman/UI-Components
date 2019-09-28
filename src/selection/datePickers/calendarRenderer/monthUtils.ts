@@ -43,7 +43,6 @@ export const CalendarRow = styled(Flex)<{ hasText?: boolean }>`
     min-width: 0;
     padding: 0 0;
     margin: 0 2px;
-    border-radius: 2.5px;
   }
 `;
 
