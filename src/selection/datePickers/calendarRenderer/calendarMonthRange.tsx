@@ -284,9 +284,6 @@ const buildCalendarDayStyle = (
   week: Date[],
   index: number
 ): React.CSSProperties => {
-  const notOnEndStartRange =
-    !isSameDay(dateRange[0], currentDate) &&
-    !isSameDay(dateRange[1], currentDate);
   const isDateRangeValid = dateRange[0] != null && dateRange[1] != null;
   let style: React.CSSProperties = {};
 
