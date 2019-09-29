@@ -23,10 +23,10 @@ import {
 */
 
 export interface CalendarMonthRangeProps {
-  month: Date; // current month being shown
-  dateRange: DateRangeTuple; // data set for our range
-  isSelecting: boolean; // are we selecting a new range?
-  hoverDate: Date; // latest hovered date
+  month: Date;
+  dateRange: DateRangeTuple;
+  isSelecting: boolean;
+  hoverDate: Date;
   onSelectHoverRange: (hoverDate: Date) => void;
   onSelectRange: (incomingDate: Date) => void;
 }
@@ -72,16 +72,14 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               <RangeStartComponent rangeSpecifier='start' key={index}>
                 <Button
                   style={{
+                    ...Full_Radius,
                     zIndex: 3,
                     position: 'absolute',
-                    borderRadius: '50%',
                     width: '100%',
                     top: 0,
                     bottom: 0,
                     left: 0,
-                    right: 0,
-                    backgroundColor: BRAND_PRIMARY,
-                    color: 'white'
+                    right: 0
                   }}
                   onClick={dispatchSelect}
                   onMouseDown={e => e.preventDefault()}
@@ -94,11 +92,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           } else if (isSameDay(dateRange[0], date)) {
             return (
               <CalenderNoHoverButton
-                style={{
-                  borderRadius: '50%',
-                  backgroundColor: BRAND_PRIMARY,
-                  color: 'white'
-                }}
+                style={Full_Radius}
                 key={index}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
@@ -116,16 +110,14 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               <RangeStartComponent rangeSpecifier='end' key={index}>
                 <Button
                   style={{
+                    ...Full_Radius,
                     zIndex: 3,
                     position: 'absolute',
-                    borderRadius: '50%',
                     width: '100%',
                     top: 0,
                     bottom: 0,
                     left: 0,
-                    right: 0,
-                    backgroundColor: BRAND_PRIMARY,
-                    color: 'white'
+                    right: 0
                   }}
                   onClick={dispatchSelect}
                   onMouseDown={e => e.preventDefault()}
@@ -138,11 +130,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           } else if (isSameDay(dateRange[1], date)) {
             return (
               <CalenderNoHoverButton
-                style={{
-                  borderRadius: '50%',
-                  backgroundColor: BRAND_PRIMARY,
-                  color: 'white'
-                }}
+                style={Full_Radius}
                 key={index}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
@@ -244,6 +232,12 @@ const Left_Radius: React.CSSProperties = {
 const Square: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
   borderRadius: 0,
+  color: 'white'
+};
+
+const Full_Radius: React.CSSProperties = {
+  backgroundColor: BRAND_PRIMARY,
+  borderRadius: '50%',
   color: 'white'
 };
 
