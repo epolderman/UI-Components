@@ -223,6 +223,30 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
   }
 );
 
+const Right_Radius: React.CSSProperties = {
+  backgroundColor: BRAND_PRIMARY_LIGHT,
+  borderTopRightRadius: '50%',
+  borderBottomRightRadius: '50%',
+  borderTopLeftRadius: 0,
+  borderBottomLeftRadius: 0,
+  color: 'white'
+};
+
+const Left_Radius: React.CSSProperties = {
+  backgroundColor: BRAND_PRIMARY_LIGHT,
+  borderTopRightRadius: 0,
+  borderBottomRightRadius: 0,
+  borderTopLeftRadius: '50%',
+  borderBottomLeftRadius: '50%',
+  color: 'white'
+};
+
+const Square: React.CSSProperties = {
+  backgroundColor: BRAND_PRIMARY_LIGHT,
+  borderRadius: 0,
+  color: 'white'
+};
+
 const buildCalendarDayStyle = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
@@ -232,63 +256,30 @@ const buildCalendarDayStyle = (
 ): React.CSSProperties => {
   const isStartDate = isSameDay(currentDate, dateRange[0]);
   const isDateRangeValid = dateRange[0] != null && dateRange[1] != null;
-  let style: React.CSSProperties = {};
 
   // while hovering states -->
-
   if (hoverDate != null && !isStartDate) {
     const isWithinRanges = isWithinRange(currentDate, dateRange[0], hoverDate);
 
-    if (isSameDay(currentDate, hoverDate) && index !== 0) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderTopRightRadius: '50%',
-        borderBottomRightRadius: '50%',
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        color: 'white'
-      };
-      return style;
-    }
-
-    if (isWithinRanges && index == 6) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderTopRightRadius: '50%',
-        borderBottomRightRadius: '50%',
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        color: 'white'
-      };
-      return style;
+    if (
+      (isSameDay(currentDate, hoverDate) && index !== 0) ||
+      (isWithinRanges && index === 6)
+    ) {
+      return Right_Radius;
     }
 
     // while hover, begin index, left side circle
     if (isWithinRanges && index === 0) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        borderTopLeftRadius: '50%',
-        borderBottomLeftRadius: '50%',
-        color: 'white'
-      };
-      return style;
+      return Left_Radius;
     }
 
     // while hovering, middle indices
     if (isWithinRanges) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderRadius: 0,
-        color: 'white'
-      };
-      return style;
+      return Square;
     }
   }
 
   // end and start ranges are already set states ->
-
   if (isDateRangeValid) {
     const isWithinRanges = isWithinRange(
       currentDate,
@@ -297,41 +288,20 @@ const buildCalendarDayStyle = (
     );
     // end index within range
     if (isWithinRanges && index === 6) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderTopRightRadius: '50%',
-        borderBottomRightRadius: '50%',
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-        color: 'white'
-      };
-      return style;
+      return Right_Radius;
     }
 
     // begin index start range
     if (isWithinRanges && index === 0) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        borderTopLeftRadius: '50%',
-        borderBottomLeftRadius: '50%',
-        color: 'white'
-      };
-      return style;
+      return Left_Radius;
     }
 
     // middle indexes within range
     if (isWithinRanges) {
-      style = {
-        backgroundColor: BRAND_PRIMARY_LIGHT,
-        borderRadius: 0,
-        color: 'white'
-      };
-      return style;
+      return Square;
     }
   }
-  return style;
+  return {};
 };
 
 const CalendarRowRange = styled(Flex)<{ hasText?: boolean }>`
