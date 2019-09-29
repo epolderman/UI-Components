@@ -1,14 +1,10 @@
+import styled from '@emotion/styled';
 import { Button, Typography, withStyles } from '@material-ui/core';
-import {
-  format,
-  isSameMonth,
-  isWithinRange,
-  isSameDay,
-  addDays,
-  isAfter
-} from 'date-fns';
+import { Flex } from '@rebass/grid/emotion';
+import { format, isSameDay, isSameMonth, isWithinRange } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import { DateRangeTuple } from '../dateRange/dateRangeSelector';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
@@ -17,15 +13,9 @@ import {
 } from '../dateUtils';
 import {
   BRAND_PRIMARY,
-  DayNameBlocks,
-  BRAND_PRIMARY_DARK,
-  BRAND_PRIMARY_LIGHT
+  BRAND_PRIMARY_LIGHT,
+  DayNameBlocks
 } from './monthUtils';
-import { DateRangeTuple } from '../dateRange/dateRangeSelector';
-import styled from '@emotion/styled';
-import { ButtonProps } from '@material-ui/core/Button';
-import { styled as matStyled } from '@material-ui/styles';
-import { Flex } from '@rebass/grid/emotion';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -75,6 +65,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           } else if (
             isSameDay(dateRange[0], date) &&
+            index !== 6 &&
             (hoverDate != null || isDateRangeValid)
           ) {
             return (
@@ -118,6 +109,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           } else if (
             isSameDay(dateRange[1], date) &&
+            index !== 0 &&
             (hoverDate != null || isDateRangeValid)
           ) {
             return (
@@ -247,7 +239,7 @@ const buildCalendarDayStyle = (
   if (hoverDate != null && !isStartDate) {
     const isWithinRanges = isWithinRange(currentDate, dateRange[0], hoverDate);
 
-    if (isSameDay(currentDate, hoverDate)) {
+    if (isSameDay(currentDate, hoverDate) && index !== 0) {
       style = {
         backgroundColor: BRAND_PRIMARY_LIGHT,
         borderTopRightRadius: '50%',
@@ -437,38 +429,38 @@ const RangeStartComponent: React.FC<{
 };
 
 // @todo find a better way to handle adding / removing styles depending on props
-interface CalendarButtonProps {
-  color?: 'selected' | 'range' | 'rangeRight' | 'rangeLeft';
-}
+// interface CalendarButtonProps {
+//   color?: 'selected' | 'range' | 'rangeRight' | 'rangeLeft';
+// }
 
-type OmittedTypes = Omit<ButtonProps, keyof CalendarButtonProps>;
+// type OmittedTypes = Omit<ButtonProps, keyof CalendarButtonProps>;
 
-const CalenderButton = matStyled(
-  ({ color, ...buttonProps }: CalendarButtonProps & OmittedTypes) => (
-    <Button {...buttonProps} />
-  )
-)({
-  background: ({ color }) =>
-    color === 'range'
-      ? `${BRAND_PRIMARY_LIGHT}`
-      : color === 'selected'
-      ? `${BRAND_PRIMARY}`
-      : 'white',
-  borderTopRightRadius: ({ color }) =>
-    color === 'rangeRight' ? '50% !important' : null,
-  borderBottomRightRadius: ({ color }) =>
-    color === 'rangeRight' ? '50% !important' : null,
-  borderTopLeftRadius: ({ color }) =>
-    color === 'rangeLeft' ? '50% !important' : null,
-  borderBottomLeftRadius: ({ color }) =>
-    color === 'rangeLeft' ? '50% !important' : null,
-  borderRadius: ({ color }) =>
-    color === 'range' ? '0px' : color === 'selected' ? '50% !important' : null,
-  color: 'white',
-  height: 44,
-  width: 44,
-  '&:hover': {
-    background: ({ color }) =>
-      color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`
-  }
-});
+// const CalenderButton = matStyled(
+//   ({ color, ...buttonProps }: CalendarButtonProps & OmittedTypes) => (
+//     <Button {...buttonProps} />
+//   )
+// )({
+//   background: ({ color }) =>
+//     color === 'range'
+//       ? `${BRAND_PRIMARY_LIGHT}`
+//       : color === 'selected'
+//       ? `${BRAND_PRIMARY}`
+//       : 'white',
+//   borderTopRightRadius: ({ color }) =>
+//     color === 'rangeRight' ? '50% !important' : null,
+//   borderBottomRightRadius: ({ color }) =>
+//     color === 'rangeRight' ? '50% !important' : null,
+//   borderTopLeftRadius: ({ color }) =>
+//     color === 'rangeLeft' ? '50% !important' : null,
+//   borderBottomLeftRadius: ({ color }) =>
+//     color === 'rangeLeft' ? '50% !important' : null,
+//   borderRadius: ({ color }) =>
+//     color === 'range' ? '0px' : color === 'selected' ? '50% !important' : null,
+//   color: 'white',
+//   height: 44,
+//   width: 44,
+//   '&:hover': {
+//     background: ({ color }) =>
+//       color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`
+//   }
+// });
