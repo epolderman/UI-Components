@@ -238,12 +238,13 @@ const buildCalendarDayStyle = (
   week: Date[],
   index: number
 ): React.CSSProperties => {
+  const isStartDate = isSameDay(currentDate, dateRange[0]);
   const isDateRangeValid = dateRange[0] != null && dateRange[1] != null;
   let style: React.CSSProperties = {};
 
   // while hovering states -->
 
-  if (hoverDate != null) {
+  if (hoverDate != null && !isStartDate) {
     const isWithinRanges = isWithinRange(currentDate, dateRange[0], hoverDate);
 
     if (isSameDay(currentDate, hoverDate)) {
@@ -271,7 +272,7 @@ const buildCalendarDayStyle = (
     }
 
     // while hover, begin index, left side circle
-    if (isWithinRanges && index == 0) {
+    if (isWithinRanges && index === 0) {
       style = {
         backgroundColor: BRAND_PRIMARY_LIGHT,
         borderTopRightRadius: 0,
@@ -338,7 +339,6 @@ const buildCalendarDayStyle = (
       return style;
     }
   }
-
   return style;
 };
 
@@ -387,7 +387,7 @@ const CalenderNoHoverButton = withStyles({
   root: {
     width: '44px',
     height: '44px',
-    borderRadius: 0,
+    borderRadius: '50%',
     '&:hover': {
       backgroundColor: 'transparent'
     }
