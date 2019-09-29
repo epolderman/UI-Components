@@ -1,7 +1,14 @@
 import styled from '@emotion/styled';
 import { Button, Typography, withStyles } from '@material-ui/core';
 import { Flex } from '@rebass/grid/emotion';
-import { format, isSameDay, isSameMonth, isWithinRange } from 'date-fns';
+import {
+  format,
+  isSameDay,
+  isSameMonth,
+  isWithinRange,
+  isLastDayOfMonth,
+  isFirstDayOfMonth
+} from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { DateRangeTuple } from '../dateRange/dateRangeSelector';
@@ -50,7 +57,6 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             dateRange,
             hoverDate,
             date,
-            week,
             index
           );
 
@@ -65,6 +71,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           } else if (
             isSameDay(dateRange[0], date) &&
+            !isLastDayOfMonth(date) &&
             index !== 6 &&
             (hoverDate != null || isDateRangeValid)
           ) {
@@ -103,6 +110,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             );
           } else if (
             isSameDay(dateRange[1], date) &&
+            !isFirstDayOfMonth(date) &&
             index !== 0 &&
             (hoverDate != null || isDateRangeValid)
           ) {
@@ -245,7 +253,6 @@ const buildCalendarDayStyle = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
   currentDate: Date,
-  week: Date[],
   index: number
 ): React.CSSProperties => {
   const isStartDate = isSameDay(currentDate, dateRange[0]);
@@ -256,14 +263,16 @@ const buildCalendarDayStyle = (
     const isWithinRanges = isWithinRange(currentDate, dateRange[0], hoverDate);
 
     if (
-      (isSameDay(currentDate, hoverDate) && index !== 0) ||
-      (isWithinRanges && index === 6)
+      (isSameDay(currentDate, hoverDate) &&
+        index !== 0 &&
+        !isFirstDayOfMonth(currentDate)) ||
+      (isWithinRanges && (index === 6 || isLastDayOfMonth(currentDate)))
     ) {
       return Right_Radius;
     }
 
     // while hover, begin index, left side circle
-    if (isWithinRanges && index === 0) {
+    if (isWithinRanges && (index === 0 || isFirstDayOfMonth(currentDate))) {
       return Left_Radius;
     }
 
@@ -281,12 +290,12 @@ const buildCalendarDayStyle = (
       dateRange[1]
     );
     // end index within range
-    if (isWithinRanges && index === 6) {
+    if (isWithinRanges && (index === 6 || isLastDayOfMonth(currentDate))) {
       return Right_Radius;
     }
 
     // begin index start range
-    if (isWithinRanges && index === 0) {
+    if (isWithinRanges && (index === 0 || isFirstDayOfMonth(currentDate))) {
       return Left_Radius;
     }
 
@@ -343,7 +352,7 @@ const CalenderNoHoverButton = withStyles({
   root: {
     width: '44px',
     height: '44px',
-    borderRadius: '50%',
+    transition: 'none',
     '&:hover': {
       backgroundColor: 'transparent'
     }
