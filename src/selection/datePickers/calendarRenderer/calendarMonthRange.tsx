@@ -78,30 +78,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             (hoverDate != null || isDateRangeValid)
           ) {
             return (
-              <Flex
-                flex='1 1 0%'
-                alignItems='stretch'
-                justifyContent='stretch'
-                style={{
-                  position: 'relative'
-                }}
-                key={index}
-              >
-                <Flex
-                  flex='1 1 0%'
-                  style={{
-                    position: 'absolute',
-                    zIndex: 2,
-                    height: '44px',
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0
-                  }}
-                >
-                  <Flex flex='1 1 0%' bg='white' />
-                  <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
-                </Flex>
+              <RangeStartComponent rangeSpecifier='start' key={index}>
                 <Button
                   style={{
                     zIndex: 3,
@@ -121,7 +98,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </Flex>
+              </RangeStartComponent>
             );
           } else if (isSameDay(dateRange[0], date)) {
             return (
@@ -144,30 +121,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             (hoverDate != null || isDateRangeValid)
           ) {
             return (
-              <Flex
-                flex='1 1 0%'
-                alignItems='stretch'
-                justifyContent='stretch'
-                style={{
-                  position: 'relative'
-                }}
-                key={index}
-              >
-                <Flex
-                  flex='1 1 0%'
-                  style={{
-                    position: 'absolute',
-                    zIndex: 2,
-                    height: '44px',
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0
-                  }}
-                >
-                  <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
-                  <Flex flex='1 1 0%' bg='white' />
-                </Flex>
+              <RangeStartComponent rangeSpecifier='end' key={index}>
                 <Button
                   style={{
                     zIndex: 3,
@@ -187,7 +141,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </Flex>
+              </RangeStartComponent>
             );
           } else if (isSameDay(dateRange[1], date)) {
             return (
@@ -439,6 +393,48 @@ const CalenderNoHoverButton = withStyles({
     }
   }
 })(Button);
+
+const RangeStartComponent: React.FC<{
+  children?: React.ReactNode;
+  rangeSpecifier: 'start' | 'end';
+}> = ({ children, rangeSpecifier }) => {
+  return (
+    <Flex
+      flex='1 1 0%'
+      alignItems='stretch'
+      justifyContent='stretch'
+      style={{
+        position: 'relative'
+      }}
+    >
+      <Flex
+        flex='1 1 0%'
+        style={{
+          position: 'absolute',
+          zIndex: 2,
+          height: '44px',
+          top: 0,
+          bottom: 0,
+          right: 0,
+          left: 0
+        }}
+      >
+        {rangeSpecifier === 'start' ? (
+          <>
+            <Flex flex='1 1 0%' bg='white' />
+            <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
+          </>
+        ) : (
+          <>
+            <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
+            <Flex flex='1 1 0%' bg='white' />
+          </>
+        )}
+      </Flex>
+      {children}
+    </Flex>
+  );
+};
 
 // @todo find a better way to handle adding / removing styles depending on props
 interface CalendarButtonProps {
