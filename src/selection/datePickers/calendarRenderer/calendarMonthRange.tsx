@@ -26,7 +26,6 @@ import {
 
 /*
    Calculation of calendar month data + date range rendering 
-   @todo redo all styles
 */
 
 export interface CalendarMonthRangeProps {
@@ -53,12 +52,6 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       (week: Date[]) => {
         return map(week, (date, index) => {
           const dispatchSelect = () => onSelectRange(date);
-          const markerStyles = buildCalendarDayStyle(
-            dateRange,
-            hoverDate,
-            date,
-            index
-          );
 
           if (!isSameMonth(month, date)) {
             return (
@@ -79,7 +72,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               <RangeStartComponent rangeSpecifier='start' key={index}>
                 <Button
                   style={{
-                    ...Full_Radius,
+                    ...FULL_RADIUS_STYLE,
                     zIndex: 3,
                     position: 'absolute',
                     width: '100%',
@@ -99,7 +92,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           } else if (isSameDay(dateRange[0], date)) {
             return (
               <CalenderNoHoverButton
-                style={Full_Radius}
+                style={FULL_RADIUS_STYLE}
                 key={index}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
@@ -118,7 +111,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               <RangeStartComponent rangeSpecifier='end' key={index}>
                 <Button
                   style={{
-                    ...Full_Radius,
+                    ...FULL_RADIUS_STYLE,
                     zIndex: 3,
                     position: 'absolute',
                     width: '100%',
@@ -138,7 +131,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           } else if (isSameDay(dateRange[1], date)) {
             return (
               <CalenderNoHoverButton
-                style={Full_Radius}
+                style={FULL_RADIUS_STYLE}
                 key={index}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
@@ -151,7 +144,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             return (
               <CalenderNoHoverButton
                 key={index}
-                style={markerStyles}
+                style={styleBuilder(dateRange, hoverDate, date, index, week)}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
                 onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
@@ -219,7 +212,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
   }
 );
 
-const Right_Radius: React.CSSProperties = {
+const RIGHT_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
   borderTopRightRadius: '50%',
   borderBottomRightRadius: '50%',
@@ -228,7 +221,7 @@ const Right_Radius: React.CSSProperties = {
   color: 'white'
 };
 
-const Left_Radius: React.CSSProperties = {
+const LEFT_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
   borderTopRightRadius: 0,
   borderBottomRightRadius: 0,
@@ -237,74 +230,93 @@ const Left_Radius: React.CSSProperties = {
   color: 'white'
 };
 
-const Square: React.CSSProperties = {
+const SQUARE_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
   borderRadius: 0,
   color: 'white'
 };
 
-const Full_Radius: React.CSSProperties = {
+const FULL_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY,
   borderRadius: '50%',
   color: 'white'
 };
 
-const buildCalendarDayStyle = (
+const styleBuilder = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
   currentDate: Date,
-  index: number
-): React.CSSProperties => {
+  index: number,
+  week: Date[]
+): React.CSSProperties | null => {
   const isStartDate = isSameDay(currentDate, dateRange[0]);
-  const isDateRangeValid = dateRange[0] != null && dateRange[1] != null;
+  const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
+  const isValidHoverDateRange = hoverDate != null && !isStartDate;
+  if (!isValidHoverDateRange && !isValidDateRange) {
+    return null;
+  }
 
   // while hovering states -->
-  if (hoverDate != null && !isStartDate) {
-    const isWithinRanges = isWithinRange(currentDate, dateRange[0], hoverDate);
+  if (isValidHoverDateRange) {
+    const isWithinHoverRange = isWithinRange(
+      currentDate,
+      dateRange[0],
+      hoverDate
+    );
+
+    const isValidHoverRightDate =
+      isSameDay(currentDate, hoverDate) &&
+      index !== 0 &&
+      !isFirstDayOfMonth(currentDate);
+
+    const nextIndexIsOutOfRange =
+      week[index + 1] != null &&
+      !isWithinRange(week[index + 1], dateRange[0], hoverDate);
 
     if (
-      (isSameDay(currentDate, hoverDate) &&
-        index !== 0 &&
-        !isFirstDayOfMonth(currentDate)) ||
-      (isWithinRanges && (index === 6 || isLastDayOfMonth(currentDate)))
+      isValidHoverRightDate ||
+      (isWithinHoverRange && (index === 6 || isLastDayOfMonth(currentDate)))
     ) {
-      return Right_Radius;
+      return RIGHT_RADIUS_STYLE;
     }
 
-    // while hover, begin index, left side circle
-    if (isWithinRanges && (index === 0 || isFirstDayOfMonth(currentDate))) {
-      return Left_Radius;
+    if (
+      isWithinHoverRange &&
+      nextIndexIsOutOfRange &&
+      (index === 0 || isFirstDayOfMonth(currentDate))
+    ) {
+      return { ...FULL_RADIUS_STYLE, backgroundColor: BRAND_PRIMARY_LIGHT };
     }
 
-    // while hovering, middle indices
-    if (isWithinRanges) {
-      return Square;
+    if (isWithinHoverRange && (index === 0 || isFirstDayOfMonth(currentDate))) {
+      return LEFT_RADIUS_STYLE;
+    }
+
+    if (isWithinHoverRange) {
+      return SQUARE_STYLE;
     }
   }
 
-  // end and start ranges are already set states ->
-  if (isDateRangeValid) {
-    const isWithinRanges = isWithinRange(
+  // set date ranges state -->
+  if (isValidDateRange) {
+    const isWithinDateRanges = isWithinRange(
       currentDate,
       dateRange[0],
       dateRange[1]
     );
-    // end index within range
-    if (isWithinRanges && (index === 6 || isLastDayOfMonth(currentDate))) {
-      return Right_Radius;
+
+    if (isWithinDateRanges && (index === 6 || isLastDayOfMonth(currentDate))) {
+      return RIGHT_RADIUS_STYLE;
     }
 
-    // begin index start range
-    if (isWithinRanges && (index === 0 || isFirstDayOfMonth(currentDate))) {
-      return Left_Radius;
+    if (isWithinDateRanges && (index === 0 || isFirstDayOfMonth(currentDate))) {
+      return LEFT_RADIUS_STYLE;
     }
 
-    // middle indexes within range
-    if (isWithinRanges) {
-      return Square;
+    if (isWithinDateRanges) {
+      return SQUARE_STYLE;
     }
   }
-  return {};
 };
 
 const CalendarRowRange = styled(Flex)<{ hasText?: boolean }>`
@@ -400,40 +412,3 @@ const RangeStartComponent: React.FC<{
     </Flex>
   );
 };
-
-// @todo find a better way to handle adding / removing styles depending on props
-// interface CalendarButtonProps {
-//   color?: 'selected' | 'range' | 'rangeRight' | 'rangeLeft';
-// }
-
-// type OmittedTypes = Omit<ButtonProps, keyof CalendarButtonProps>;
-
-// const CalenderButton = matStyled(
-//   ({ color, ...buttonProps }: CalendarButtonProps & OmittedTypes) => (
-//     <Button {...buttonProps} />
-//   )
-// )({
-//   background: ({ color }) =>
-//     color === 'range'
-//       ? `${BRAND_PRIMARY_LIGHT}`
-//       : color === 'selected'
-//       ? `${BRAND_PRIMARY}`
-//       : 'white',
-//   borderTopRightRadius: ({ color }) =>
-//     color === 'rangeRight' ? '50% !important' : null,
-//   borderBottomRightRadius: ({ color }) =>
-//     color === 'rangeRight' ? '50% !important' : null,
-//   borderTopLeftRadius: ({ color }) =>
-//     color === 'rangeLeft' ? '50% !important' : null,
-//   borderBottomLeftRadius: ({ color }) =>
-//     color === 'rangeLeft' ? '50% !important' : null,
-//   borderRadius: ({ color }) =>
-//     color === 'range' ? '0px' : color === 'selected' ? '50% !important' : null,
-//   color: 'white',
-//   height: 44,
-//   width: 44,
-//   '&:hover': {
-//     background: ({ color }) =>
-//       color === 'range' ? `${BRAND_PRIMARY_LIGHT}` : `${BRAND_PRIMARY}`
-//   }
-// });
