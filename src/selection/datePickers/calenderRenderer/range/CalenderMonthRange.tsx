@@ -1,4 +1,3 @@
-import styled from '@emotion/styled';
 import { Button, Typography, withStyles } from '@material-ui/core';
 import { Flex } from '@rebass/grid/emotion';
 import {
@@ -11,18 +10,27 @@ import {
 } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { DateRangeTuple } from '../dateRange/dateRangeSelector';
+import { DateRangeTuple } from '../../dateRange/DateRangeSelector';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
   DAYS
-} from '../dateUtils';
+} from '../../dateUtils';
 import {
-  BRAND_PRIMARY,
-  BRAND_PRIMARY_LIGHT,
-  DayNameBlocks
-} from './monthUtils';
+  CalendarRowRange,
+  MonthContainer,
+  CalendarContents,
+  FULL_RADIUS_STYLE,
+  RANGE_BUTTON_STYLE,
+  RIGHT_RADIUS_STYLE,
+  SQUARE_STYLE,
+  LEFT_RADIUS_STYLE,
+  DayNameBlocks,
+  CalendarHeader,
+  BRAND_PRIMARY_LIGHT
+} from './rangeUtils';
+import { RangeStart } from './RangeStart';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -235,44 +243,6 @@ const renderSkeletonWeek = (week: Date[], month: Date) => {
   });
 };
 
-/* Day marker styles / See mockups */
-const RIGHT_RADIUS_STYLE: React.CSSProperties = {
-  backgroundColor: BRAND_PRIMARY_LIGHT,
-  borderTopRightRadius: '50%',
-  borderBottomRightRadius: '50%',
-  borderTopLeftRadius: 0,
-  borderBottomLeftRadius: 0
-};
-
-const LEFT_RADIUS_STYLE: React.CSSProperties = {
-  backgroundColor: BRAND_PRIMARY_LIGHT,
-  borderTopRightRadius: 0,
-  borderBottomRightRadius: 0,
-  borderTopLeftRadius: '50%',
-  borderBottomLeftRadius: '50%'
-};
-
-const SQUARE_STYLE: React.CSSProperties = {
-  backgroundColor: BRAND_PRIMARY_LIGHT,
-  borderRadius: 0
-};
-
-const FULL_RADIUS_STYLE: React.CSSProperties = {
-  backgroundColor: BRAND_PRIMARY,
-  borderRadius: '50%',
-  color: 'white'
-};
-
-const RANGE_BUTTON_STYLE: React.CSSProperties = {
-  zIndex: 3,
-  position: 'absolute',
-  width: '100%',
-  top: 0,
-  bottom: 0,
-  left: 0,
-  right: 0
-};
-
 const styleBuilder = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
@@ -354,47 +324,6 @@ const styleBuilder = (
   }
 };
 
-const CalendarRowRange = styled(Flex)<{ hasText?: boolean }>`
-  flex: 1 1 0%;
-  flex-direction: row;
-  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
-  align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
-  padding: 2px 0;
-
-  button {
-    display: flex;
-    flex: 1 1 0%;
-    min-width: 0;
-    padding: 0 0;
-  }
-`;
-
-const MonthContainer = styled(Flex)`
-  flex: 1 1 0%;
-  flex-direction: column;
-  justify-content: stretch;
-  align-content: stretch;
-  position: relative;
-  margin: 0 8px;
-`;
-
-/* Contains Month Name Row + Day Names Row */
-const CalendarHeader = styled(Flex)`
-  max-height: 96px; /* 2 Rows = 2 * 44 */
-  flex-direction: column;
-  flex: 1 1 0%;
-`;
-
-const CalendarContents = styled(Flex)`
-  flex: 1 1 0%;
-  top: 96px; /* 2 Rows = 2 * 44 */
-  flex-direction: column;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  position: absolute;
-`;
-
 const CalenderNoHoverButton = withStyles({
   root: {
     width: '44px',
@@ -405,49 +334,3 @@ const CalenderNoHoverButton = withStyles({
     }
   }
 })(Button);
-
-/* 
-  Container that has two divs behind children[button], depending on direction[range specifier], 
-  will render the color on the left or right side visualizing range start
-*/
-const RangeStart: React.FC<{
-  children?: React.ReactNode;
-  rangeSpecifier: 'start' | 'end';
-}> = ({ children, rangeSpecifier }) => {
-  return (
-    <Flex
-      flex='1 1 0%'
-      alignItems='stretch'
-      justifyContent='stretch'
-      style={{
-        position: 'relative'
-      }}
-    >
-      <Flex
-        flex='1 1 0%'
-        style={{
-          position: 'absolute',
-          zIndex: 2,
-          height: '44px',
-          top: 0,
-          bottom: 0,
-          right: 0,
-          left: 0
-        }}
-      >
-        {rangeSpecifier === 'start' ? (
-          <>
-            <Flex flex='1 1 0%' bg='white' />
-            <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
-          </>
-        ) : (
-          <>
-            <Flex flex='1 1 0%' bg={BRAND_PRIMARY_LIGHT} />
-            <Flex flex='1 1 0%' bg='white' />
-          </>
-        )}
-      </Flex>
-      {children}
-    </Flex>
-  );
-};

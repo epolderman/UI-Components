@@ -5,10 +5,10 @@ import { addMonths, format, isValid, parse } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../../common/elevation';
-import { AnimatedGrid } from '../animatedGrid';
-import { CalendarMonth } from '../calenderRenderer/calenderMonth';
+import { AnimatedGrid } from '../AnimatedGrid';
+import { CalendarMonth } from '../CalenderRenderer/CalenderMonth';
 import { usePrevious } from '../../../utils/hooks';
-import { DateTextField } from './dateTextField';
+import { DateTextField } from './DateTextField';
 import {
   CALENDAR_DIMENSIONS,
   MONTH_DAY_YEAR_FORMAT,

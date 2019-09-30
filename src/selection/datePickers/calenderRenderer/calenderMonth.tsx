@@ -10,15 +10,8 @@ import {
   isSameDate,
   MAX_NUMBER_WEEKS_SHOWN
 } from '../dateUtils';
-import {
-  BACKGROUND_EMPTY,
-  BRAND_PRIMARY,
-  CalendarContents,
-  CalendarHeader,
-  CalendarRow,
-  Container,
-  DayNameBlocks
-} from './monthUtils';
+import styled from '@emotion/styled';
+import { Flex } from '@rebass/grid/emotion';
 
 /*
    Calculation of calendar month data / Selection of calendar day
@@ -139,3 +132,59 @@ const renderSkeletonWeek = (week: any[]) => {
     </Button>
   ));
 };
+
+const Container = styled(Flex)`
+  flex: 1 1 0%;
+  flex-direction: column;
+  justify-content: stretch;
+  align-content: stretch;
+  position: relative;
+`;
+
+/* Contains Month Name Row + Day Names Row */
+const CalendarHeader = styled(Flex)`
+  max-height: 75px; /* 2 Rows = 2 * 37.5 */
+  flex-direction: column;
+  flex: 1 1 0%;
+`;
+
+const CalendarContents = styled(Flex)`
+  flex: 1 1 0%;
+  top: 75px; /* 2 Rows = 2 * 37.5 */
+  flex-direction: column;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+`;
+
+const CalendarRow = styled(Flex)<{ hasText?: boolean }>`
+  flex: 1 1 0%;
+  flex-direction: row;
+  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  padding: 2px 0;
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: 0 0;
+    margin: 0 2px;
+  }
+`;
+
+const DayNameBlocks = styled(Flex)`
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 0 0;
+  margin: 0 2px;
+  border-radius: 2.5px;
+`;
+
+const BACKGROUND_EMPTY = 'rgb(238,238,238)';
+const BRAND_PRIMARY = 'rgb(74,175,227)';

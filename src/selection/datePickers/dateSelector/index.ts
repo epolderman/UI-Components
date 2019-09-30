@@ -1,1 +1,1 @@
-export * from './dateSelector';
+export * from './DateSelector';
