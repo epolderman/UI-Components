@@ -92,8 +92,8 @@ const AnimatedWrapper = styled(animated.div, {
   height: 100%;
   justify-content: center;
   align-items: center;
-  padding-left: ${props => (props.isSmall ? '0px' : '8px')};
-  padding-right: ${props => (props.isSmall ? '0px' : '8px')};
+  padding-left: ${({ isSmall }) => (isSmall ? '0px' : '8px')};
+  padding-right: ${({ isSmall }) => (isSmall ? '0px' : '8px')};
   z-index: 99;
   border-radius: 4px;
   background-color: ${BACKGROUND_EMPTY};

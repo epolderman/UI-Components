@@ -5,7 +5,6 @@ import { Flex } from '@rebass/grid/emotion';
 import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
 import React, { useCallback, useRef, useReducer } from 'react';
 import { AnimatedGrid } from '../AnimatedGrid';
-import { CalendarMonthRange } from '../CalenderRenderer/range/CalenderMonthRange';
 import {
   CALENDAR_DIMENSIONS_RANGE_HEIGHT,
   CALENDAR_DIMENSIONS_RANGE_WIDTH,
@@ -14,7 +13,7 @@ import {
 } from '../dateUtils';
 import { DateRangeTextFields } from './DateRangeTextFields';
 import { makeShadow, ELEVATIONS } from '../../../common/elevation';
-
+import { CalendarMonthRange } from '../calenderRenderer/CalenderMonthRange';
 /* 
   Date Range Selector Todo
   1. Add StartDate logic to move to different calendar month if suppplied by user.

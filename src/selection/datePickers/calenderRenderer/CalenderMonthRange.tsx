@@ -10,13 +10,13 @@ import {
 } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { DateRangeTuple } from '../../dateRange/DateRangeSelector';
+import { DateRangeTuple } from '../dateRange/DateRangeSelector';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
   DAYS
-} from '../../dateUtils';
+} from '../dateUtils';
 import {
   CalendarRowRange,
   MonthContainer,
