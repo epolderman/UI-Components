@@ -69,17 +69,11 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             (hoverDate != null || isValidDateRange)
           ) {
             return (
-              <RangeStartComponent rangeSpecifier='start' key={index}>
+              <RangeStart rangeSpecifier='start' key={index}>
                 <Button
                   style={{
                     ...FULL_RADIUS_STYLE,
-                    zIndex: 3,
-                    position: 'absolute',
-                    width: '100%',
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0
+                    ...RANGE_BUTTON_STYLE
                   }}
                   onClick={dispatchSelect}
                   onMouseDown={e => e.preventDefault()}
@@ -87,7 +81,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </RangeStartComponent>
+              </RangeStart>
             );
           } else if (isSameDay(dateRange[0], date)) {
             return (
@@ -108,17 +102,11 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             (hoverDate != null || isValidDateRange)
           ) {
             return (
-              <RangeStartComponent rangeSpecifier='end' key={index}>
+              <RangeStart rangeSpecifier='end' key={index}>
                 <Button
                   style={{
                     ...FULL_RADIUS_STYLE,
-                    zIndex: 3,
-                    position: 'absolute',
-                    width: '100%',
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0
+                    ...RANGE_BUTTON_STYLE
                   }}
                   onClick={dispatchSelect}
                   onMouseDown={e => e.preventDefault()}
@@ -126,7 +114,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </RangeStartComponent>
+              </RangeStart>
             );
           } else if (isSameDay(dateRange[1], date)) {
             return (
@@ -241,6 +229,16 @@ const FULL_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY,
   borderRadius: '50%',
   color: 'white'
+};
+
+const RANGE_BUTTON_STYLE: React.CSSProperties = {
+  zIndex: 3,
+  position: 'absolute',
+  width: '100%',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0
 };
 
 const styleBuilder = (
@@ -374,9 +372,9 @@ const CalenderNoHoverButton = withStyles({
 
 /* 
   Container that has two divs behind children[button], depending on direction[range specifier], 
-  will render the color on the left or right side
+  will render the color on the left or right side visuallizing range start
 */
-const RangeStartComponent: React.FC<{
+const RangeStart: React.FC<{
   children?: React.ReactNode;
   rangeSpecifier: 'start' | 'end';
 }> = ({ children, rangeSpecifier }) => {
