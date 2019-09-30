@@ -372,7 +372,7 @@ const CalenderNoHoverButton = withStyles({
 
 /* 
   Container that has two divs behind children[button], depending on direction[range specifier], 
-  will render the color on the left or right side visuallizing range start
+  will render the color on the left or right side visualizing range start
 */
 const RangeStart: React.FC<{
   children?: React.ReactNode;
