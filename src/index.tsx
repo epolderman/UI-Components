@@ -9,8 +9,8 @@ import { DateRangeExample } from './selection/datePickers/dateRange/dateRange.ex
 
 const App: React.FC = () => (
   <MuiThemeProvider theme={theme}>
-    <Flex justifyContent='stretch' alignItems='stretch' flex='1 1 0%' bg='grey'>
-      <DateExample />
+    <Flex justifyContent='center' alignItems='stretch' flex='1 1 0%'>
+      {/* <DateExample /> */}
       <DateRangeExample />
       {/* <Flex flex='1 1 0%' justifyContent='center' alignItems='center'>
         <FoldViewExample />

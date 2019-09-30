@@ -12,6 +12,8 @@ import {
   MAX_TIME_SPAN,
   MIDDLE_INDEX
 } from '../dateUtils';
+import { DateRangeTextFields } from './DateRangeTextFields';
+import { makeShadow, ELEVATIONS } from '../../../common/elevation';
 
 /* 
   Date Range Selector Todo
@@ -183,30 +185,51 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   );
 
   return (
-    <DateRangeContainer>
-      <AnimatedGrid
-        column={monthOffset}
-        cellRenderer={cellRenderer}
-        height={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
-        width={CALENDAR_DIMENSIONS_RANGE_WIDTH}
-        rowHeight={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
-        rowCount={1}
-        columnCount={MAX_TIME_SPAN}
-        columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
-        style={{ overflow: 'hidden', outline: 'none' }}
-        durationOfAnimation={800}
-        onAnimationStart={onAnimationStart}
-        onAnimationEnd={onAnimationEnd}
-      />
-      <ControlsContainer>
-        <Button disableRipple onClick={() => toMonth('prev')}>
-          <KeyboardArrowLeft />
-        </Button>
-        <Button disableRipple onClick={() => toMonth('next')}>
-          <KeyboardArrowRight />
-        </Button>
-      </ControlsContainer>
-    </DateRangeContainer>
+    <Flex
+      justifyContent='center'
+      alignItems='center'
+      flex='1 1 0%'
+      style={{ position: 'relative', maxWidth: '625px' }}
+    >
+      <DateRangeTextFields />
+      <Flex
+        justifyContent='stretch'
+        alignItems='stretch'
+        flexDirection='column'
+        flex='1 1 0%'
+        style={{
+          position: 'absolute',
+          top: '40px',
+          bottom: 0,
+          left: 0
+        }}
+      >
+        <DateRangeContainer>
+          <AnimatedGrid
+            column={monthOffset}
+            cellRenderer={cellRenderer}
+            height={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
+            width={CALENDAR_DIMENSIONS_RANGE_WIDTH}
+            rowHeight={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
+            rowCount={1}
+            columnCount={MAX_TIME_SPAN}
+            columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
+            style={{ overflow: 'hidden', outline: 'none' }}
+            durationOfAnimation={800}
+            onAnimationStart={onAnimationStart}
+            onAnimationEnd={onAnimationEnd}
+          />
+          <ControlsContainer>
+            <Button disableRipple onClick={() => toMonth('prev')}>
+              <KeyboardArrowLeft />
+            </Button>
+            <Button disableRipple onClick={() => toMonth('next')}>
+              <KeyboardArrowRight />
+            </Button>
+          </ControlsContainer>
+        </DateRangeContainer>
+      </Flex>
+    </Flex>
   );
 };
 
@@ -228,6 +251,7 @@ const DateRangeContainer = styled(Flex)`
   align-items: stretch;
   position: relative;
   background-color: ${background.content.primary};
+  ${makeShadow(ELEVATIONS.MENU)};
 `;
 
 const ControlsContainer = styled(Flex)`
