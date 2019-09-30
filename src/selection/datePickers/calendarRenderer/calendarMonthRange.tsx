@@ -52,6 +52,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       (week: Date[]) => {
         return map(week, (date, index) => {
           const dispatchSelect = () => onSelectRange(date);
+          const isSelectionInProgress = hoverDate != null || isValidDateRange;
 
           if (!isSameMonth(month, date)) {
             return (
@@ -66,7 +67,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSameDay(dateRange[0], date) &&
             !isLastDayOfMonth(date) &&
             index !== 6 &&
-            (hoverDate != null || isValidDateRange)
+            isSelectionInProgress
           ) {
             return (
               <RangeStart rangeSpecifier='start' key={index}>
@@ -99,7 +100,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSameDay(dateRange[1], date) &&
             !isFirstDayOfMonth(date) &&
             index !== 0 &&
-            (hoverDate != null || isValidDateRange)
+            isSelectionInProgress
           ) {
             return (
               <RangeStart rangeSpecifier='end' key={index}>
@@ -296,7 +297,7 @@ const styleBuilder = (
     }
   }
 
-  // set date ranges states -->
+  // we have a set date range states -->
   if (isValidDateRange) {
     const isWithinDateRanges = isWithinRange(
       currentDate,
