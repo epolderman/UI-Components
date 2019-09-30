@@ -112,6 +112,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
   const onSelectHoverRange = useCallback(
     (incomingDate: Date) => {
+      // update hover date as long as not on dateRange, never clear
       if (isAfter(incomingDate, dateRange[0])) {
         dispatch({ type: 'UPDATE_HOVER_DATE', payload: incomingDate });
       } else {
@@ -125,11 +126,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     ({
       key,
       style,
-      columnIndex
+      columnIndex,
+      isScrolling
     }: {
       key: string;
       style: React.CSSProperties;
       columnIndex: number;
+      isScrolling: boolean;
     }) => (
       <div
         style={{
@@ -145,6 +148,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
+          isLoading={isScrolling}
         />
         <Divider orientation='vertical' />
         <CalendarMonthRange
@@ -154,6 +158,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
+          isLoading={isScrolling}
         />
       </div>
     ),

@@ -35,6 +35,7 @@ export interface CalendarMonthRangeProps {
   hoverDate: Date;
   onSelectHoverRange: (hoverDate: Date) => void;
   onSelectRange: (incomingDate: Date) => void;
+  isLoading?: boolean;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
@@ -44,7 +45,8 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     isSelecting,
     onSelectHoverRange,
     hoverDate,
-    dateRange
+    dateRange,
+    isLoading
   }) => {
     const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
 
@@ -164,6 +166,15 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       ));
     }, [month, renderCalendarWeek]);
 
+    const skeletonMonthJSX = useMemo(() => {
+      const currentMonth: DateMatrix = buildDateMatrix(month);
+      return map(currentMonth, (week, index) => (
+        <CalendarRowRange key={index}>
+          {renderSkeletonWeek(week, month)}
+        </CalendarRowRange>
+      ));
+    }, [month]);
+
     const dayNamesJSX = useMemo(
       () => (
         <CalendarRowRange>
@@ -195,11 +206,34 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           </CalendarRowRange>
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarContents>{monthJSX}</CalendarContents>
+        <CalendarContents>
+          {isLoading ? skeletonMonthJSX : monthJSX}
+        </CalendarContents>
       </MonthContainer>
     );
   }
 );
+
+const renderSkeletonWeek = (week: Date[], month: Date) => {
+  return map(week, (date, index) => {
+    if (!isSameMonth(month, date)) {
+      return (
+        <Flex
+          key={index}
+          flex='1 1 0%'
+          justifyContent='stretch'
+          alignItems='stretch'
+        />
+      );
+    } else {
+      return (
+        <CalenderNoHoverButton key={index} disabled>
+          {format(date, CALENDAR_DAY_FORMAT)}
+        </CalenderNoHoverButton>
+      );
+    }
+  });
+};
 
 /* Day marker styles / See mockups */
 const RIGHT_RADIUS_STYLE: React.CSSProperties = {
@@ -207,8 +241,7 @@ const RIGHT_RADIUS_STYLE: React.CSSProperties = {
   borderTopRightRadius: '50%',
   borderBottomRightRadius: '50%',
   borderTopLeftRadius: 0,
-  borderBottomLeftRadius: 0,
-  color: 'white'
+  borderBottomLeftRadius: 0
 };
 
 const LEFT_RADIUS_STYLE: React.CSSProperties = {
@@ -216,14 +249,12 @@ const LEFT_RADIUS_STYLE: React.CSSProperties = {
   borderTopRightRadius: 0,
   borderBottomRightRadius: 0,
   borderTopLeftRadius: '50%',
-  borderBottomLeftRadius: '50%',
-  color: 'white'
+  borderBottomLeftRadius: '50%'
 };
 
 const SQUARE_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
-  borderRadius: 0,
-  color: 'white'
+  borderRadius: 0
 };
 
 const FULL_RADIUS_STYLE: React.CSSProperties = {
@@ -285,7 +316,11 @@ const styleBuilder = (
       nextIndexIsOutOfRange &&
       (index === 0 || isFirstDayOfMonth(currentDate))
     ) {
-      return { ...FULL_RADIUS_STYLE, backgroundColor: BRAND_PRIMARY_LIGHT };
+      return {
+        ...FULL_RADIUS_STYLE,
+        backgroundColor: BRAND_PRIMARY_LIGHT,
+        color: 'black'
+      };
     }
 
     if (isWithinHoverRange && (index === 0 || isFirstDayOfMonth(currentDate))) {
