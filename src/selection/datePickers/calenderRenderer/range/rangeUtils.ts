@@ -1,5 +1,5 @@
-import styled from 'src/selection/datePickers/CalenderRenderer/range/node_modules/@emotion/styled';
-import { Flex } from 'src/selection/datePickers/CalenderRenderer/range/node_modules/@rebass/grid/emotion';
+import styled from '@emotion/styled';
+import { Flex } from '@rebass/grid/emotion';
 
 export const BACKGROUND_EMPTY = 'rgb(238,238,238)';
 export const BRAND_PRIMARY = 'rgb(74,175,227)';
