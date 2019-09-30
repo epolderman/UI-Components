@@ -5,7 +5,7 @@ import { Flex } from '@rebass/grid/emotion';
 import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
 import React, { useCallback, useRef, useReducer } from 'react';
 import { AnimatedGrid } from '../animatedGrid';
-import { CalendarMonthRange } from '../calendarRenderer/calendarMonthRange';
+import { CalendarMonthRange } from '../calenderRenderer/calenderMonthRange';
 import {
   CALENDAR_DIMENSIONS_RANGE_HEIGHT,
   CALENDAR_DIMENSIONS_RANGE_WIDTH,
