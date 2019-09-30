@@ -46,7 +46,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     hoverDate,
     dateRange
   }) => {
-    const isDateRangeValid = dateRange[0] != null && dateRange[1] != null;
+    const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
 
     const renderCalendarWeek = useCallback(
       (week: Date[]) => {
@@ -66,7 +66,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSameDay(dateRange[0], date) &&
             !isLastDayOfMonth(date) &&
             index !== 6 &&
-            (hoverDate != null || isDateRangeValid)
+            (hoverDate != null || isValidDateRange)
           ) {
             return (
               <RangeStartComponent rangeSpecifier='start' key={index}>
@@ -105,7 +105,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSameDay(dateRange[1], date) &&
             !isFirstDayOfMonth(date) &&
             index !== 0 &&
-            (hoverDate != null || isDateRangeValid)
+            (hoverDate != null || isValidDateRange)
           ) {
             return (
               <RangeStartComponent rangeSpecifier='end' key={index}>
@@ -159,7 +159,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         onSelectRange,
         month,
         dateRange,
-        isDateRangeValid,
+        isValidDateRange,
         hoverDate,
         isSelecting,
         onSelectHoverRange
@@ -212,6 +212,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
   }
 );
 
+/* Day marker styles / See mockups */
 const RIGHT_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY_LIGHT,
   borderTopRightRadius: '50%',
@@ -256,7 +257,7 @@ const styleBuilder = (
     return null;
   }
 
-  // while hovering states -->
+  // hovering states -->
   if (isValidHoverDateRange) {
     const isWithinHoverRange = isWithinRange(
       currentDate,
@@ -297,7 +298,7 @@ const styleBuilder = (
     }
   }
 
-  // set date ranges state -->
+  // set date ranges states -->
   if (isValidDateRange) {
     const isWithinDateRanges = isWithinRange(
       currentDate,
@@ -371,6 +372,10 @@ const CalenderNoHoverButton = withStyles({
   }
 })(Button);
 
+/* 
+  Container that has two divs behind children[button], depending on direction[range specifier], 
+  will render the color on the left or right side
+*/
 const RangeStartComponent: React.FC<{
   children?: React.ReactNode;
   rangeSpecifier: 'start' | 'end';
