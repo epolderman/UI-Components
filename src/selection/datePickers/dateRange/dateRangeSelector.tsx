@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
-import { Button, Divider } from '@material-ui/core';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
+import { Button, Divider, TextField, Typography } from '@material-ui/core';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  CalendarToday
+} from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
 import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
 import React, { useCallback, useRef, useReducer } from 'react';
@@ -27,12 +31,16 @@ interface DateRangeState {
   monthOffset: number;
   isSelecting: boolean;
   hoverDate: Date;
+  startDateTyped: string;
+  endDateTyped: string;
 }
 
 const initialState: DateRangeState = {
   monthOffset: MIDDLE_INDEX,
   isSelecting: false,
-  hoverDate: null
+  hoverDate: null,
+  startDateTyped: '',
+  endDateTyped: ''
 };
 
 type DateRangeActions =
@@ -40,7 +48,9 @@ type DateRangeActions =
   | { type: 'UPDATE_HOVER_DATE'; payload: Date }
   | { type: 'UPDATE_SELECTION_STATE'; payload: boolean }
   | { type: 'CLEAR_SELECTION_STATE' }
-  | { type: 'CLEAR_HOVER_DATE' };
+  | { type: 'CLEAR_HOVER_DATE' }
+  | { type: 'UPDATE_START_DATE_STATE'; payload: string }
+  | { type: 'UPDATE_END_DATE_STATE'; payload: string };
 
 function reducer(
   state: DateRangeState,
@@ -51,6 +61,10 @@ function reducer(
       return { ...state, monthOffset: action.payload };
     case 'UPDATE_SELECTION_STATE':
       return { ...state, isSelecting: action.payload };
+    case 'UPDATE_START_DATE_STATE':
+      return { ...state, startDateTyped: action.payload };
+    case 'UPDATE_END_DATE_STATE':
+      return { ...state, endDateTyped: action.payload };
     case 'CLEAR_SELECTION_STATE':
       return { ...state, isSelecting: false, hoverDate: null };
     case 'UPDATE_HOVER_DATE':
@@ -75,7 +89,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   // const prevDate = usePrevious<Date>(value);
   const initialDate = useRef<Date>(new Date());
   const isGridAnimating = useRef(false);
-  const { monthOffset, hoverDate, isSelecting } = state;
+  const {
+    monthOffset,
+    hoverDate,
+    isSelecting,
+    startDateTyped,
+    endDateTyped
+  } = state;
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
@@ -183,6 +203,18 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     []
   );
 
+  const onChangeStartDate = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch({ type: 'UPDATE_START_DATE_STATE', payload: evt.target.value }),
+    []
+  );
+
+  const onChangeEndDate = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch({ type: 'UPDATE_END_DATE_STATE', payload: evt.target.value }),
+    []
+  );
+
   return (
     <Flex
       justifyContent='center'
@@ -190,7 +222,44 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       flex='1 1 0%'
       style={{ position: 'relative', maxWidth: '625px' }}
     >
-      <DateRangeTextFields />
+      <Flex alignItems='center' justifyContent='center' flex='1 1 0%'>
+        <CalendarToday style={{ marginRight: '8px' }} />
+        <TextField
+          value={startDateTyped}
+          placeholder={'12/19/99'}
+          onChange={onChangeStartDate}
+          margin='dense'
+          autoComplete='on'
+          variant='outlined'
+          style={{
+            margin: 0
+          }}
+          InputProps={{
+            endAdornment: null,
+            startAdornment: null,
+            style: { width: '150px' }
+          }}
+        />
+        <Typography variant='subtitle1' style={{ margin: '0 8px' }}>
+          to
+        </Typography>
+        <TextField
+          value={endDateTyped}
+          placeholder={'12/19/99'}
+          onChange={onChangeEndDate}
+          margin='dense'
+          autoComplete='on'
+          variant='outlined'
+          style={{
+            margin: 0
+          }}
+          InputProps={{
+            endAdornment: null,
+            startAdornment: null,
+            style: { width: '150px' }
+          }}
+        />
+      </Flex>
       <Flex
         justifyContent='stretch'
         alignItems='stretch'
