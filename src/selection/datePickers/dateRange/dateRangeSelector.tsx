@@ -198,7 +198,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         flex='1 1 0%'
         style={{
           position: 'absolute',
-          top: '40px',
+          top: '41px',
           bottom: 0,
           left: 0
         }}

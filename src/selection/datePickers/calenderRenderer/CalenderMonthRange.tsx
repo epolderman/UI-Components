@@ -243,6 +243,7 @@ const renderSkeletonWeek = (week: Date[], month: Date) => {
   });
 };
 
+// @todo: add final check for date within rage but 1st arrives on Sunday [Check feb 2020]
 const styleBuilder = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
