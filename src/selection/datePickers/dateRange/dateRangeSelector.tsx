@@ -6,18 +6,20 @@ import {
   CalendarToday
 } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
-import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns';
-import React, { useCallback, useRef, useReducer } from 'react';
+import { addMonths, isAfter, isBefore, isSameDay, format } from 'date-fns';
+import React, { useCallback, useRef, useReducer, useEffect } from 'react';
 import { AnimatedGrid } from '../AnimatedGrid';
 import {
   CALENDAR_DIMENSIONS_RANGE_HEIGHT,
   CALENDAR_DIMENSIONS_RANGE_WIDTH,
   MAX_TIME_SPAN,
-  MIDDLE_INDEX
+  MIDDLE_INDEX,
+  MONTH_DAY_YEAR_FORMAT
 } from '../dateUtils';
 import { DateRangeTextFields } from './DateRangeTextFields';
 import { makeShadow, ELEVATIONS } from '../../../common/elevation';
 import { CalendarMonthRange } from '../calenderRenderer/CalenderMonthRange';
+import { usePrevious } from '../../../utils/hooks';
 
 /* 
   Date Range Selector Todo
@@ -87,7 +89,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   dateRange
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  // const prevDate = usePrevious<Date>(value);
+  const prevDateRange = usePrevious<DateRangeTuple>(dateRange);
   const initialDate = useRef<Date>(new Date());
   const isGridAnimating = useRef(false);
   const {
@@ -97,6 +99,17 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     startDateTyped,
     endDateTyped
   } = state;
+
+  // @todo bind this to the calendar and vic versa
+  useEffect(() => {
+    if (dateRange !== prevDateRange) {
+      // check if date[0], date[1] is same as prev date
+      dispatch({
+        type: 'UPDATE_START_DATE_STATE',
+        payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
+      });
+    }
+  }, [dateRange]);
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
