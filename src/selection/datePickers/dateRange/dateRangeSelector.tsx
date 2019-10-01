@@ -126,18 +126,21 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       return;
     }
     // // animations ->>>
-    // const differenceInMonths = calculateMonthOffset(
-    //   initialDate.current,
-    //   monthOffset - MIDDLE_INDEX,
-    //   dateRange[0]
-    // );
-    // if (differenceInMonths !== 0) {
-    //   // dispatch month offset change
-    //   dispatch({
-    //     type: 'UPDATE_MONTH_OFFSET',
-    //     payload: monthOffset + differenceInMonths
-    //   });
-    // }
+    const differenceInMonths = calculateMonthOffset(
+      initialDate.current,
+      monthOffset - MIDDLE_INDEX,
+      dateRange[0]
+    );
+    if (
+      differenceInMonths !== 0 &&
+      differenceInMonths !== 1 &&
+      dateRange[0] != null
+    ) {
+      dispatch({
+        type: 'UPDATE_MONTH_OFFSET',
+        payload: monthOffset + differenceInMonths
+      });
+    }
     // date typed ->>>
     if (dateRange[0] != null) {
       if (error === 'start') {
@@ -193,7 +196,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         return;
       }
 
-      if (overrideSelectionState === 'start') {
+      if (
+        overrideSelectionState === 'start' &&
+        !isAfter(incomingDate, dateRange[1])
+      ) {
         onChange([incomingDate, dateRange[1]]);
       } else if (overrideSelectionState === 'end') {
         onChange([dateRange[0], incomingDate]);

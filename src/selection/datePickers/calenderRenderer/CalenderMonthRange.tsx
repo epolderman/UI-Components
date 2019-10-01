@@ -6,7 +6,8 @@ import {
   isSameMonth,
   isWithinRange,
   isLastDayOfMonth,
-  isFirstDayOfMonth
+  isFirstDayOfMonth,
+  isBefore
 } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -303,8 +304,8 @@ const styleBuilder = (
     }
   }
 
-  // we have a set date range states -->
-  if (isValidDateRange) {
+  // we have a set date range states --> @todo: may not need isBefore
+  if (isValidDateRange && isBefore(dateRange[0], dateRange[1])) {
     const isWithinDateRanges = isWithinRange(
       currentDate,
       dateRange[0],
