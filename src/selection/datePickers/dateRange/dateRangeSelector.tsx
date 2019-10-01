@@ -18,13 +18,14 @@ import {
 import { DateRangeTextFields } from './DateRangeTextFields';
 import { makeShadow, ELEVATIONS } from '../../../common/elevation';
 import { CalendarMonthRange } from '../calenderRenderer/CalenderMonthRange';
+
 /* 
   Date Range Selector Todo
-  1. Add StartDate logic to move to different calendar month if suppplied by user.
-  2. CalendarMonthRange needs styles update to match mockups.
-  3. Wire in text field date ranges to this component.
-  4. Wire up isSmall prop to respond to smaller dimension threshold.
-  5. Add pallette colors and remove statics.
+  1. Add StartDate logic to move to different calendar month if suppplied by user(WIP).
+  2. Wire in text field date ranges to this component. (WIP)
+  3. Layout of text field with calendar below. Handle no space on right. (WIP)
+  3. CalendarMonthRange needs styles update to match mockups. (99% DONE)
+  4. Add pallette colors and remove static colors. 
 */
 
 interface DateRangeState {
@@ -226,7 +227,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <CalendarToday style={{ marginRight: '8px' }} />
         <TextField
           value={startDateTyped}
-          placeholder={'12/19/99'}
+          placeholder={'ex. 12/19/99'}
           onChange={onChangeStartDate}
           margin='dense'
           autoComplete='on'
@@ -245,7 +246,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         </Typography>
         <TextField
           value={endDateTyped}
-          placeholder={'12/19/99'}
+          placeholder={'ex. 12/19/99'}
           onChange={onChangeEndDate}
           margin='dense'
           autoComplete='on'
@@ -318,6 +319,7 @@ const DateRangeContainer = styled(Flex)`
   justify-content: stretch;
   align-items: stretch;
   position: relative;
+  padding: 8px 0;
   background-color: ${background.content.primary};
   ${makeShadow(ELEVATIONS.MENU)};
 `;
@@ -327,7 +329,7 @@ const ControlsContainer = styled(Flex)`
   align-items: center;
   flex: 1 1 0%;
   position: absolute;
-  top: 0px;
+  top: 8px;
   left: 4px;
   right: 4px;
   height: 44px;

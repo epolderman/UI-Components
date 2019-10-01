@@ -205,7 +205,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             <Typography
               style={{
                 fontSize: '16px',
-                marginTop: '-2px'
+                marginTop: '-4px'
               }}
               color='textPrimary'
             >
