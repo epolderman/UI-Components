@@ -169,20 +169,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     }
   }, [dateRange, prevDateRange, error]);
 
-  const toMonth = useCallback(
-    (increment: 'next' | 'prev') => {
-      if (isGridAnimating.current) {
-        return;
-      }
-      const monthAddition = increment === 'next' ? 1 : -1;
-      dispatch({
-        type: 'UPDATE_MONTH_OFFSET',
-        payload: monthOffset + monthAddition
-      });
-    },
-    [monthOffset]
-  );
-
   const updateDateRange = useCallback(
     (incomingDate: Date, overrideSelectionState?: 'start' | 'end') => {
       // silent protection: limitation of virtualized table: incoming date is > 41 years in future, past
@@ -260,6 +246,20 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       }
     },
     [dateRange]
+  );
+
+  const toMonth = useCallback(
+    (increment: 'next' | 'prev') => {
+      if (isGridAnimating.current) {
+        return;
+      }
+      const monthAddition = increment === 'next' ? 1 : -1;
+      dispatch({
+        type: 'UPDATE_MONTH_OFFSET',
+        payload: monthOffset + monthAddition
+      });
+    },
+    [monthOffset]
   );
 
   const cellRenderer = useCallback(

@@ -305,7 +305,7 @@ const styleBuilder = (
   }
 
   // we have a set date range states --> @todo: may not need isBefore
-  if (isValidDateRange && isBefore(dateRange[0], dateRange[1])) {
+  if (isValidDateRange) {
     const isWithinDateRanges = isWithinRange(
       currentDate,
       dateRange[0],
