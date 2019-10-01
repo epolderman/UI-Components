@@ -109,7 +109,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
       });
     }
-  }, [dateRange]);
+  }, [dateRange, prevDateRange]);
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
