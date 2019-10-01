@@ -4,15 +4,15 @@ import { BRAND_PRIMARY_LIGHT } from './rangeUtils';
 
 /* 
   Container that has two divs behind children[button], depending on direction[range specifier], 
-  will render the color on the left or right side visualizing range start
+  will render the color on the left or right side visualizing range marker behind the button.
 */
 
-export interface RangeStartProps {
+export interface RangeStartEndProps {
   children: React.ReactNode;
   rangeSpecifier: 'start' | 'end';
 }
 
-export const RangeStart: React.FC<RangeStartProps> = ({
+export const RangeStartEnd: React.FC<RangeStartEndProps> = ({
   children,
   rangeSpecifier
 }) => {

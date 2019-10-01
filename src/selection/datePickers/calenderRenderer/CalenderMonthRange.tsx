@@ -30,7 +30,7 @@ import {
   CalendarHeader,
   BRAND_PRIMARY_LIGHT
 } from './rangeUtils';
-import { RangeStart } from './RangeStart';
+import { RangeStartEnd } from './RangeStartEnd';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -80,7 +80,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSelectionInProgress
           ) {
             return (
-              <RangeStart rangeSpecifier='start' key={index}>
+              <RangeStartEnd rangeSpecifier='start' key={index}>
                 <Button
                   style={{
                     ...FULL_RADIUS_STYLE,
@@ -92,7 +92,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </RangeStart>
+              </RangeStartEnd>
             );
           } else if (isSameDay(dateRange[0], date)) {
             return (
@@ -113,7 +113,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             isSelectionInProgress
           ) {
             return (
-              <RangeStart rangeSpecifier='end' key={index}>
+              <RangeStartEnd rangeSpecifier='end' key={index}>
                 <Button
                   style={{
                     ...FULL_RADIUS_STYLE,
@@ -125,7 +125,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 >
                   {format(date, CALENDAR_DAY_FORMAT)}
                 </Button>
-              </RangeStart>
+              </RangeStartEnd>
             );
           } else if (isSameDay(dateRange[1], date)) {
             return (
