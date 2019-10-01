@@ -178,15 +178,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       const isBeforeStart = isBefore(incomingDate, dateRange[0]);
       const isAfterStart = isAfter(incomingDate, dateRange[0]);
       const isSameStart = isSameDay(incomingDate, dateRange[0]);
+      const isBeforeEnd = isBefore(incomingDate, dateRange[1]);
       // silent protection: end date cannot start before start date when typing in date
       if (overrideSelectionState === 'end' && (isBeforeStart || isSameStart)) {
         return;
       }
 
-      if (
-        overrideSelectionState === 'start' &&
-        !isAfter(incomingDate, dateRange[1])
-      ) {
+      if (overrideSelectionState === 'start' && isBeforeEnd) {
         onChange([incomingDate, dateRange[1]]);
       } else if (overrideSelectionState === 'end') {
         onChange([dateRange[0], incomingDate]);
