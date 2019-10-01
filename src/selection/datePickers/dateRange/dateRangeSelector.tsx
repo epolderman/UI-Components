@@ -35,10 +35,11 @@ import { DateRangeField } from './DateRangeField';
 /* 
   Date Range Selector Todo
   1. Add StartDate logic to move to different calendar month if suppplied by user(WIP).
-  2. Wire in text field date ranges to this component. (WIP)
-  3. Layout of text field with calendar below. Handle no space on right. (WIP)
-  3. CalendarMonthRange needs styles update to match mockups. (99% DONE)
-  4. Add pallette colors and remove static colors. 
+  2. Handle error states (Silent + Visual) (DONE)
+  3. Wire in text field date ranges to this component. (DONE)
+  4. Layout of text field with calendar below. Handle no space on right. (50%)
+  5. CalendarMonthRange needs styles update to match mockups. (99% DONE / 1 Bug)
+  6. Add pallette colors and remove static colors. 
 */
 
 type RangeErrorType = 'start' | 'end' | null;
