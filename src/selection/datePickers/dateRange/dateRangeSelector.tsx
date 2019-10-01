@@ -1,12 +1,20 @@
 import styled from '@emotion/styled';
-import { Button, Divider, TextField, Typography } from '@material-ui/core';
+import { Button, Divider, Typography } from '@material-ui/core';
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   CalendarToday
 } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
-import { addMonths, isAfter, isBefore, isSameDay, format } from 'date-fns';
+import {
+  addMonths,
+  isAfter,
+  isBefore,
+  isSameDay,
+  format,
+  parse,
+  isValid
+} from 'date-fns';
 import React, { useCallback, useRef, useReducer, useEffect } from 'react';
 import { AnimatedGrid } from '../AnimatedGrid';
 import {
@@ -14,12 +22,15 @@ import {
   CALENDAR_DIMENSIONS_RANGE_WIDTH,
   MAX_TIME_SPAN,
   MIDDLE_INDEX,
-  MONTH_DAY_YEAR_FORMAT
+  MONTH_DAY_YEAR_FORMAT,
+  calculateMonthOffset,
+  hasDateChanged,
+  hasDateReachedLimit
 } from '../dateUtils';
-import { DateRangeTextFields } from './DateRangeTextFields';
 import { makeShadow, ELEVATIONS } from '../../../common/elevation';
 import { CalendarMonthRange } from '../calenderRenderer/CalenderMonthRange';
 import { usePrevious } from '../../../utils/hooks';
+import { DateRangeField } from './DateRangeField';
 
 /* 
   Date Range Selector Todo
@@ -30,12 +41,15 @@ import { usePrevious } from '../../../utils/hooks';
   4. Add pallette colors and remove static colors. 
 */
 
+type RangeErrorType = 'start' | 'end' | null;
+
 interface DateRangeState {
   monthOffset: number;
   isSelecting: boolean;
   hoverDate: Date;
   startDateTyped: string;
   endDateTyped: string;
+  error: RangeErrorType;
 }
 
 const initialState: DateRangeState = {
@@ -43,7 +57,8 @@ const initialState: DateRangeState = {
   isSelecting: false,
   hoverDate: null,
   startDateTyped: '',
-  endDateTyped: ''
+  endDateTyped: '',
+  error: null
 };
 
 type DateRangeActions =
@@ -53,7 +68,8 @@ type DateRangeActions =
   | { type: 'CLEAR_SELECTION_STATE' }
   | { type: 'CLEAR_HOVER_DATE' }
   | { type: 'UPDATE_START_DATE_STATE'; payload: string }
-  | { type: 'UPDATE_END_DATE_STATE'; payload: string };
+  | { type: 'UPDATE_END_DATE_STATE'; payload: string }
+  | { type: 'UPDATE_ERROR_STATE'; payload: RangeErrorType };
 
 function reducer(
   state: DateRangeState,
@@ -74,6 +90,8 @@ function reducer(
       return { ...state, hoverDate: action.payload };
     case 'CLEAR_HOVER_DATE':
       return { ...state, hoverDate: null };
+    case 'UPDATE_ERROR_STATE':
+      return { ...state, error: action.payload };
   }
 }
 
@@ -97,19 +115,54 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     hoverDate,
     isSelecting,
     startDateTyped,
-    endDateTyped
+    endDateTyped,
+    error
   } = state;
 
-  // @todo bind this to the calendar and vic versa
   useEffect(() => {
-    if (dateRange !== prevDateRange) {
-      // check if date[0], date[1] is same as prev date
+    // may need more thourough checks
+    if (dateRange === prevDateRange) {
+      return;
+    }
+    // // animations ->>>
+    // const differenceInMonths = calculateMonthOffset(
+    //   initialDate.current,
+    //   monthOffset - MIDDLE_INDEX,
+    //   dateRange[0]
+    // );
+    // if (differenceInMonths !== 0) {
+    //   // dispatch month offset change
+    //   dispatch({
+    //     type: 'UPDATE_MONTH_OFFSET',
+    //     payload: monthOffset + differenceInMonths
+    //   });
+    // }
+    // date typed ->>>
+    if (dateRange[0] != null) {
+      if (error === 'start') {
+        dispatch({
+          type: 'UPDATE_ERROR_STATE',
+          payload: null
+        });
+      }
       dispatch({
         type: 'UPDATE_START_DATE_STATE',
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
       });
     }
-  }, [dateRange, prevDateRange]);
+    if (dateRange[1] != null) {
+      if (error === 'end') {
+        dispatch({
+          type: 'UPDATE_ERROR_STATE',
+          payload: null
+        });
+      }
+      dispatch({
+        type: 'UPDATE_END_DATE_STATE',
+        payload: format(dateRange[1], MONTH_DAY_YEAR_FORMAT)
+      });
+    }
+  }, [dateRange, prevDateRange, error]);
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
@@ -126,12 +179,24 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   );
 
   const updateDateRange = useCallback(
-    (incomingDate: Date) => {
+    (incomingDate: Date, overrideSelectionState?: 'start' | 'end') => {
+      // silent protection: limitation of virtualized table: incoming date is > 41 years in future, past
+      if (hasDateReachedLimit(initialDate.current, incomingDate)) {
+        return;
+      }
       const isBeforeStart = isBefore(incomingDate, dateRange[0]);
       const isAfterStart = isAfter(incomingDate, dateRange[0]);
       const isSameStart = isSameDay(incomingDate, dateRange[0]);
+      // silent protection: end date cannot start before start date when typing in date
+      if (overrideSelectionState === 'end' && (isBeforeStart || isSameStart)) {
+        return;
+      }
 
-      if (isSelecting && (isBeforeStart || isSameStart)) {
+      if (overrideSelectionState === 'start') {
+        onChange([incomingDate, dateRange[1]]);
+      } else if (overrideSelectionState === 'end') {
+        onChange([dateRange[0], incomingDate]);
+      } else if (isSelecting && (isBeforeStart || isSameStart)) {
         dispatch({ type: 'CLEAR_HOVER_DATE' });
         onChange([incomingDate, null]);
       } else if (isSelecting && isAfterStart) {
@@ -145,9 +210,41 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     [onChange, dateRange, isSelecting]
   );
 
+  const onDateParse = useCallback(
+    (dateTyped: string, rangeSpecifier: 'start' | 'end') => {
+      const newDate = parse(dateTyped);
+      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
+      const isValidDateChange = hasDateChanged(
+        rangeSpecifier === 'start' ? dateRange[0] : dateRange[1],
+        newDate
+      );
+      // overrides: don't go through hover date selecting, just slam
+      const endDateOverride =
+        rangeSpecifier === 'end' &&
+        dateRange[0] != null &&
+        isValid(dateRange[0]) &&
+        !isSelecting;
+      const startDateOverride =
+        rangeSpecifier === 'start' &&
+        dateRange[1] != null &&
+        isValid(dateRange[1]) &&
+        !isSelecting;
+
+      if (!isValidDateTyped && isValidDateChange) {
+        dispatch({ type: 'UPDATE_ERROR_STATE', payload: rangeSpecifier });
+      } else if (endDateOverride) {
+        updateDateRange(newDate, 'end');
+      } else if (startDateOverride) {
+        updateDateRange(newDate, 'start');
+      } else {
+        updateDateRange(newDate);
+      }
+    },
+    [dateRange, updateDateRange]
+  );
+
   const onSelectHoverRange = useCallback(
     (incomingDate: Date) => {
-      // update hover date as long as not on dateRange, never clear
       if (isAfter(incomingDate, dateRange[0])) {
         dispatch({ type: 'UPDATE_HOVER_DATE', payload: incomingDate });
       } else {
@@ -238,40 +335,26 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     >
       <Flex alignItems='center' justifyContent='center' flex='1 1 0%'>
         <CalendarToday style={{ marginRight: '8px' }} />
-        <TextField
+        <DateRangeField
           value={startDateTyped}
-          placeholder={'ex. 12/19/99'}
+          placeholder={'ex. 11/19/19'}
           onChange={onChangeStartDate}
-          margin='dense'
-          autoComplete='on'
-          variant='outlined'
-          style={{
-            margin: 0
-          }}
-          InputProps={{
-            endAdornment: null,
-            startAdornment: null,
-            style: { width: '150px' }
-          }}
+          onDateParse={onDateParse}
+          rangeSpecifier='start'
+          error={error === 'start'}
+          label={error === 'start' ? 'Invalid Date' : 'Start Range'}
         />
         <Typography variant='subtitle1' style={{ margin: '0 8px' }}>
           to
         </Typography>
-        <TextField
+        <DateRangeField
           value={endDateTyped}
-          placeholder={'ex. 12/19/99'}
+          placeholder={'ex. 12/19/19'}
           onChange={onChangeEndDate}
-          margin='dense'
-          autoComplete='on'
-          variant='outlined'
-          style={{
-            margin: 0
-          }}
-          InputProps={{
-            endAdornment: null,
-            startAdornment: null,
-            style: { width: '150px' }
-          }}
+          onDateParse={onDateParse}
+          rangeSpecifier='end'
+          error={error === 'end'}
+          label={error === 'end' ? 'Invalid Date' : 'End Range'}
         />
       </Flex>
       <Flex
@@ -281,7 +364,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         flex='1 1 0%'
         style={{
           position: 'absolute',
-          top: '41px',
+          top: '42px' /* text field height + 2px */,
           bottom: 0,
           left: 0
         }}
