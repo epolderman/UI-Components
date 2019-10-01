@@ -34,12 +34,13 @@ import { DateRangeField } from './DateRangeField';
 
 /* 
   Date Range Selector Todo
-  1. Add StartDate logic to move to different calendar month if suppplied by user(WIP).
+  1. Add StartDate logic to move to different calendar month if suppplied by user(99% DONE).
   2. Handle error states (Silent + Visual) (DONE)
   3. Wire in text field date ranges to this component. (DONE)
   4. Layout of text field with calendar below. Handle no space on right. (50%)
   5. CalendarMonthRange needs styles update to match mockups. (99% DONE / 1 Bug)
-  6. Add pallette colors and remove static colors. 
+  6  Add onBlur to text fields to parse date. 
+  7. Add pallette colors and remove static colors. 
 */
 
 type RangeErrorType = 'start' | 'end' | null;
@@ -131,11 +132,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       monthOffset - MIDDLE_INDEX,
       dateRange[0]
     );
-    if (
+    const validAnimationChange =
       differenceInMonths !== 0 &&
       differenceInMonths !== 1 &&
-      dateRange[0] != null
-    ) {
+      dateRange[0] != null;
+    if (validAnimationChange) {
       dispatch({
         type: 'UPDATE_MONTH_OFFSET',
         payload: monthOffset + differenceInMonths
