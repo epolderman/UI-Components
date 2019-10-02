@@ -44,7 +44,6 @@ export interface CalendarMonthRangeProps {
   hoverDate: Date;
   onSelectHoverRange: (hoverDate: Date) => void;
   onSelectRange: (incomingDate: Date) => void;
-  isLoading?: boolean;
 }
 
 export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
@@ -54,8 +53,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     isSelecting,
     onSelectHoverRange,
     hoverDate,
-    dateRange,
-    isLoading
+    dateRange
   }) => {
     const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
 
@@ -175,15 +173,6 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       ));
     }, [month, renderCalendarWeek]);
 
-    const skeletonMonthJSX = useMemo(() => {
-      const currentMonth: DateMatrix = buildDateMatrix(month);
-      return map(currentMonth, (week, index) => (
-        <CalendarRowRange key={index}>
-          {renderSkeletonWeek(week, month)}
-        </CalendarRowRange>
-      ));
-    }, [month]);
-
     const dayNamesJSX = useMemo(
       () => (
         <CalendarRowRange>
@@ -215,34 +204,11 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
           </CalendarRowRange>
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarContents>
-          {isLoading ? skeletonMonthJSX : monthJSX}
-        </CalendarContents>
+        <CalendarContents>{monthJSX}</CalendarContents>
       </MonthContainer>
     );
   }
 );
-
-const renderSkeletonWeek = (week: Date[], month: Date) => {
-  return map(week, (date, index) => {
-    if (!isSameMonth(month, date)) {
-      return (
-        <Flex
-          key={index}
-          flex='1 1 0%'
-          justifyContent='stretch'
-          alignItems='stretch'
-        />
-      );
-    } else {
-      return (
-        <CalenderNoHoverButton key={index} disabled>
-          {format(date, CALENDAR_DAY_FORMAT)}
-        </CalenderNoHoverButton>
-      );
-    }
-  });
-};
 
 // @todo: add final check for date within rage but 1st arrives on Sunday [Check feb 2020]
 const styleBuilder = (

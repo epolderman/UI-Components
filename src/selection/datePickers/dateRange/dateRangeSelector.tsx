@@ -115,31 +115,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   dateRange
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const prevDateRange = usePrevious<DateRangeTuple>(dateRange);
-  const initialDate = useRef<Date>(new Date());
-  const startDateRef = useRef<HTMLInputElement>(null);
-  const isGridAnimating = useRef(false);
-  const showAnimation = useSpring({
-    transform: state.isVisible ? `scale(1)` : `scale(0)`,
-    opacity: state.isVisible ? 1 : 0,
-    config: config.default,
-    onRest: () => {
-      if (!state.isVisible) {
-        startDateRef.current.blur();
-        // blur end date
-        // transition back to the currently selected date month after close
-        // if we navigated away during open state
-        // const differenceInMonths = calculateMonthOffset(
-        //   initialDate.current,
-        //   monthOffset - MIDDLE_INDEX,
-        //   value
-        // );
-        // if (differenceInMonths !== 0) {
-        //   setMonthOffset(monthOffset => monthOffset + differenceInMonths);
-        // }
-      }
-    }
-  });
   const {
     monthOffset,
     hoverDate,
@@ -149,6 +124,36 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     error,
     isVisible
   } = state;
+  const prevDateRange = usePrevious<DateRangeTuple>(dateRange);
+  const initialDate = useRef<Date>(new Date());
+  const startDateRef = useRef<HTMLInputElement>(null);
+  const endDateRef = useRef<HTMLInputElement>(null);
+
+  const isGridAnimating = useRef(false);
+  const showAnimation = useSpring({
+    opacity: isVisible ? 1 : 0,
+    config: config.default,
+    onRest: () => {
+      if (!isVisible) {
+        startDateRef.current.blur();
+        endDateRef.current.blur();
+        // on close, transition back to our start date if not visible
+        if (dateRange[0] != null && isValid(dateRange[0])) {
+          const differenceInMonths = calculateMonthOffset(
+            initialDate.current,
+            monthOffset - MIDDLE_INDEX,
+            dateRange[0]
+          );
+          if (differenceInMonths !== 0 && differenceInMonths !== 1) {
+            dispatch({
+              type: 'UPDATE_MONTH_OFFSET',
+              payload: monthOffset + differenceInMonths
+            });
+          }
+        }
+      }
+    }
+  });
 
   useEffect(() => {
     // may need more thourough checks
@@ -303,13 +308,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     ({
       key,
       style,
-      columnIndex,
-      isScrolling
+      columnIndex
     }: {
       key: string;
       style: React.CSSProperties;
       columnIndex: number;
-      isScrolling: boolean;
     }) => (
       <div
         style={{
@@ -325,7 +328,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
-          isLoading={isScrolling}
         />
         <Divider orientation='vertical' />
         <CalendarMonthRange
@@ -335,7 +337,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
-          isLoading={isScrolling}
         />
       </div>
     ),
@@ -421,6 +422,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           value={endDateTyped}
           onBlur={onBlur}
           onFocus={onFocus}
+          ref={endDateRef}
           disabled={dateRange[0] == null || !isValid(dateRange[0])}
           placeholder={'ex. 12/19/19'}
           onChange={onChangeEndDate}
@@ -441,8 +443,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             rowCount={1}
             columnCount={MAX_TIME_SPAN}
             columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
-            style={{ overflow: 'hidden', outline: 'none' }}
-            durationOfAnimation={800}
+            durationOfAnimation={1000}
             onAnimationStart={onAnimationStart}
             onAnimationEnd={onAnimationEnd}
           />
