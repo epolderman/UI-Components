@@ -1,3 +1,4 @@
+import React, { useCallback, useRef, useReducer, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Button, Divider, Typography } from '@material-ui/core';
 import {
@@ -15,7 +16,6 @@ import {
   parse,
   isValid
 } from 'date-fns';
-import React, { useCallback, useRef, useReducer, useEffect } from 'react';
 import { AnimatedGrid } from '../AnimatedGrid';
 import {
   CALENDAR_DIMENSIONS_RANGE_HEIGHT,
@@ -432,7 +432,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           label={error === 'end' ? 'Invalid Date' : 'End Range'}
         />
       </Flex>
-      <AnimatedCalendarWrapper style={showAnimation}>
+      <AnimatedCalendarWrapper
+        style={{ ...showAnimation, pointerEvents: isVisible ? 'auto' : 'none' }}
+      >
         <DateRangeContainer>
           <AnimatedGrid
             column={monthOffset}
