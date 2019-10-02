@@ -10,9 +10,9 @@
 
 #### Components
 
-##### Date Selector Components: Animations in the calendar are imperative via requestAnimationFrame API. Windowing is achieved by virtualization. Supports +41 / -41 years in the future/past.
+##### Date Selector Components: Windowing is achieved by virtualization. Animations in the calendar are imperative via the Web API 'requestAnimationFrame'. Supports +41 / -41 years in the future/past.
 
-- Date Selector: Single date selection component. React Spring for open close / error animations. Supports text field & mouse date selection.
+- Date Selector: React Spring for open close / error animations. Supports text field & mouse date selection.
 
 - Date Range Selector: Supports selection via ranges by text fields.
 
