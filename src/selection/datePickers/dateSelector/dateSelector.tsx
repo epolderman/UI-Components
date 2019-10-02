@@ -245,7 +245,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 rowCount={1}
                 columnCount={MAX_TIME_SPAN}
                 columnWidth={CALENDAR_DIMENSIONS}
-                style={{ overflow: 'hidden' }}
                 onAnimationStart={onAnimationStart}
                 onAnimationEnd={onAnimationEnd}
               />
