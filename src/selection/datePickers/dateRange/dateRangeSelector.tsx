@@ -35,7 +35,7 @@ import { DateRangeField } from './DateRangeField';
 /* 
   Date Range Selector Todo
   1. Add StartDate logic to move to different calendar month if suppplied by user(99% DONE).
-  2. Handle error states (Silent + Visual) (DONE)
+  2. Handle error states (Silent + Visual) (DONE / animation?)
   3. Wire in text field date ranges to this component. (DONE)
   4. Layout of text field with calendar below. Handle no space on right. (50%)
   5. CalendarMonthRange needs styles update to match mockups. (99% DONE / 1 Bug)
@@ -126,24 +126,26 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     if (dateRange === prevDateRange) {
       return;
     }
-    // // animations ->>>
-    const differenceInMonths = calculateMonthOffset(
-      initialDate.current,
-      monthOffset - MIDDLE_INDEX,
-      dateRange[0]
-    );
-    const validAnimationChange =
-      differenceInMonths !== 0 &&
-      differenceInMonths !== 1 &&
-      dateRange[0] != null;
-    if (validAnimationChange) {
-      dispatch({
-        type: 'UPDATE_MONTH_OFFSET',
-        payload: monthOffset + differenceInMonths
-      });
-    }
-    // date typed ->>>
-    if (dateRange[0] != null && isValid(dateRange[0])) {
+    const validStartDate = dateRange[0] != null && isValid(dateRange[0]);
+    const validEndDate = dateRange[1] != null && isValid(dateRange[1]);
+
+    if (validStartDate) {
+      const differenceInMonths = calculateMonthOffset(
+        initialDate.current,
+        monthOffset - MIDDLE_INDEX,
+        dateRange[0]
+      );
+      const validAnimationChange =
+        differenceInMonths !== 0 &&
+        differenceInMonths !== 1 &&
+        dateRange[0] != null;
+      if (validAnimationChange) {
+        dispatch({
+          type: 'UPDATE_MONTH_OFFSET',
+          payload: monthOffset + differenceInMonths
+        });
+      }
+
       if (error === 'start') {
         dispatch({
           type: 'UPDATE_ERROR_STATE',
@@ -155,7 +157,8 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
       });
     }
-    if (dateRange[1] != null && isValid(dateRange[1])) {
+
+    if (validEndDate) {
       if (error === 'end') {
         dispatch({
           type: 'UPDATE_ERROR_STATE',
