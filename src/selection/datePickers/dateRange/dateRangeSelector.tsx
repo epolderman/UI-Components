@@ -143,7 +143,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       });
     }
     // date typed ->>>
-    if (dateRange[0] != null) {
+    if (dateRange[0] != null && isValid(dateRange[0])) {
       if (error === 'start') {
         dispatch({
           type: 'UPDATE_ERROR_STATE',
@@ -155,7 +155,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
       });
     }
-    if (dateRange[1] != null) {
+    if (dateRange[1] != null && isValid(dateRange[1])) {
       if (error === 'end') {
         dispatch({
           type: 'UPDATE_ERROR_STATE',
