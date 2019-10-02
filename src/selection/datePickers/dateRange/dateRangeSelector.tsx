@@ -31,6 +31,7 @@ import { makeShadow, ELEVATIONS } from '../../../common/elevation';
 import { CalendarMonthRange } from '../calenderRenderer/CalenderMonthRange';
 import { usePrevious } from '../../../utils/hooks';
 import { DateRangeField } from './DateRangeField';
+import { animated, useSpring, config } from 'react-spring';
 
 /* 
   Date Range Selector Todo
@@ -48,18 +49,20 @@ type RangeErrorType = 'start' | 'end' | null;
 interface DateRangeState {
   monthOffset: number;
   isSelecting: boolean;
-  hoverDate: Date;
+  isVisible: boolean;
   startDateTyped: string;
   endDateTyped: string;
+  hoverDate: Date;
   error: RangeErrorType;
 }
 
 const initialState: DateRangeState = {
   monthOffset: MIDDLE_INDEX,
   isSelecting: false,
-  hoverDate: null,
+  isVisible: false,
   startDateTyped: '',
   endDateTyped: '',
+  hoverDate: null,
   error: null
 };
 
@@ -71,7 +74,8 @@ type DateRangeActions =
   | { type: 'CLEAR_HOVER_DATE' }
   | { type: 'UPDATE_START_DATE_STATE'; payload: string }
   | { type: 'UPDATE_END_DATE_STATE'; payload: string }
-  | { type: 'UPDATE_ERROR_STATE'; payload: RangeErrorType };
+  | { type: 'UPDATE_ERROR_STATE'; payload: RangeErrorType }
+  | { type: 'UPDATE_VISIBLE_STATE'; payload: boolean };
 
 function reducer(
   state: DateRangeState,
@@ -94,6 +98,8 @@ function reducer(
       return { ...state, hoverDate: null };
     case 'UPDATE_ERROR_STATE':
       return { ...state, error: action.payload };
+    case 'UPDATE_VISIBLE_STATE':
+      return { ...state, isVisible: action.payload };
   }
 }
 
@@ -118,8 +124,15 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     isSelecting,
     startDateTyped,
     endDateTyped,
-    error
+    error,
+    isVisible
   } = state;
+  console.log('render', isVisible);
+  const showAnimation = useSpring({
+    transform: isVisible ? `scale(1)` : `scale(0)`,
+    opacity: isVisible ? 1 : 0,
+    config: config.default
+  });
 
   useEffect(() => {
     // may need more thourough checks
@@ -136,9 +149,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         dateRange[0]
       );
       const validAnimationChange =
-        differenceInMonths !== 0 &&
-        differenceInMonths !== 1 &&
-        dateRange[0] != null;
+        differenceInMonths !== 0 && differenceInMonths !== 1;
       if (validAnimationChange) {
         dispatch({
           type: 'UPDATE_MONTH_OFFSET',
@@ -335,6 +346,22 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     []
   );
 
+  const onFocusStartDate = useCallback(
+    (evt: React.FocusEvent<HTMLInputElement>) => {
+      console.log('onFocus...');
+      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: true });
+    },
+    []
+  );
+
+  const onBlurStartDate = useCallback(
+    (evt: React.BlurEvent<HTMLInputElement>) => {
+      console.log('onFocus...');
+      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+    },
+    []
+  );
+
   return (
     <Flex
       justifyContent='center'
@@ -346,6 +373,8 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <CalendarToday style={{ marginRight: '8px' }} />
         <DateRangeField
           value={startDateTyped}
+          onFocus={onFocusStartDate}
+          onBlur={onBlurStartDate}
           placeholder={'ex. 11/19/19'}
           onChange={onChangeStartDate}
           onDateParse={onDateParse}
@@ -366,16 +395,18 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           label={error === 'end' ? 'Invalid Date' : 'End Range'}
         />
       </Flex>
-      <Flex
+      <AnimatedFlex
         justifyContent='stretch'
         alignItems='stretch'
         flexDirection='column'
         flex='1 1 0%'
         style={{
           position: 'absolute',
-          top: '42px' /* text field height + 2px */,
+          top: '42px',
+          right: 0,
           bottom: 0,
-          left: 0
+          ...showAnimation,
+          zIndex: 99
         }}
       >
         <DateRangeContainer>
@@ -402,10 +433,12 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             </Button>
           </ControlsContainer>
         </DateRangeContainer>
-      </Flex>
+      </AnimatedFlex>
     </Flex>
   );
 };
+
+const AnimatedFlex = animated(Flex);
 
 const background = {
   content: {

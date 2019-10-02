@@ -8,7 +8,12 @@ import { DateRangeExample } from './selection/datePickers/dateRange/dateRange.ex
 ///
 const App: React.FC = () => (
   <MuiThemeProvider theme={theme}>
-    <Flex justifyContent='center' alignItems='stretch' flex='1 1 0%'>
+    <Flex
+      justifyContent='center'
+      alignItems='stretch'
+      flex='1 1 0%'
+      paddingY='8px'
+    >
       <DateRangeExample />
     </Flex>
   </MuiThemeProvider>
