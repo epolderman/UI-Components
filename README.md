@@ -14,7 +14,7 @@
 
 - Date Selector: Single date selection component. React Spring for open close / error animations. Supports text field & mouse date selection.
 
-- Date Range Selector: Supports selection via ranges (WIP)
+- Date Range Selector: Supports selection via ranges by text fields. Uses virtualization for the calendar and imperative animations via the Web API 'requestAnimationFrame' for animations.
 
 - Fold View: WIP
 
