@@ -117,7 +117,29 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const [state, dispatch] = useReducer(reducer, initialState);
   const prevDateRange = usePrevious<DateRangeTuple>(dateRange);
   const initialDate = useRef<Date>(new Date());
+  const startDateRef = useRef<HTMLInputElement>(null);
   const isGridAnimating = useRef(false);
+  const showAnimation = useSpring({
+    transform: state.isVisible ? `scale(1)` : `scale(0)`,
+    opacity: state.isVisible ? 1 : 0,
+    config: config.default,
+    onRest: () => {
+      if (!state.isVisible) {
+        startDateRef.current.blur();
+        // blur end date
+        // transition back to the currently selected date month after close
+        // if we navigated away during open state
+        // const differenceInMonths = calculateMonthOffset(
+        //   initialDate.current,
+        //   monthOffset - MIDDLE_INDEX,
+        //   value
+        // );
+        // if (differenceInMonths !== 0) {
+        //   setMonthOffset(monthOffset => monthOffset + differenceInMonths);
+        // }
+      }
+    }
+  });
   const {
     monthOffset,
     hoverDate,
@@ -127,12 +149,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     error,
     isVisible
   } = state;
-  console.log('render', isVisible);
-  const showAnimation = useSpring({
-    transform: isVisible ? `scale(1)` : `scale(0)`,
-    opacity: isVisible ? 1 : 0,
-    config: config.default
-  });
 
   useEffect(() => {
     // may need more thourough checks
@@ -181,7 +197,14 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: format(dateRange[1], MONTH_DAY_YEAR_FORMAT)
       });
     }
-  }, [dateRange, prevDateRange, error, monthOffset]);
+
+    if (validEndDate && validStartDate && isVisible) {
+      dispatch({
+        type: 'UPDATE_VISIBLE_STATE',
+        payload: false
+      });
+    }
+  }, [dateRange, prevDateRange, error, monthOffset, isVisible]);
 
   const updateDateRange = useCallback(
     (incomingDate: Date, overrideSelectionState?: 'start' | 'end') => {
@@ -238,6 +261,8 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
       if (!isValidDateTyped && isValidDateChange) {
         dispatch({ type: 'UPDATE_ERROR_STATE', payload: rangeSpecifier });
+      } else if (!isValidDateChange && isVisible) {
+        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       } else if (endDateOverride) {
         updateDateRange(newDate, 'end');
       } else if (startDateOverride) {
@@ -246,7 +271,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         updateDateRange(newDate);
       }
     },
-    [dateRange, updateDateRange, isSelecting]
+    [dateRange, updateDateRange, isSelecting, isVisible]
   );
 
   const onSelectHoverRange = useCallback(
@@ -346,21 +371,27 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     []
   );
 
-  const onFocusStartDate = useCallback(
-    (evt: React.FocusEvent<HTMLInputElement>) => {
-      console.log('onFocus...');
-      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: true });
-    },
-    []
-  );
+  const onFocus = useCallback(() => {
+    dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: true });
+  }, []);
 
-  const onBlurStartDate = useCallback(
-    (evt: React.BlurEvent<HTMLInputElement>) => {
-      console.log('onFocus...');
+  const onBlur = useCallback(() => {
+    const startDateHasText =
+      startDateTyped.length > 0 && startDateTyped.trim() !== '';
+    const endDateHasText =
+      endDateTyped.length > 0 && endDateTyped.trim() !== '';
+
+    if (startDateHasText) {
+      onDateParse(startDateTyped, 'start');
+    }
+    if (endDateHasText) {
+      onDateParse(endDateTyped, 'end');
+    }
+
+    if (isVisible && !startDateHasText && !endDateHasText) {
       dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
-    },
-    []
-  );
+    }
+  }, [startDateTyped, endDateTyped, onDateParse, isVisible]);
 
   return (
     <Flex
@@ -373,8 +404,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         <CalendarToday style={{ marginRight: '8px' }} />
         <DateRangeField
           value={startDateTyped}
-          onFocus={onFocusStartDate}
-          onBlur={onBlurStartDate}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          ref={startDateRef}
           placeholder={'ex. 11/19/19'}
           onChange={onChangeStartDate}
           onDateParse={onDateParse}
@@ -387,6 +419,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         </Typography>
         <DateRangeField
           value={endDateTyped}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          disabled={dateRange[0] == null || !isValid(dateRange[0])}
           placeholder={'ex. 12/19/19'}
           onChange={onChangeEndDate}
           onDateParse={onDateParse}
@@ -395,20 +430,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           label={error === 'end' ? 'Invalid Date' : 'End Range'}
         />
       </Flex>
-      <AnimatedFlex
-        justifyContent='stretch'
-        alignItems='stretch'
-        flexDirection='column'
-        flex='1 1 0%'
-        style={{
-          position: 'absolute',
-          top: '42px',
-          right: 0,
-          bottom: 0,
-          ...showAnimation,
-          zIndex: 99
-        }}
-      >
+      <AnimatedCalendarWrapper style={showAnimation}>
         <DateRangeContainer>
           <AnimatedGrid
             column={monthOffset}
@@ -425,20 +447,26 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             onAnimationEnd={onAnimationEnd}
           />
           <ControlsContainer>
-            <Button disableRipple onClick={() => toMonth('prev')}>
+            <Button
+              disableRipple
+              onClick={() => toMonth('prev')}
+              onMouseDown={e => e.preventDefault()}
+            >
               <KeyboardArrowLeft />
             </Button>
-            <Button disableRipple onClick={() => toMonth('next')}>
+            <Button
+              disableRipple
+              onClick={() => toMonth('next')}
+              onMouseDown={e => e.preventDefault()}
+            >
               <KeyboardArrowRight />
             </Button>
           </ControlsContainer>
         </DateRangeContainer>
-      </AnimatedFlex>
+      </AnimatedCalendarWrapper>
     </Flex>
   );
 };
-
-const AnimatedFlex = animated(Flex);
 
 const background = {
   content: {
@@ -449,6 +477,19 @@ const background = {
   error: '#323232',
   barren: 'rgb(220,220,220)'
 };
+
+const AnimatedCalendarWrapper = styled(animated.div)`
+  display: flex;
+  flex: 1 1 0%;
+  position: absolute;
+  top: 42px;
+  right: 0;
+  bottom: 0;
+  justify-content: stretch;
+  align-items: stretch;
+  z-index: 99;
+  flex-direction: column;
+`;
 
 const DateRangeContainer = styled(Flex)`
   flex-direction: column;

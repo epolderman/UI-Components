@@ -12,38 +12,37 @@ export interface DateRangeFieldProps {
 
 type CombinedProps = DateRangeFieldProps & TextFieldProps;
 
-export const DateRangeField: React.FC<CombinedProps> = ({
-  onDateParse,
-  rangeSpecifier,
-  ...textFieldProps
-}) => {
-  const onSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      onDateParse(textFieldProps.value as string, rangeSpecifier);
-    },
-    [textFieldProps.value, onDateParse, rangeSpecifier]
-  );
+export const DateRangeField: React.FC<CombinedProps> = React.forwardRef(
+  ({ onDateParse, rangeSpecifier, ...textFieldProps }, ref) => {
+    const onSubmit = useCallback(
+      (e: React.FormEvent) => {
+        e.preventDefault();
+        onDateParse(textFieldProps.value as string, rangeSpecifier);
+      },
+      [textFieldProps.value, onDateParse, rangeSpecifier]
+    );
 
-  return (
-    <FormContainer onSubmit={onSubmit}>
-      <TextField
-        {...textFieldProps}
-        margin='dense'
-        autoComplete='on'
-        variant='outlined'
-        fullWidth
-        style={{
-          margin: 0
-        }}
-        InputProps={{
-          endAdornment: null,
-          startAdornment: null
-        }}
-      />
-    </FormContainer>
-  );
-};
+    return (
+      <FormContainer onSubmit={onSubmit}>
+        <TextField
+          {...textFieldProps}
+          inputRef={ref}
+          margin='dense'
+          autoComplete='on'
+          variant='outlined'
+          fullWidth
+          style={{
+            margin: 0
+          }}
+          InputProps={{
+            endAdornment: null,
+            startAdornment: null
+          }}
+        />
+      </FormContainer>
+    );
+  }
+);
 
 const FormContainer = styled.form`
   display: flex;
