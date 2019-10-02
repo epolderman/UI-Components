@@ -22,7 +22,7 @@ export const DateRangeField: React.FC<CombinedProps> = ({
       e.preventDefault();
       onDateParse(textFieldProps.value as string, rangeSpecifier);
     },
-    [textFieldProps.value]
+    [textFieldProps.value, onDateParse, rangeSpecifier]
   );
 
   return (

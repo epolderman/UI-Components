@@ -167,7 +167,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: format(dateRange[1], MONTH_DAY_YEAR_FORMAT)
       });
     }
-  }, [dateRange, prevDateRange, error]);
+  }, [dateRange, prevDateRange, error, monthOffset]);
 
   const updateDateRange = useCallback(
     (incomingDate: Date, overrideSelectionState?: 'start' | 'end') => {
@@ -232,7 +232,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         updateDateRange(newDate);
       }
     },
-    [dateRange, updateDateRange]
+    [dateRange, updateDateRange, isSelecting]
   );
 
   const onSelectHoverRange = useCallback(
