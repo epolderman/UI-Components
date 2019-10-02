@@ -382,15 +382,16 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     const endDateHasText =
       endDateTyped.length > 0 && endDateTyped.trim() !== '';
 
+    if (isVisible && !startDateHasText && !endDateHasText) {
+      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+      return;
+    }
+
     if (startDateHasText) {
       onDateParse(startDateTyped, 'start');
     }
     if (endDateHasText) {
       onDateParse(endDateTyped, 'end');
-    }
-
-    if (isVisible && !startDateHasText && !endDateHasText) {
-      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
     }
   }, [startDateTyped, endDateTyped, onDateParse, isVisible]);
 
