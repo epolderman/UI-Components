@@ -188,6 +188,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         type: 'UPDATE_START_DATE_STATE',
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
       });
+    } else {
+      dispatch({
+        type: 'UPDATE_START_DATE_STATE',
+        payload: ''
+      });
     }
 
     if (validEndDate) {
@@ -200,6 +205,11 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       dispatch({
         type: 'UPDATE_END_DATE_STATE',
         payload: format(dateRange[1], MONTH_DAY_YEAR_FORMAT)
+      });
+    } else {
+      dispatch({
+        type: 'UPDATE_START_DATE_STATE',
+        payload: ''
       });
     }
 
