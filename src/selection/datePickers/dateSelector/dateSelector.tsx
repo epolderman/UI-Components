@@ -166,7 +166,6 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
     // shrinking size logic
     useEffect(() => {
-      console.log('calling 2');
       dispatch({
         type: 'UPDATE_DATE_TYPED_STATE',
         payload: formatDate(value, isSmall, dateFormat)
