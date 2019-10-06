@@ -2,7 +2,13 @@ import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { addMonths, format, isValid, parse } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useReducer
+} from 'react';
 import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../../common/elevation';
 import { AnimatedGrid } from '../AnimatedGrid';
@@ -27,6 +33,55 @@ import { Flex } from '@rebass/grid/emotion';
     & and the communication between the two
 */
 
+interface DateSelectorState {
+  monthOffset: number;
+  dateTyped: string;
+  isVisible: boolean;
+  isActiveError: boolean;
+}
+
+type DateSelectorActions =
+  | { type: 'UPDATE_MONTH_OFFSET'; payload: number }
+  | { type: 'UPDATE_DATE_TYPED_STATE'; payload: string }
+  | { type: 'UPDATE_VISIBLE_STATE'; payload: boolean }
+  | { type: 'UPDATE_ERROR_STATE'; payload: boolean }
+  | {
+      type: 'UPDATE_FOCUS_STATE';
+      payload: { isVisible: boolean; dateTyped: string };
+    }
+  | {
+      type: 'CLEAR_ERROR_STATE';
+      payload: { isActiveError: boolean; dateTyped: string };
+    };
+
+function reducer(
+  state: DateSelectorState,
+  action: DateSelectorActions
+): DateSelectorState {
+  switch (action.type) {
+    case 'UPDATE_MONTH_OFFSET':
+      return { ...state, monthOffset: action.payload };
+    case 'UPDATE_DATE_TYPED_STATE':
+      return { ...state, dateTyped: action.payload };
+    case 'UPDATE_ERROR_STATE':
+      return { ...state, isActiveError: action.payload };
+    case 'UPDATE_VISIBLE_STATE':
+      return { ...state, isVisible: action.payload };
+    case 'UPDATE_FOCUS_STATE':
+      return {
+        ...state,
+        isVisible: action.payload.isVisible,
+        dateTyped: action.payload.dateTyped
+      };
+    case 'CLEAR_ERROR_STATE':
+      return {
+        ...state,
+        isActiveError: action.payload.isActiveError,
+        dateTyped: action.payload.dateTyped
+      };
+  }
+}
+
 const TEXT_FIELD_HEIGHT = 31;
 
 export interface DateSelectorProps {
@@ -38,12 +93,13 @@ export interface DateSelectorProps {
 
 export const DateSelector: React.FC<DateSelectorProps> = React.memo(
   ({ value, onChange, dateFormat, isSmall }) => {
-    const [monthOffset, setMonthOffset] = useState(MIDDLE_INDEX);
-    const [isVisible, setVisibility] = useState(false);
-    const [isActiveError, setError] = useState(false);
-    const [dateTyped, setDateTyped] = useState(
-      formatDate(value, isSmall, dateFormat)
-    );
+    const [state, dispatch] = useReducer(reducer, {
+      monthOffset: MIDDLE_INDEX,
+      isVisible: false,
+      isActiveError: false,
+      dateTyped: formatDate(value, isSmall, dateFormat)
+    });
+    const { monthOffset, isVisible, isActiveError, dateTyped } = state;
     const inputRef = useRef<HTMLInputElement>(null);
     const prevDate = usePrevious<Date>(value);
     const initialDate = useRef<Date>(new Date());
@@ -60,8 +116,15 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         // close animationEnd state change
         if (!isVisible) {
           inputRef.current.blur();
-          setDateTyped(formatDate(value, isSmall, dateFormat));
-          setError(false);
+          if (isActiveError) {
+            dispatch({
+              type: 'CLEAR_ERROR_STATE',
+              payload: {
+                isActiveError: false,
+                dateTyped: formatDate(value, isSmall, dateFormat)
+              }
+            });
+          }
           // transition back to the currently selected date month after close
           // if we navigated away during open state
           const differenceInMonths = calculateMonthOffset(
@@ -70,7 +133,10 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
             value
           );
           if (differenceInMonths !== 0) {
-            setMonthOffset(monthOffset => monthOffset + differenceInMonths);
+            dispatch({
+              type: 'UPDATE_MONTH_OFFSET',
+              payload: monthOffset + differenceInMonths
+            });
           }
         }
       }
@@ -87,20 +153,25 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         // need to animate
         if (differenceInMonths !== 0) {
           noCloseFlag.current = false;
-          setMonthOffset(monthOffset => monthOffset + differenceInMonths);
+          dispatch({
+            type: 'UPDATE_MONTH_OFFSET',
+            payload: monthOffset + differenceInMonths
+          });
         } else {
           // no animation
-          setVisibility(false);
+          dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
         }
       }
     }, [value, monthOffset, prevDate, isVisible, initialDate]);
 
     // shrinking size logic
-    useEffect(() => setDateTyped(formatDate(value, isSmall, dateFormat)), [
-      isSmall,
-      dateFormat,
-      value
-    ]);
+    useEffect(() => {
+      console.log('calling 2');
+      dispatch({
+        type: 'UPDATE_DATE_TYPED_STATE',
+        payload: formatDate(value, isSmall, dateFormat)
+      });
+    }, [isSmall, dateFormat, value]);
 
     const updateDate = useCallback(
       (incomingDate: Date) => {
@@ -111,7 +182,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (validDateChange) {
           onChange(incomingDate);
         } else {
-          setVisibility(false);
+          dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
         }
       },
       [onChange, value, initialDate]
@@ -122,8 +193,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       const isValidDateTyped = isValid(newDate) && dateTyped !== '';
 
       if (!isValidDateTyped && hasDateChanged(value, newDate)) {
-        setError(true);
-        setVisibility(false);
+        dispatch({ type: 'UPDATE_ERROR_STATE', payload: true });
+        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       } else {
         updateDate(newDate);
       }
@@ -136,25 +207,35 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         }
         noCloseFlag.current = true;
         const monthAddition = increment === 'next' ? 1 : -1;
-        setMonthOffset(monthOffset + monthAddition);
+        dispatch({
+          type: 'UPDATE_MONTH_OFFSET',
+          payload: monthOffset + monthAddition
+        });
       },
       [monthOffset]
     );
 
-    const onTextFieldFocus = useCallback(
-      (evt: React.FocusEvent<HTMLInputElement>) => {
-        setDateTyped(format(value, MONTH_DAY_YEAR_FORMAT));
-        inputRef.current.focus();
-        setVisibility(true);
-      },
-      [value]
-    );
+    const onTextFieldFocus = useCallback(() => {
+      console.log('onFocus');
+      inputRef.current.focus();
+      dispatch({
+        type: 'UPDATE_FOCUS_STATE',
+        payload: {
+          dateTyped: format(value, MONTH_DAY_YEAR_FORMAT),
+          isVisible: true
+        }
+      });
+    }, [value]);
 
     const onTextFieldBlur = useCallback(() => dateParse(), [dateParse]);
 
     const onTextFieldChange = useCallback(
-      (evt: React.ChangeEvent<HTMLInputElement>) =>
-        setDateTyped(evt.target.value),
+      (evt: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch({
+          type: 'UPDATE_DATE_TYPED_STATE',
+          payload: evt.target.value
+        });
+      },
       []
     );
 
@@ -170,7 +251,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const onCalendarIconClick = useCallback(() => {
       if (isVisible) {
         inputRef.current.blur();
-        setVisibility(false);
+        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       } else {
         inputRef.current.focus();
       }
@@ -179,7 +260,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const onAnimationEnd = useCallback(() => {
       isGridAnimating.current = false;
       if (!noCloseFlag.current) {
-        setVisibility(false);
+        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       }
     }, [noCloseFlag]);
 

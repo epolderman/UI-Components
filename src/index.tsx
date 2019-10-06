@@ -16,6 +16,14 @@ const App: React.FC = () => (
     >
       <DateRangeExample />
     </Flex>
+    <Flex
+      justifyContent='center'
+      alignItems='stretch'
+      flex='1 1 0%'
+      paddingY='500px'
+    >
+      <DateExample />
+    </Flex>
   </MuiThemeProvider>
 );
 
