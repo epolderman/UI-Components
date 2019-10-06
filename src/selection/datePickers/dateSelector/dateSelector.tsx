@@ -79,6 +79,8 @@ function reducer(
         isActiveError: action.payload.isActiveError,
         dateTyped: action.payload.dateTyped
       };
+    default:
+      throw new Error();
   }
 }
 
