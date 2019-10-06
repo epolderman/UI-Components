@@ -33,17 +33,6 @@ import { usePrevious } from '../../../utils/hooks';
 import { DateRangeField } from './DateRangeField';
 import { animated, useSpring, config } from 'react-spring';
 
-/* 
-  Date Range Selector Todo
-  1. Add StartDate logic to move to different calendar month if suppplied by user(99% DONE).
-  2. Handle error states (Silent + Visual) (DONE / animation?)
-  3. Wire in text field date ranges to this component. (DONE)
-  4. Layout of text field with calendar below. Handle no space on right. (50%)
-  5. CalendarMonthRange needs styles update to match mockups. (99% DONE / 1 Bug)
-  6  Add onBlur to text fields to parse date. 
-  7. Add pallette colors and remove static colors. 
-*/
-
 type RangeErrorType = 'start' | 'end' | null;
 
 interface DateRangeState {
@@ -156,7 +145,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   });
 
   useEffect(() => {
-    // may need more thourough checks
     if (dateRange === prevDateRange) {
       return;
     }
