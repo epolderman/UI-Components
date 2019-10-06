@@ -47,15 +47,17 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
             .interpolate(x => `translate3d(${x}px, 0, 0)`)
         }}
       >
-        <DateRange
-          style={{
-            paddingLeft: isSmall ? 4 : 0,
-            cursor: 'pointer',
-            color: isActiveError ? BRAND_RED : BRAND_PRIMARY
-          }}
-          onClick={onCalendarIconClick}
-          onMouseDown={e => e.preventDefault()}
-        />
+        {!isSmall && (
+          <DateRange
+            style={{
+              paddingLeft: isSmall ? 4 : 0,
+              cursor: 'pointer',
+              color: isActiveError ? BRAND_RED : BRAND_PRIMARY
+            }}
+            onClick={onCalendarIconClick}
+            onMouseDown={e => e.preventDefault()}
+          />
+        )}
         <Input type='text' ref={ref} {...textInputProps} />
       </AnimatedWrapper>
     );
