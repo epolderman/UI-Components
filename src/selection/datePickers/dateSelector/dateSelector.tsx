@@ -31,6 +31,10 @@ import { Flex } from '@rebass/grid/emotion';
 /* 
     Parent Component that controls the Date Selector + Date Text Field
     & and the communication between the two
+
+    Todos: 
+    1. Look at update date typed logic, doesnt respond to opening close state.
+    2. Rewrite calendar renderer to meet mockups from product. 
 */
 
 interface DateSelectorState {
