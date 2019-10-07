@@ -44,6 +44,8 @@ export const CalendarContents = styled(Flex)`
   right: 0;
   bottom: 0;
   position: absolute;
+  align-items: stretch;
+  justify-content: stretch;
 `;
 
 export const DayNameBlocks = styled(Flex)`
@@ -82,6 +84,10 @@ export const FULL_RADIUS_STYLE: React.CSSProperties = {
   backgroundColor: BRAND_PRIMARY,
   borderRadius: '50%',
   color: 'white'
+};
+
+export const TODAY_STYLE: React.CSSProperties = {
+  color: BRAND_PRIMARY
 };
 
 export const RANGE_BUTTON_STYLE: React.CSSProperties = {

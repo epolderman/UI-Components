@@ -1,10 +1,16 @@
-import React, { useCallback, useRef, useReducer, useEffect } from 'react';
+import React, {
+  useCallback,
+  useRef,
+  useReducer,
+  useEffect,
+  useMemo
+} from 'react';
 import styled from '@emotion/styled';
 import { Button, Divider, Typography } from '@material-ui/core';
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
-  CalendarToday
+  DateRangeOutlined
 } from '@material-ui/icons';
 import { Flex } from '@rebass/grid/emotion';
 import {
@@ -95,13 +101,15 @@ function reducer(
 export interface DateRangeSelectorProps {
   onChange: (incomingDate: DateRangeTuple) => void;
   dateRange: DateRangeTuple;
+  disableVirtualization?: boolean;
 }
 
 export type DateRangeTuple = [Date, Date];
 
 export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   onChange,
-  dateRange
+  dateRange,
+  disableVirtualization
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {
@@ -126,7 +134,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       if (!isVisible) {
         startDateRef.current.blur();
         endDateRef.current.blur();
-        // on close, transition back to our start date if not visible
+        // on close, transition back to our start date is not visible
         if (dateRange[0] != null && isValid(dateRange[0])) {
           const differenceInMonths = calculateMonthOffset(
             initialDate.current,
@@ -137,6 +145,15 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             dispatch({
               type: 'UPDATE_MONTH_OFFSET',
               payload: monthOffset + differenceInMonths
+            });
+          }
+        } else {
+          // transition back to current date if not
+          // visible on close with no start date selected & we navigated away
+          if (monthOffset !== MIDDLE_INDEX) {
+            dispatch({
+              type: 'UPDATE_MONTH_OFFSET',
+              payload: MIDDLE_INDEX
             });
           }
         }
@@ -159,19 +176,21 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       );
       const validAnimationChange =
         differenceInMonths !== 0 && differenceInMonths !== 1;
+      // animate
       if (validAnimationChange) {
         dispatch({
           type: 'UPDATE_MONTH_OFFSET',
           payload: monthOffset + differenceInMonths
         });
       }
-
+      // clear error
       if (error === 'start') {
         dispatch({
           type: 'UPDATE_ERROR_STATE',
           payload: null
         });
       }
+      // update field
       dispatch({
         type: 'UPDATE_START_DATE_STATE',
         payload: format(dateRange[0], MONTH_DAY_YEAR_FORMAT)
@@ -196,7 +215,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       });
     } else {
       dispatch({
-        type: 'UPDATE_START_DATE_STATE',
+        type: 'UPDATE_END_DATE_STATE',
         payload: ''
       });
     }
@@ -220,7 +239,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       const isSameStart = isSameDay(incomingDate, dateRange[0]);
       const isBeforeEnd = isBefore(incomingDate, dateRange[1]);
       // silent protection: end date cannot start before start date when typing in date
-      if (overrideSelectionState === 'end' && (isBeforeStart || isSameStart)) {
+      if (overrideSelectionState === 'end' && isBeforeStart) {
         return;
       }
 
@@ -228,10 +247,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         onChange([incomingDate, dateRange[1]]);
       } else if (overrideSelectionState === 'end') {
         onChange([dateRange[0], incomingDate]);
-      } else if (isSelecting && (isBeforeStart || isSameStart)) {
+      } else if (isSelecting && isBeforeStart) {
         dispatch({ type: 'CLEAR_HOVER_DATE' });
         onChange([incomingDate, null]);
-      } else if (isSelecting && isAfterStart) {
+      } else if (isSelecting && (isAfterStart || isSameStart)) {
         dispatch({ type: 'CLEAR_SELECTION_STATE' });
         onChange([dateRange[0], incomingDate]);
       } else {
@@ -245,7 +264,8 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   const onDateParse = useCallback(
     (dateTyped: string, rangeSpecifier: 'start' | 'end') => {
       const newDate = parse(dateTyped);
-      const isValidDateTyped = isValid(newDate) && dateTyped !== '';
+      const isValidDateTyped = isValid(newDate);
+      const emptyDate = dateTyped === '';
       const isValidDateChange = hasDateChanged(
         rangeSpecifier === 'start' ? dateRange[0] : dateRange[1],
         newDate
@@ -255,26 +275,30 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         rangeSpecifier === 'end' &&
         dateRange[0] != null &&
         isValid(dateRange[0]) &&
-        !isSelecting;
+        !isSelecting &&
+        isValidDateChange;
       const startDateOverride =
         rangeSpecifier === 'start' &&
         dateRange[1] != null &&
         isValid(dateRange[1]) &&
-        !isSelecting;
+        !isSelecting &&
+        isValidDateChange;
 
-      if (!isValidDateTyped && isValidDateChange) {
+      if (emptyDate && rangeSpecifier === 'start') {
+        onChange([null, null]);
+      } else if (!isValidDateTyped && isValidDateChange) {
         dispatch({ type: 'UPDATE_ERROR_STATE', payload: rangeSpecifier });
-      } else if (!isValidDateChange && isVisible) {
-        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       } else if (endDateOverride) {
         updateDateRange(newDate, 'end');
       } else if (startDateOverride) {
         updateDateRange(newDate, 'start');
+      } else if (!isValidDateChange) {
+        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
       } else {
         updateDateRange(newDate);
       }
     },
-    [dateRange, updateDateRange, isSelecting, isVisible]
+    [dateRange, updateDateRange, isSelecting, onChange]
   );
 
   const onSelectHoverRange = useCallback(
@@ -290,7 +314,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
   const toMonth = useCallback(
     (increment: 'next' | 'prev') => {
-      if (isGridAnimating.current) {
+      if (!disableVirtualization && isGridAnimating.current) {
         return;
       }
       const monthAddition = increment === 'next' ? 1 : -1;
@@ -299,7 +323,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         payload: monthOffset + monthAddition
       });
     },
-    [monthOffset]
+    [monthOffset, disableVirtualization]
   );
 
   const cellRenderer = useCallback(
@@ -312,11 +336,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       style: React.CSSProperties;
       columnIndex: number;
     }) => (
-      <div
-        style={{
-          ...style,
-          display: 'flex'
-        }}
+      <Flex
+        alignItems='stretch'
+        justifyContent='stretch'
+        style={style}
         key={key}
       >
         <CalendarMonthRange
@@ -326,6 +349,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
+          currentDate={initialDate.current}
         />
         <Divider orientation='vertical' />
         <CalendarMonthRange
@@ -335,8 +359,9 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           hoverDate={hoverDate}
           onSelectHoverRange={onSelectHoverRange}
           dateRange={dateRange}
+          currentDate={initialDate.current}
         />
-      </div>
+      </Flex>
     ),
     [
       initialDate,
@@ -347,6 +372,49 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       hoverDate
     ]
   );
+
+  const CalendarRangeJSXNoVirtualization = useMemo(() => {
+    if (!disableVirtualization) {
+      return null;
+    }
+    return (
+      <Flex
+        style={{
+          width: `${CALENDAR_DIMENSIONS_RANGE_WIDTH}px`,
+          height: `${CALENDAR_DIMENSIONS_RANGE_HEIGHT}px`
+        }}
+      >
+        <CalendarMonthRange
+          month={addMonths(initialDate.current, monthOffset - MIDDLE_INDEX)}
+          onSelectRange={updateDateRange}
+          isSelecting={isSelecting}
+          hoverDate={hoverDate}
+          onSelectHoverRange={onSelectHoverRange}
+          dateRange={dateRange}
+          currentDate={initialDate.current}
+        />
+        <Divider orientation='vertical' />
+        <CalendarMonthRange
+          month={addMonths(initialDate.current, monthOffset - MIDDLE_INDEX + 1)}
+          onSelectRange={updateDateRange}
+          isSelecting={isSelecting}
+          hoverDate={hoverDate}
+          onSelectHoverRange={onSelectHoverRange}
+          dateRange={dateRange}
+          currentDate={initialDate.current}
+        />
+      </Flex>
+    );
+  }, [
+    initialDate,
+    dateRange,
+    updateDateRange,
+    isSelecting,
+    onSelectHoverRange,
+    hoverDate,
+    monthOffset,
+    disableVirtualization
+  ]);
 
   const onAnimationStart = useCallback(
     () => (isGridAnimating.current = true),
@@ -370,28 +438,35 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     []
   );
 
-  const onFocus = useCallback(() => {
-    dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: true });
-  }, []);
+  const onFocus = useCallback(
+    () => dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: true }),
+    []
+  );
 
-  const onBlur = useCallback(() => {
+  const onBlurStart = useCallback(() => {
     const startDateHasText =
       startDateTyped.length > 0 && startDateTyped.trim() !== '';
+
+    if (isVisible && !startDateHasText) {
+      dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+      onChange([null, null]);
+      return;
+    }
+    onDateParse(startDateTyped, 'start');
+  }, [startDateTyped, onDateParse, isVisible, onChange]);
+
+  const onBlurEnd = useCallback(() => {
     const endDateHasText =
       endDateTyped.length > 0 && endDateTyped.trim() !== '';
 
-    if (isVisible && !startDateHasText && !endDateHasText) {
+    if (isVisible && !endDateHasText) {
       dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+      dispatch({ type: 'UPDATE_SELECTION_STATE', payload: true });
+      onChange([dateRange[1], null]);
       return;
     }
-
-    if (startDateHasText) {
-      onDateParse(startDateTyped, 'start');
-    }
-    if (endDateHasText) {
-      onDateParse(endDateTyped, 'end');
-    }
-  }, [startDateTyped, endDateTyped, onDateParse, isVisible]);
+    onDateParse(endDateTyped, 'end');
+  }, [endDateTyped, onDateParse, isVisible, onChange, dateRange]);
 
   return (
     <Flex
@@ -401,13 +476,12 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       style={{ position: 'relative', maxWidth: '625px' }}
     >
       <Flex alignItems='center' justifyContent='center' flex='1 1 0%'>
-        <CalendarToday style={{ marginRight: '8px' }} />
+        <DateRangeOutlined style={{ marginRight: '8px' }} />
         <DateRangeField
           value={startDateTyped}
           onFocus={onFocus}
-          onBlur={onBlur}
+          onBlur={onBlurStart}
           ref={startDateRef}
-          placeholder={'ex. 11/19/19'}
           onChange={onChangeStartDate}
           onDateParse={onDateParse}
           rangeSpecifier='start'
@@ -419,11 +493,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         </Typography>
         <DateRangeField
           value={endDateTyped}
-          onBlur={onBlur}
+          onBlur={onBlurEnd}
           onFocus={onFocus}
           ref={endDateRef}
           disabled={dateRange[0] == null || !isValid(dateRange[0])}
-          placeholder={'ex. 12/19/19'}
           onChange={onChangeEndDate}
           onDateParse={onDateParse}
           rangeSpecifier='end'
@@ -432,22 +505,29 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         />
       </Flex>
       <AnimatedCalendarWrapper
-        style={{ ...showAnimation, pointerEvents: isVisible ? 'auto' : 'none' }}
+        style={{
+          ...showAnimation,
+          pointerEvents: isVisible ? 'auto' : 'none'
+        }}
       >
         <DateRangeContainer>
-          <AnimatedGrid
-            column={monthOffset}
-            cellRenderer={cellRenderer}
-            height={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
-            width={CALENDAR_DIMENSIONS_RANGE_WIDTH}
-            rowHeight={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
-            rowCount={1}
-            columnCount={MAX_TIME_SPAN}
-            columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
-            durationOfAnimation={1000}
-            onAnimationStart={onAnimationStart}
-            onAnimationEnd={onAnimationEnd}
-          />
+          {disableVirtualization ? (
+            CalendarRangeJSXNoVirtualization
+          ) : (
+            <AnimatedGrid
+              column={monthOffset}
+              cellRenderer={cellRenderer}
+              height={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
+              width={CALENDAR_DIMENSIONS_RANGE_WIDTH}
+              rowHeight={CALENDAR_DIMENSIONS_RANGE_HEIGHT}
+              rowCount={1}
+              columnCount={MAX_TIME_SPAN}
+              columnWidth={CALENDAR_DIMENSIONS_RANGE_WIDTH}
+              durationOfAnimation={500}
+              onAnimationStart={onAnimationStart}
+              onAnimationEnd={onAnimationEnd}
+            />
+          )}
           <ControlsContainer>
             <Button
               disableRipple
@@ -481,16 +561,15 @@ const background = {
 };
 
 const AnimatedCalendarWrapper = styled(animated.div)`
-  display: flex;
-  flex: 1 1 0%;
   position: absolute;
   top: 42px;
   right: 0;
   bottom: 0;
-  justify-content: stretch;
-  align-items: stretch;
   z-index: 99;
   flex-direction: column;
+  -ms-overflow-style: none;
+  /* For Safari */
+  height: 100%;
 `;
 
 const DateRangeContainer = styled(Flex)`

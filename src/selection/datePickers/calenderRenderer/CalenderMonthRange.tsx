@@ -29,7 +29,8 @@ import {
   LEFT_RADIUS_STYLE,
   DayNameBlocks,
   CalendarHeader,
-  BRAND_PRIMARY_LIGHT
+  BRAND_PRIMARY_LIGHT,
+  TODAY_STYLE
 } from './rangeUtils';
 import { RangeStartEnd } from './RangeStartEnd';
 
@@ -40,6 +41,7 @@ import { RangeStartEnd } from './RangeStartEnd';
 export interface CalendarMonthRangeProps {
   month: Date;
   dateRange: DateRangeTuple;
+  currentDate: Date;
   isSelecting: boolean;
   hoverDate: Date;
   onSelectHoverRange: (hoverDate: Date) => void;
@@ -53,7 +55,8 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
     isSelecting,
     onSelectHoverRange,
     hoverDate,
-    dateRange
+    dateRange,
+    currentDate
   }) => {
     const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
 
@@ -62,6 +65,10 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         return map(week, (date, index) => {
           const dispatchSelect = () => onSelectRange(date);
           const isSelectionInProgress = hoverDate != null || isValidDateRange;
+          const isRangeOneDay =
+            isValidDateRange &&
+            isSameDay(date, dateRange[1]) &&
+            isSameDay(date, dateRange[0]);
 
           if (!isSameMonth(month, date)) {
             return (
@@ -71,6 +78,18 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
                 justifyContent='stretch'
                 alignItems='stretch'
               />
+            );
+          } else if (isRangeOneDay) {
+            return (
+              <CalenderNoHoverButton
+                style={FULL_RADIUS_STYLE}
+                key={index}
+                onClick={dispatchSelect}
+                onMouseDown={e => e.preventDefault()}
+                onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </CalenderNoHoverButton>
             );
           } else if (
             isSameDay(dateRange[0], date) &&
@@ -142,7 +161,14 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
             return (
               <CalenderNoHoverButton
                 key={index}
-                style={styleBuilder(dateRange, hoverDate, date, index, week)}
+                style={styleBuilder(
+                  dateRange,
+                  hoverDate,
+                  date,
+                  index,
+                  week,
+                  currentDate
+                )}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
                 onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
@@ -160,7 +186,8 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         isValidDateRange,
         hoverDate,
         isSelecting,
-        onSelectHoverRange
+        onSelectHoverRange,
+        currentDate
       ]
     );
 
@@ -199,7 +226,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               }}
               color='textPrimary'
             >
-              {format(month, 'MMM YYYY')}
+              {format(month, 'MMMM YYYY')}
             </Typography>
           </CalendarRowRange>
           {dayNamesJSX}
@@ -216,13 +243,19 @@ const styleBuilder = (
   hoverDate: Date,
   currentDate: Date,
   index: number,
-  week: Date[]
+  week: Date[],
+  today: Date
 ): React.CSSProperties | null => {
   const isStartDate = isSameDay(currentDate, dateRange[0]);
   const isValidDateRange = dateRange[0] != null && dateRange[1] != null;
   const isValidHoverDateRange = hoverDate != null && !isStartDate;
-  if (!isValidHoverDateRange && !isValidDateRange) {
+  const isToday = isSameDay(currentDate, today);
+  if (!isValidHoverDateRange && !isValidDateRange && !isToday) {
     return null;
+  }
+
+  if (isToday && !isValidHoverDateRange && !isValidDateRange) {
+    return TODAY_STYLE;
   }
 
   // hovering states -->
@@ -268,9 +301,13 @@ const styleBuilder = (
     if (isWithinHoverRange) {
       return SQUARE_STYLE;
     }
+
+    if (isToday) {
+      return TODAY_STYLE;
+    }
   }
 
-  // we have a set date range states --> @todo: may not need isBefore
+  // we have a set date range states -->
   if (isValidDateRange) {
     const isWithinDateRanges = isWithinRange(
       currentDate,
@@ -289,6 +326,10 @@ const styleBuilder = (
     if (isWithinDateRanges) {
       return SQUARE_STYLE;
     }
+
+    if (isToday) {
+      return TODAY_STYLE;
+    }
   }
 };
 
@@ -297,6 +338,7 @@ const CalenderNoHoverButton = withStyles({
     width: '44px',
     height: '44px',
     transition: 'none',
+    boxSizing: 'border-box',
     '&:hover': {
       backgroundColor: 'transparent'
     }
