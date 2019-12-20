@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
-import { DateRange } from '@material-ui/icons';
+import { CalendarToday } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { animated, config, useSpring } from 'react-spring';
 import isPropValid from '@emotion/is-prop-valid';
-
+import { background, text, brand } from '../../../common/colors';
 /* 
     Error Animations, Date selection via text input
     isSmall prop shrinks the Date Selector when the window resizes to a threshold
@@ -48,11 +48,11 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
         }}
       >
         {!isSmall && (
-          <DateRange
+          <CalendarToday
             style={{
               paddingLeft: isSmall ? 4 : 0,
               cursor: 'pointer',
-              color: isActiveError ? BRAND_RED : BRAND_PRIMARY
+              color: isActiveError ? brand.secondary.red : text.black.secondary
             }}
             onClick={onCalendarIconClick}
             onMouseDown={e => e.preventDefault()}
@@ -63,10 +63,6 @@ export const DateTextField: React.FC<CombinedProps> = React.forwardRef(
     );
   }
 );
-
-const BACKGROUND_EMPTY = 'rgb(238,238,238)';
-const BRAND_PRIMARY = 'rgb(74,175,227)';
-const BRAND_RED = 'rgb(231,54,49)';
 
 const Input = styled.input`
   display: flex;
@@ -82,8 +78,14 @@ const Input = styled.input`
   text-overflow: ellipsis;
   min-width: 0;
   font-size: 14px;
-  background-color: ${BACKGROUND_EMPTY};
+  background-color: ${background.empty};
   outline: none;
+  height: 36px;
+  box-sizing: border-box;
+  color: ${text.black.secondary};
+  &::-ms-clear {
+    display: none;
+  }
 `;
 
 const AnimatedWrapper = styled(animated.div, {
@@ -98,5 +100,5 @@ const AnimatedWrapper = styled(animated.div, {
   padding-right: ${({ isSmall }) => (isSmall ? '0px' : '8px')};
   z-index: 99;
   border-radius: 4px;
-  background-color: ${BACKGROUND_EMPTY};
+  background-color: ${background.empty};
 `;

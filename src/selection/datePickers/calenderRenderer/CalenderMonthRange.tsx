@@ -6,8 +6,7 @@ import {
   isSameMonth,
   isWithinRange,
   isLastDayOfMonth,
-  isFirstDayOfMonth,
-  isBefore
+  isFirstDayOfMonth
 } from 'date-fns';
 import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -29,10 +28,10 @@ import {
   LEFT_RADIUS_STYLE,
   DayNameBlocks,
   CalendarHeader,
-  BRAND_PRIMARY_LIGHT,
   TODAY_STYLE
 } from './rangeUtils';
 import { RangeStartEnd } from './RangeStartEnd';
+import { BRAND_PRIMARY_LIGHT, text } from '../../../common/colors';
 
 /*
    Calculation of calendar month data + date range rendering 
@@ -158,17 +157,18 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
               </CalenderNoHoverButton>
             );
           } else {
+            const markerStyles = styleBuilder(
+              dateRange,
+              hoverDate,
+              date,
+              index,
+              week,
+              currentDate
+            );
             return (
               <CalenderNoHoverButton
                 key={index}
-                style={styleBuilder(
-                  dateRange,
-                  hoverDate,
-                  date,
-                  index,
-                  week,
-                  currentDate
-                )}
+                style={markerStyles}
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
                 onMouseEnter={() => isSelecting && onSelectHoverRange(date)}
@@ -205,7 +205,7 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
         <CalendarRowRange>
           {map(DAYS, day => (
             <DayNameBlocks key={day}>
-              <Typography style={{ fontSize: '14px' }} color='textSecondary'>
+              <Typography variant='subtitle2' color='textSecondary'>
                 {day.slice(0, 1)}
               </Typography>
             </DayNameBlocks>
@@ -215,18 +215,14 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
       []
     );
 
+    const monthIdentifier = useMemo(() => format(month, 'MMMM YYYY'), [month]);
+
     return (
       <MonthContainer>
         <CalendarHeader>
           <CalendarRowRange hasText>
-            <Typography
-              style={{
-                fontSize: '16px',
-                marginTop: '-4px'
-              }}
-              color='textPrimary'
-            >
-              {format(month, 'MMMM YYYY')}
+            <Typography variant='body1' color='textSecondary'>
+              {monthIdentifier}
             </Typography>
           </CalendarRowRange>
           {dayNamesJSX}
@@ -290,7 +286,7 @@ const styleBuilder = (
       return {
         ...FULL_RADIUS_STYLE,
         backgroundColor: BRAND_PRIMARY_LIGHT,
-        color: 'black'
+        color: `${text.black.primary}`
       };
     }
 
@@ -335,10 +331,9 @@ const styleBuilder = (
 
 const CalenderNoHoverButton = withStyles({
   root: {
-    width: '44px',
-    height: '44px',
+    height: '32px',
+    maxWidth: '32px',
     transition: 'none',
-    boxSizing: 'border-box',
     '&:hover': {
       backgroundColor: 'transparent'
     }

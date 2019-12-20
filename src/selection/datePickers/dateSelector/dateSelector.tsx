@@ -2,17 +2,11 @@ import styled from '@emotion/styled';
 import { Button } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 import { addMonths, format, isValid, parse } from 'date-fns';
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useReducer
-} from 'react';
+import React, { useCallback, useEffect, useRef, useReducer } from 'react';
 import { animated, useSpring, config } from 'react-spring';
 import { ELEVATIONS, makeShadow } from '../../../common/elevation';
 import { AnimatedGrid } from '../AnimatedGrid';
-import { CalendarMonth } from '../CalenderRenderer/CalenderMonth';
+import { CalendarMonth } from '../calenderRenderer/CalenderMonth';
 import { usePrevious } from '../../../utils/hooks';
 import { DateTextField } from './DateTextField';
 import {
@@ -27,14 +21,14 @@ import {
   formatDate
 } from '../dateUtils';
 import { Flex } from '@rebass/grid/emotion';
+import { text } from '../../../common/colors';
 
 /* 
     Parent Component that controls the Date Selector + Date Text Field
     & and the communication between the two
 
     Todos: 
-    1. Look at update date typed logic, doesnt respond to opening close state.
-    2. Rewrite calendar renderer to meet mockups from product. 
+    1. Add disabled dates props to interface, write logic.
 */
 
 interface DateSelectorState {
@@ -56,6 +50,10 @@ type DateSelectorActions =
   | {
       type: 'CLEAR_ERROR_STATE';
       payload: { isActiveError: boolean; dateTyped: string };
+    }
+  | {
+      type: 'CLEAR_VISIBLE_STATE';
+      payload: { isVisible: boolean; dateTyped: string };
     };
 
 function reducer(
@@ -83,12 +81,18 @@ function reducer(
         isActiveError: action.payload.isActiveError,
         dateTyped: action.payload.dateTyped
       };
+    case 'CLEAR_VISIBLE_STATE':
+      return {
+        ...state,
+        isVisible: action.payload.isVisible,
+        dateTyped: action.payload.dateTyped
+      };
     default:
       throw new Error();
   }
 }
 
-const TEXT_FIELD_HEIGHT = 31;
+const TEXT_FIELD_HEIGHT = 34;
 
 export interface DateSelectorProps {
   onChange: (incomingDate: Date) => void;
@@ -111,16 +115,14 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     const initialDate = useRef<Date>(new Date());
     const isGridAnimating = useRef(false);
     const noCloseFlag = useRef(false);
-    // @todo: Refactor when spring hits v9 to take
-    // into account isSmall + different animation.
+    const isCalendarHidden = useRef(false);
+    // @todo: Refactor when spring hits v9 to take to add scale + into account isSmall + different animation.
     const openCloseAnimation = useSpring({
-      transform: isVisible
-        ? `translateY(0) scale(1)`
-        : `translateY(-100%) scale(0)`,
-      config: config.default,
+      transform: isVisible ? `translateY(0)` : `translateY(-150%)`,
       onRest: () => {
         // close animationEnd state change
         if (!isVisible) {
+          isCalendarHidden.current = true;
           inputRef.current.blur();
           if (isActiveError) {
             dispatch({
@@ -165,10 +167,24 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
           });
         } else {
           // no animation
-          dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+          dispatch({
+            type: 'CLEAR_VISIBLE_STATE',
+            payload: {
+              isVisible: false,
+              dateTyped: formatDate(value, isSmall, dateFormat)
+            }
+          });
         }
       }
-    }, [value, monthOffset, prevDate, isVisible, initialDate]);
+    }, [
+      value,
+      monthOffset,
+      prevDate,
+      isVisible,
+      initialDate,
+      dateFormat,
+      isSmall
+    ]);
 
     // shrinking size logic
     useEffect(() => {
@@ -187,10 +203,16 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
         if (validDateChange) {
           onChange(incomingDate);
         } else {
-          dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+          dispatch({
+            type: 'CLEAR_VISIBLE_STATE',
+            payload: {
+              isVisible: false,
+              dateTyped: formatDate(value, isSmall, dateFormat)
+            }
+          });
         }
       },
-      [onChange, value, initialDate]
+      [onChange, value, initialDate, isSmall, dateFormat]
     );
 
     const dateParse = useCallback(() => {
@@ -199,11 +221,17 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
 
       if (!isValidDateTyped && hasDateChanged(value, newDate)) {
         dispatch({ type: 'UPDATE_ERROR_STATE', payload: true });
-        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+        dispatch({
+          type: 'CLEAR_VISIBLE_STATE',
+          payload: {
+            isVisible: false,
+            dateTyped: formatDate(value, isSmall, dateFormat)
+          }
+        });
       } else {
         updateDate(newDate);
       }
-    }, [updateDate, dateTyped, value]);
+    }, [updateDate, dateTyped, value, isSmall, dateFormat]);
 
     const toMonth = useCallback(
       (increment: 'next' | 'prev') => {
@@ -221,8 +249,8 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     const onTextFieldFocus = useCallback(() => {
-      console.log('onFocus');
       inputRef.current.focus();
+      isCalendarHidden.current = false;
       dispatch({
         type: 'UPDATE_FOCUS_STATE',
         payload: {
@@ -254,20 +282,33 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
     );
 
     const onCalendarIconClick = useCallback(() => {
+      isCalendarHidden.current = false;
       if (isVisible) {
         inputRef.current.blur();
-        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+        dispatch({
+          type: 'CLEAR_VISIBLE_STATE',
+          payload: {
+            isVisible: false,
+            dateTyped: formatDate(value, isSmall, dateFormat)
+          }
+        });
       } else {
         inputRef.current.focus();
       }
-    }, [isVisible]);
+    }, [isVisible, isSmall, dateFormat, value]);
 
     const onAnimationEnd = useCallback(() => {
       isGridAnimating.current = false;
       if (!noCloseFlag.current) {
-        dispatch({ type: 'UPDATE_VISIBLE_STATE', payload: false });
+        dispatch({
+          type: 'CLEAR_VISIBLE_STATE',
+          payload: {
+            isVisible: false,
+            dateTyped: formatDate(value, isSmall, dateFormat)
+          }
+        });
       }
-    }, [noCloseFlag]);
+    }, [noCloseFlag, isSmall, dateFormat, value]);
 
     const onAnimationStart = useCallback(
       () => (isGridAnimating.current = true),
@@ -278,24 +319,25 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
       ({
         key,
         style,
-        columnIndex,
-        isScrolling
+        columnIndex
       }: {
         key: string;
         style: React.CSSProperties;
         columnIndex: number;
-        isScrolling: boolean;
       }) => {
+        const shouldRenderCalendar = isCalendarHidden.current === false;
         const itemOffset = columnIndex - MIDDLE_INDEX;
         const itemDate = addMonths(initialDate.current, itemOffset);
         return (
           <div style={{ ...style, display: 'flex' }} key={key}>
-            <CalendarMonth
-              onSelect={updateDate}
-              month={itemDate}
-              selectedDate={value}
-              isLoading={isScrolling}
-            />
+            {shouldRenderCalendar ? (
+              <CalendarMonth
+                onSelect={updateDate}
+                month={itemDate}
+                selectedDate={value}
+                currentDay={initialDate.current}
+              />
+            ) : null}
           </div>
         );
       },
@@ -333,6 +375,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                 columnWidth={CALENDAR_DIMENSIONS}
                 onAnimationStart={onAnimationStart}
                 onAnimationEnd={onAnimationEnd}
+                durationOfAnimation={500}
               />
               <ControlsContainer>
                 <Button
@@ -341,6 +384,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                   /* Event Chain OnMouseDown -> onFocus/onBlur -> OnMouseUp -> Click */
                   /* Cancel the focus event with e.preventDefualt on mouse down on the button */
                   onMouseDown={e => e.preventDefault()}
+                  style={{ color: text.black.secondary }}
                 >
                   <KeyboardArrowLeft />
                 </Button>
@@ -348,6 +392,7 @@ export const DateSelector: React.FC<DateSelectorProps> = React.memo(
                   disableRipple
                   onClick={() => toMonth('next')}
                   onMouseDown={e => e.preventDefault()}
+                  style={{ color: text.black.secondary }}
                 >
                   <KeyboardArrowRight />
                 </Button>
@@ -373,14 +418,14 @@ const ControlsContainer = styled(Flex)`
   align-items: center;
   flex: 1 1 0%;
   position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
+  top: 12px;
+  left: 10px;
+  right: 10px;
 
   /* overrides: sync with title animation */
   button {
-    width: 39px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     padding: 0 0;
     min-width: 0;
     &:hover {

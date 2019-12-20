@@ -1,6 +1,6 @@
 import { Flex } from '@rebass/grid/emotion';
 import React from 'react';
-import { BRAND_PRIMARY_LIGHT } from './rangeUtils';
+import { BRAND_PRIMARY_LIGHT } from '../../../common/colors';
 
 /* 
   Container that has two divs behind children[button], depending on direction[range specifier], 
@@ -30,7 +30,7 @@ export const RangeStartEnd: React.FC<RangeStartEndProps> = ({
         style={{
           position: 'absolute',
           zIndex: 2,
-          height: '44px',
+          height: '32px',
           top: 0,
           bottom: 0,
           right: 0,

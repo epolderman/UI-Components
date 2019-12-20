@@ -1,17 +1,17 @@
-import { Button, Typography } from '@material-ui/core';
-import { format, isSameMonth } from 'date-fns';
-import { map, range } from 'lodash';
+import { Button, Typography, withStyles } from '@material-ui/core';
+import { format, isSameMonth, isSameDay } from 'date-fns';
+import { map } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
   buildDateMatrix,
   CALENDAR_DAY_FORMAT,
   DateMatrix,
   DAYS,
-  isSameDate,
-  MAX_NUMBER_WEEKS_SHOWN
+  isSameDate
 } from '../dateUtils';
 import styled from '@emotion/styled';
 import { Flex } from '@rebass/grid/emotion';
+import { background, text, brand } from '../../../common/colors';
 
 /*
    Calculation of calendar month data / Selection of calendar day
@@ -19,51 +19,66 @@ import { Flex } from '@rebass/grid/emotion';
 
 export interface CalendarMonthProps {
   month: Date;
+  currentDay: Date;
   selectedDate: Date;
   onSelect: (incomingDate: Date) => void;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
-  ({ month, selectedDate, isLoading, onSelect }) => {
+  ({ month, selectedDate, isLoading, onSelect, currentDay }) => {
     const renderWeek = useCallback(
       (week: Date[]) =>
         map(week, (date, index) => {
           const dispatchSelect = () => onSelect(date);
-          if (isSameDate(date, selectedDate)) {
+          if (isSameMonth(month, date) && isSameDate(date, selectedDate)) {
             return (
-              <Button
-                variant='contained'
+              <CalenderSelectorButton
                 key={index}
-                style={{ backgroundColor: BRAND_PRIMARY, color: 'white' }}
+                style={{
+                  backgroundColor: brand.primary.blue,
+                  color: text.white.primary
+                }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
+              </CalenderSelectorButton>
+            );
+          } else if (isSameMonth(month, date) && isSameDay(currentDay, date)) {
+            return (
+              <CalenderSelectorButton
+                onClick={dispatchSelect}
+                onMouseDown={e => e.preventDefault()}
+                key={index}
+                style={{
+                  border: `1px solid ${text.black.primary}`
+                }}
+              >
+                {format(date, CALENDAR_DAY_FORMAT)}
+              </CalenderSelectorButton>
             );
           } else if (!isSameMonth(month, date)) {
             return (
-              <Button
+              <CalenderNotSameDay
                 onClick={dispatchSelect}
                 onMouseDown={e => e.preventDefault()}
                 key={index}
-                style={{ backgroundColor: BACKGROUND_EMPTY }}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
+              </CalenderNotSameDay>
             );
           } else {
             return (
-              <Button
+              <CalenderSelectorButton
                 onClick={dispatchSelect}
                 key={index}
                 onMouseDown={e => e.preventDefault()}
               >
                 {format(date, CALENDAR_DAY_FORMAT)}
-              </Button>
+              </CalenderSelectorButton>
             );
           }
         }),
-      [onSelect, selectedDate, month]
+      [onSelect, selectedDate, month, currentDay]
     );
 
     const monthJSX = useMemo(() => {
@@ -73,20 +88,13 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
       ));
     }, [month, renderWeek]);
 
-    const skeletonMonthJSX = useMemo(() => {
-      const month = getSkeletonMonth();
-      return map(month, (week, index) => (
-        <CalendarRow key={index}>{renderSkeletonWeek(week)}</CalendarRow>
-      ));
-    }, []);
-
     const dayNamesJSX = useMemo(
       () => (
         <CalendarRow>
           {map(DAYS, day => (
             <DayNameBlocks key={day}>
-              <Typography style={{ fontSize: '14px' }} color='textPrimary'>
-                {day.slice(0, 3)}
+              <Typography variant='subtitle2' color='textSecondary'>
+                {day.slice(0, 1)}
               </Typography>
             </DayNameBlocks>
           ))}
@@ -96,61 +104,41 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = React.memo(
     );
 
     return (
-      <Container>
+      <MonthContainer>
         <CalendarHeader>
           <CalendarRow hasText>
-            <Typography
-              style={{
-                fontSize: '16px',
-                marginTop: '-10px'
-              }}
-              color='textPrimary'
-            >
-              {format(month, 'MMM YYYY')}
+            <Typography variant='body1' color='textSecondary'>
+              {format(month, 'MMMM YYYY')}
             </Typography>
           </CalendarRow>
           {dayNamesJSX}
         </CalendarHeader>
-        <CalendarContents>
-          {isLoading ? skeletonMonthJSX : monthJSX}
-        </CalendarContents>
-      </Container>
+        <CalendarContents>{monthJSX}</CalendarContents>
+      </MonthContainer>
     );
   }
 );
 
-const getSkeletonMonth = () => {
-  return range(0, MAX_NUMBER_WEEKS_SHOWN).map(() =>
-    new Array(DAYS.length).fill(null)
-  );
-};
-
-const renderSkeletonWeek = (week: any[]) => {
-  return map(week, (_, index) => (
-    <Button style={{ backgroundColor: BACKGROUND_EMPTY }} key={index}>
-      <Typography color='primary'>{null}</Typography>
-    </Button>
-  ));
-};
-
-const Container = styled(Flex)`
+const MonthContainer = styled(Flex)`
   flex: 1 1 0%;
   flex-direction: column;
   justify-content: stretch;
   align-content: stretch;
   position: relative;
+  max-height: 288px; /* 36 x 8 = 288 */
+  margin: 8px 0 4px 0;
 `;
 
 /* Contains Month Name Row + Day Names Row */
 const CalendarHeader = styled(Flex)`
-  max-height: 75px; /* 2 Rows = 2 * 37.5 */
+  max-height: 72px; /* 2 Rows = 2 * 36 */
   flex-direction: column;
   flex: 1 1 0%;
 `;
 
 const CalendarContents = styled(Flex)`
   flex: 1 1 0%;
-  top: 75px; /* 2 Rows = 2 * 37.5 */
+  top: 72px; /* 2 Rows = 2 * 36 */
   flex-direction: column;
   left: 0;
   right: 0;
@@ -161,18 +149,20 @@ const CalendarContents = styled(Flex)`
 const CalendarRow = styled(Flex)<{ hasText?: boolean }>`
   flex: 1 1 0%;
   flex-direction: row;
-  justify-content: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
+  justify-content: ${({ hasText }) => (hasText ? 'center' : 'space-evenly')};
   align-items: ${({ hasText }) => (hasText ? 'center' : 'stretch')};
-  padding: 2px 0;
+  padding: 2px 4px;
+  max-height: 36px;
+  /* Edge */
+  justify-content: ${({ hasText }) => (hasText ? 'center' : 'space-around')};
 
   button {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex: 1 1 0%;
     min-width: 0;
     padding: 0 0;
-    margin: 0 2px;
+    justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -182,9 +172,31 @@ const DayNameBlocks = styled(Flex)`
   flex: 1 1 0%;
   min-width: 0;
   padding: 0 0;
-  margin: 0 2px;
-  border-radius: 2.5px;
+  height: 32px;
+  max-width: 32px;
+  border-radius: 50%;
 `;
 
-const BACKGROUND_EMPTY = 'rgb(238,238,238)';
-const BRAND_PRIMARY = 'rgb(74,175,227)';
+const CalenderSelectorButton = withStyles({
+  root: {
+    height: '32px',
+    maxWidth: '32px',
+    transition: 'none',
+    borderRadius: '50%'
+  }
+})(Button);
+
+const CalenderNotSameDay = withStyles({
+  root: {
+    height: '32px',
+    maxWidth: '32px',
+    borderRadius: '50%',
+    opacity: 0.2,
+    color: text.black.secondary,
+    backgroundColor: 'transparent',
+    '&:hover': {
+      opacity: 1,
+      backgroundColor: background.empty
+    }
+  }
+})(Button);
