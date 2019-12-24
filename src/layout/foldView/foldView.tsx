@@ -18,7 +18,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
   // spring animation
   const [isOpen, setOpen] = useState<Boolean>(false);
   const interpolatedVal = useSpring({
-    y: isOpen ? 150 : 0,
+    y: isOpen ? 130 : 0,
     config: config.slow,
   });
 
@@ -41,7 +41,9 @@ export const FoldView: React.FC<FoldViewProps> = ({
         <AnimatedFlex
           style={{
             transformOrigin: "center left",
-            transform: interpolatedVal.y.interpolate(y => `rotateY(${y}deg)`),
+            transform: interpolatedVal.y.interpolate(
+              y => `perspective(1000px) rotateY(${-y}deg)`
+            ),
           }}
         >
           {leftContent}
