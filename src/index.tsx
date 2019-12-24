@@ -5,7 +5,8 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import { Flex } from '@rebass/grid/emotion';
 import { DateExample } from './selection/datePickers/dateSelector/dateSelector.example';
 import { DateRangeExample } from './selection/datePickers/dateRange/dateRange.example';
-///
+import { FoldViewExample} from './layout/foldView/foldView.example'
+
 const App: React.FC = () => (
   <MuiThemeProvider theme={theme}>
     <Flex
@@ -23,6 +24,14 @@ const App: React.FC = () => (
       paddingY='500px'
     >
       <DateExample />
+    </Flex>
+    <Flex
+      justifyContent='center'
+      alignItems='stretch'
+      flex='1 1 0%'
+      paddingY='500px'
+    >
+      <FoldViewExample />
     </Flex>
   </MuiThemeProvider>
 );
