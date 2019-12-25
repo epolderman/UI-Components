@@ -18,7 +18,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
   // spring animation
   const [isOpen, setOpen] = useState<Boolean>(false);
   const interpolatedVal = useSpring({
-    y: isOpen ? 130 : 0,
+    y: isOpen ? 180 : 0,
     config: config.slow,
   });
 
