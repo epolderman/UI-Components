@@ -25,7 +25,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
     config: config.molasses,
   });
   const viewStyles = useCallback(
-    (index: number) => ({
+    (index: number, y: number) => ({
       left: index === 0 ? 0 : null,
       right: index === 1 ? 0 : null,
       zIndex: index === 0 ? 1 : 0,
@@ -53,7 +53,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
           <AnimatedFlex
             key={index}
             style={{
-              ...viewStyles(index),
+              ...viewStyles(index, y),
               transform: y.interpolate(
                 y => `perspective(1000px) rotateY(${index === 0 ? -y : y}deg)`
               ),

@@ -28,7 +28,13 @@ interface ContentProps {
 
 const Content: React.FC<ContentProps> = ({ color }) => {
   return (
-    <Flex flex="1 1 0%" bg={color} style={{ height: "200px" }}>
+    <Flex
+      flex="1 1 0%"
+      bg={color}
+      style={{ height: "200px" }}
+      justifyContent="center"
+      alignItems="center"
+    >
       <Typography>Content</Typography>
     </Flex>
   );
