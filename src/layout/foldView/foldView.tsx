@@ -42,28 +42,28 @@ export const FoldView: React.FC<FoldViewProps> = ({
       <Button onClick={() => setOpen(isOpen => !isOpen)}>Toggle Foldview</Button>
       <Folder flex="1 1 0%" flexDirection="row" justifyContent="center">
         {middleContent}
-        <FlipperContainer>
-          <Flipper
+        <SleeveContainer>
+          <SleeveFlipper
             style={{
               left: 0,
               transformOrigin: "center left",
               transform: left.y,
             }}
           >
-            <FrontCard>{leftFrontContent}</FrontCard>
-            <BackCard>{leftBackContent}</BackCard>
-          </Flipper>
-          <Flipper
+            <FrontSleeve>{leftFrontContent}</FrontSleeve>
+            <BackSleeve>{leftBackContent}</BackSleeve>
+          </SleeveFlipper>
+          <SleeveFlipper
             style={{
               right: 0,
               transformOrigin: "center right",
               transform: right.y,
             }}
           >
-            <FrontCard>{rightFrontContent}</FrontCard>
-            <BackCard>{rightBackContent}</BackCard>
-          </Flipper>
-        </FlipperContainer>
+            <FrontSleeve>{rightFrontContent}</FrontSleeve>
+            <BackSleeve>{rightBackContent}</BackSleeve>
+          </SleeveFlipper>
+        </SleeveContainer>
       </Folder>
     </Flex>
   );
@@ -74,15 +74,7 @@ const Folder = styled(Flex)`
   width: 500px;
 `;
 
-const Flipper = styled(animated.div)`
-  display: flex;
-  flex: 1 1 0%;
-  width: 250px;
-  transform-style: preserve-3d;
-  position: relative;
-`;
-
-const FlipperContainer = styled(Flex)`
+const SleeveContainer = styled(Flex)`
   position: absolute;
   top: 0;
   right: 0;
@@ -91,7 +83,15 @@ const FlipperContainer = styled(Flex)`
   perspective: 1000px;
 `;
 
-const Card = styled(Flex)`
+const SleeveFlipper = styled(animated.div)`
+  display: flex;
+  flex: 1 1 0%;
+  width: 250px;
+  transform-style: preserve-3d;
+  position: relative;
+`;
+
+const Sleeve = styled(Flex)`
   position: absolute;
   top: 0;
   flex: 1 1 0%;
@@ -100,10 +100,10 @@ const Card = styled(Flex)`
   height: 100%;
 `;
 
-const FrontCard = styled(Card)`
+const FrontSleeve = styled(Sleeve)`
   z-index: 2;
 `;
 
-const BackCard = styled(Card)`
+const BackSleeve = styled(Sleeve)`
   transform: rotateY(180deg);
 `;
