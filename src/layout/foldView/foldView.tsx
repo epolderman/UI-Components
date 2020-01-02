@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Flex } from "@rebass/grid/emotion";
 import { Typography, Button } from "@material-ui/core";
-import { animated, config, useTrail } from "react-spring";
+import { animated, config, useTrail, useSpring } from "react-spring";
 import styled from "@emotion/styled";
 
 export interface FoldViewProps {
@@ -10,29 +10,27 @@ export interface FoldViewProps {
   rightContent: React.ReactNode;
 }
 
-type ViewCollection = React.ReactNode[];
-
 export const FoldView: React.FC<FoldViewProps> = ({
   leftContent,
   middleContent,
   rightContent,
 }) => {
-  // spring animation
-  const [isOpen, setOpen] = useState<Boolean>(false);
-  const [views, setViewOrder] = useState<ViewCollection>([leftContent, rightContent]);
-  const trail = useTrail(views.length, {
-    y: isOpen ? 180 : 0,
+  const [isOpen, setOpen] = useState<boolean>(false);
+  // @todo replace when useTrail can reverse indexes in trail array
+  const left = useSpring({
+    y: isOpen
+      ? `perspective(1000px) rotateY(-180deg)`
+      : `perspective(1000px) rotateY(0deg)`,
     config: config.molasses,
+    delay: isOpen ? 0 : 300,
   });
-  const viewStyles = useCallback(
-    (index: number, y: number) => ({
-      left: index === 0 ? 0 : null,
-      right: index === 1 ? 0 : null,
-      zIndex: index === 0 ? 1 : 0,
-      transformOrigin: index === 0 ? "center left" : "center right",
-    }),
-    []
-  );
+  const right = useSpring({
+    y: isOpen
+      ? `perspective(1000px) rotateY(180deg)`
+      : `perspective(1000px) rotateY(0deg)`,
+    config: config.molasses,
+    delay: isOpen ? 300 : 0,
+  });
 
   return (
     <Flex
@@ -49,7 +47,25 @@ export const FoldView: React.FC<FoldViewProps> = ({
         style={{ position: "relative", width: "500px" }}
       >
         {middleContent}
-        {trail.map(({ y }, index) => (
+        <AnimatedFlex
+          style={{
+            right: 0,
+            transformOrigin: "center right",
+            transform: right.y,
+          }}
+        >
+          {rightContent}
+        </AnimatedFlex>
+        <AnimatedFlex
+          style={{
+            left: 0,
+            transformOrigin: "center left",
+            transform: left.y,
+          }}
+        >
+          {leftContent}
+        </AnimatedFlex>
+        {/* {trail.map(({ y }, index) => (
           <AnimatedFlex
             key={index}
             style={{
@@ -61,7 +77,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
           >
             {views[index]}
           </AnimatedFlex>
-        ))}
+        ))} */}
       </Flex>
     </Flex>
   );
@@ -72,8 +88,8 @@ const AnimatedFlex = styled(animated.div)`
   flex: 1 1 0%;
   position: absolute;
   top: 0;
-  width: 300px;
+  width: 250px;
   bottom: 0;
-  /* box-shadow: 5px 10px 8px #888888; */
+  /* box-shadow: 5px 10px 8px #888888;*/
   backface-visibility: visible;
 `;
