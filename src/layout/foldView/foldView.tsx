@@ -5,15 +5,19 @@ import { animated, config, useTrail, useSpring } from "react-spring";
 import styled from "@emotion/styled";
 
 export interface FoldViewProps {
-  leftContent: React.ReactNode;
+  leftFrontContent: React.ReactNode;
+  leftBackContent: React.ReactNode;
   middleContent: React.ReactNode;
-  rightContent: React.ReactNode;
+  rightBackContent: React.ReactNode;
+  rightFrontContent: React.ReactNode;
 }
 
 export const FoldView: React.FC<FoldViewProps> = ({
-  leftContent,
+  leftFrontContent,
+  leftBackContent,
   middleContent,
-  rightContent,
+  rightFrontContent,
+  rightBackContent,
 }) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   // @todo replace when useTrail can reverse indexes in trail array
@@ -46,10 +50,8 @@ export const FoldView: React.FC<FoldViewProps> = ({
               transform: left.y,
             }}
           >
-            <FrontCard>{leftContent}</FrontCard>
-            <BackCard>
-              <Typography>Back</Typography>
-            </BackCard>
+            <FrontCard>{leftFrontContent}</FrontCard>
+            <BackCard>{leftBackContent}</BackCard>
           </Flipper>
           <Flipper
             style={{
@@ -58,10 +60,8 @@ export const FoldView: React.FC<FoldViewProps> = ({
               transform: right.y,
             }}
           >
-            <FrontCard>{rightContent}</FrontCard>
-            <BackCard>
-              <Typography>Back</Typography>
-            </BackCard>
+            <FrontCard>{rightFrontContent}</FrontCard>
+            <BackCard>{rightBackContent}</BackCard>
           </Flipper>
         </FlipperContainer>
       </Folder>
@@ -106,5 +106,4 @@ const FrontCard = styled(Card)`
 
 const BackCard = styled(Card)`
   transform: rotateY(180deg);
-  background-color: teal;
 `;

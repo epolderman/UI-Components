@@ -14,9 +14,11 @@ export const FoldViewExample: React.FC<{}> = () => {
       flex="1 1 0%"
     >
       <FoldView
-        rightContent={<Content color="green" />}
-        leftContent={<Content color="blue" />}
+        leftFrontContent={<Content color="blue" />}
+        leftBackContent={<Content color="teal" />}
         middleContent={<Content color="yellow" />}
+        rightFrontContent={<Content color="green" />}
+        rightBackContent={<Content color="orange" />}
       />
     </Flex>
   );
