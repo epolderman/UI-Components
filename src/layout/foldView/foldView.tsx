@@ -1,15 +1,7 @@
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Flex } from "@rebass/grid/emotion";
 import { Typography, Button } from "@material-ui/core";
-import {
-  useSpring,
-  interpolate,
-  animated,
-  config,
-  useChain,
-  useTransition,
-  useTrail,
-} from "react-spring";
+import { animated, config, useTrail } from "react-spring";
 import styled from "@emotion/styled";
 
 export interface FoldViewProps {
@@ -18,7 +10,7 @@ export interface FoldViewProps {
   rightContent: React.ReactNode;
 }
 
-type DataNode = React.ReactNode[];
+type ViewCollection = React.ReactNode[];
 
 export const FoldView: React.FC<FoldViewProps> = ({
   leftContent,
@@ -27,8 +19,8 @@ export const FoldView: React.FC<FoldViewProps> = ({
 }) => {
   // spring animation
   const [isOpen, setOpen] = useState<Boolean>(false);
-  const [data, setData] = useState<DataNode>([leftContent, rightContent]);
-  const trail = useTrail(data.length, {
+  const [views, setViewOrder] = useState<ViewCollection>([leftContent, rightContent]);
+  const trail = useTrail(views.length, {
     y: isOpen ? 180 : 0,
     config: config.molasses,
   });
@@ -67,7 +59,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
               ),
             }}
           >
-            {data[index]}
+            {views[index]}
           </AnimatedFlex>
         ))}
       </Flex>
