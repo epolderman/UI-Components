@@ -1,7 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Flex } from "@rebass/grid/emotion";
 import { Typography, Button } from "@material-ui/core";
-import { useSpring, interpolate, animated, config } from "react-spring";
+import {
+  useSpring,
+  interpolate,
+  animated,
+  config,
+  useChain,
+  useTransition,
+  useTrail,
+} from "react-spring";
 import styled from "@emotion/styled";
 
 export interface FoldViewProps {
@@ -10,6 +18,8 @@ export interface FoldViewProps {
   rightContent: React.ReactNode;
 }
 
+type DataNode = React.ReactNode[];
+
 export const FoldView: React.FC<FoldViewProps> = ({
   leftContent,
   middleContent,
@@ -17,10 +27,20 @@ export const FoldView: React.FC<FoldViewProps> = ({
 }) => {
   // spring animation
   const [isOpen, setOpen] = useState<Boolean>(false);
-  const interpolatedVal = useSpring({
+  const [data, setData] = useState<DataNode>([leftContent, rightContent]);
+  const trail = useTrail(data.length, {
     y: isOpen ? 180 : 0,
-    config: config.slow,
+    config: config.molasses,
   });
+  const viewStyles = useCallback(
+    (index: number) => ({
+      left: index === 0 ? 0 : null,
+      right: index === 1 ? 0 : null,
+      zIndex: index === 0 ? 1 : 0,
+      transformOrigin: index === 0 ? "center left" : "center right",
+    }),
+    []
+  );
 
   return (
     <Flex
@@ -36,23 +56,20 @@ export const FoldView: React.FC<FoldViewProps> = ({
         justifyContent="center"
         style={{ position: "relative", width: "500px" }}
       >
-        <AnimatedFlex>{rightContent}</AnimatedFlex>
         {middleContent}
-        <AnimatedFlex
-          style={{
-            transformOrigin: "center left",
-            transform: interpolatedVal.y.interpolate(
-              y => `perspective(1000px) rotateY(${-y}deg)`
-            ),
-          }}
-        >
-          {leftContent}
-        </AnimatedFlex>
-        {/* <AnimatedFlex
-          style={{ transformOrigin: "center right", transform: animationRight.transform }}
-        >
-          {rightContent}
-        </AnimatedFlex> */}
+        {trail.map(({ y }, index) => (
+          <AnimatedFlex
+            key={index}
+            style={{
+              ...viewStyles(index),
+              transform: y.interpolate(
+                y => `perspective(1000px) rotateY(${index === 0 ? -y : y}deg)`
+              ),
+            }}
+          >
+            {data[index]}
+          </AnimatedFlex>
+        ))}
       </Flex>
     </Flex>
   );
@@ -63,9 +80,8 @@ const AnimatedFlex = styled(animated.div)`
   flex: 1 1 0%;
   position: absolute;
   top: 0;
-  right: 0;
-  left: 0;
+  width: 300px;
   bottom: 0;
-  box-shadow: 5px 10px 8px #888888;
+  /* box-shadow: 5px 10px 8px #888888; */
   backface-visibility: visible;
 `;
