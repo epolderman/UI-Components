@@ -65,19 +65,6 @@ export const FoldView: React.FC<FoldViewProps> = ({
         >
           {leftContent}
         </AnimatedFlex>
-        {/* {trail.map(({ y }, index) => (
-          <AnimatedFlex
-            key={index}
-            style={{
-              ...viewStyles(index, y),
-              transform: y.interpolate(
-                y => `perspective(1000px) rotateY(${index === 0 ? -y : y}deg)`
-              ),
-            }}
-          >
-            {views[index]}
-          </AnimatedFlex>
-        ))} */}
       </Flex>
     </Flex>
   );
@@ -90,6 +77,4 @@ const AnimatedFlex = styled(animated.div)`
   top: 0;
   width: 250px;
   bottom: 0;
-  /* box-shadow: 5px 10px 8px #888888;*/
-  backface-visibility: visible;
 `;
