@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { Flex } from "@rebass/grid/emotion";
 import React from "react";
+import { Paper, withStyles } from "@material-ui/core";
 import { animated, SpringConfig, useSpring } from "react-spring";
 
 export interface FoldViewProps {
@@ -35,7 +36,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
   });
 
   return (
-    <Folder flex="1 1 0%" flexDirection="row" justifyContent="center">
+    <FolderPaper elevation={3}>
       {middleContent}
       <SleeveFlipper
         style={{
@@ -61,15 +62,19 @@ export const FoldView: React.FC<FoldViewProps> = ({
           <BackSleeve>{leftBackContent}</BackSleeve>
         </SleeveContainer>
       </SleeveFlipper>
-    </Folder>
+    </FolderPaper>
   );
 };
 
-const Folder = styled(Flex)`
-  position: relative;
-  width: 500px;
-  perspective: 3500px;
-`;
+const FolderPaper = withStyles({
+  root: {
+    display: "flex",
+    width: "500px",
+    perspective: "3500px",
+    justifyContent: "center",
+    flex: "1 1 0%",
+  },
+})(Paper);
 
 const SleeveContainer = styled(Flex)`
   position: relative;
