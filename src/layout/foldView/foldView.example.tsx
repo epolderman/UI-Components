@@ -1,25 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { FoldView } from "./foldView";
 import { Flex } from "@rebass/grid/emotion";
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 
 export const FoldViewExample: React.FC<{}> = () => {
+  const [isOpen, setOpen] = useState<boolean>(false);
   return (
     <Flex
       style={{
-        marginTop: "24px",
+        margin: "24px 16px 24px 16px",
       }}
-      justifyContent="stretch"
+      justifyContent="center"
       alignItems="stretch"
       flex="1 1 0%"
     >
-      <FoldView
-        leftFrontContent={<Content color="blue" />}
-        leftBackContent={<Content color="teal" />}
-        middleContent={<Content color="yellow" />}
-        rightFrontContent={<Content color="green" />}
-        rightBackContent={<Content color="orange" />}
-      />
+      <Flex flexDirection="column">
+        <Button onClick={() => setOpen(isOpen => !isOpen)}>Toggle Foldview</Button>
+        <FoldView
+          isOpen={isOpen}
+          leftFrontContent={<Content color="blue" />}
+          leftBackContent={<Content color="teal" />}
+          middleContent={<Content color="yellow" />}
+          rightFrontContent={<Content color="green" />}
+          rightBackContent={<Content color="orange" />}
+        />
+      </Flex>
     </Flex>
   );
 };

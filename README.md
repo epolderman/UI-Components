@@ -16,7 +16,8 @@
 
 - Date Range Selector: Supports selection via ranges by text fields and mouse selection. Supports Virtualization + Animating via props flag `disableVirtualization`;
 
-- Fold View: WIP
+- Fold View: Component that handles all rotations and 3d perspectives and the user can just handle passing
+React Nodes / JSX to the interface. 
 
 #### Design System
 

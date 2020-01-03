@@ -1,10 +1,10 @@
-import React, { useState, useRef, useCallback, useMemo } from "react";
-import { Flex } from "@rebass/grid/emotion";
-import { Typography, Button } from "@material-ui/core";
-import { animated, config, useTrail, useSpring } from "react-spring";
 import styled from "@emotion/styled";
+import { Flex } from "@rebass/grid/emotion";
+import React from "react";
+import { animated, SpringConfig, useSpring } from "react-spring";
 
 export interface FoldViewProps {
+  isOpen: boolean;
   leftFrontContent: React.ReactNode;
   leftBackContent: React.ReactNode;
   middleContent: React.ReactNode;
@@ -12,83 +12,81 @@ export interface FoldViewProps {
   rightFrontContent: React.ReactNode;
 }
 
+const folderConfig: SpringConfig = { mass: 1, tension: 150, friction: 25 };
+
 export const FoldView: React.FC<FoldViewProps> = ({
   leftFrontContent,
   leftBackContent,
   middleContent,
   rightFrontContent,
   rightBackContent,
+  isOpen,
 }) => {
-  const [isOpen, setOpen] = useState<boolean>(false);
   // @todo replace when useTrail can reverse indexes in trail array
   const left = useSpring({
     y: isOpen ? `rotateY(-180deg)` : `rotateY(0deg)`,
-    config: config.molasses,
-    delay: isOpen ? 0 : 300,
+    config: folderConfig,
+    delay: isOpen ? 0 : 500,
   });
   const right = useSpring({
     y: isOpen ? `rotateY(180deg)` : `rotateY(0deg)`,
-    config: config.molasses,
-    delay: isOpen ? 300 : 0,
+    config: folderConfig,
+    delay: isOpen ? 500 : 0,
   });
 
   return (
-    <Flex
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      flex="1 1 0%"
-    >
-      <Button onClick={() => setOpen(isOpen => !isOpen)}>Toggle Foldview</Button>
-      <Folder flex="1 1 0%" flexDirection="row" justifyContent="center">
-        {middleContent}
+    <Folder flex="1 1 0%" flexDirection="row" justifyContent="center">
+      {middleContent}
+      <SleeveFlipper
+        style={{
+          right: 0,
+          transformOrigin: "center right",
+          transform: right.y,
+        }}
+      >
         <SleeveContainer>
-          <SleeveFlipper
-            style={{
-              left: 0,
-              transformOrigin: "center left",
-              transform: left.y,
-            }}
-          >
-            <FrontSleeve>{leftFrontContent}</FrontSleeve>
-            <BackSleeve>{leftBackContent}</BackSleeve>
-          </SleeveFlipper>
-          <SleeveFlipper
-            style={{
-              right: 0,
-              transformOrigin: "center right",
-              transform: right.y,
-            }}
-          >
-            <FrontSleeve>{rightFrontContent}</FrontSleeve>
-            <BackSleeve>{rightBackContent}</BackSleeve>
-          </SleeveFlipper>
+          <FrontSleeve>{rightFrontContent}</FrontSleeve>
+          <BackSleeve>{rightBackContent}</BackSleeve>
         </SleeveContainer>
-      </Folder>
-    </Flex>
+      </SleeveFlipper>
+      <SleeveFlipper
+        style={{
+          left: 0,
+          transformOrigin: "center left",
+          transform: left.y,
+        }}
+      >
+        <SleeveContainer>
+          <FrontSleeve>{leftFrontContent}</FrontSleeve>
+          <BackSleeve>{leftBackContent}</BackSleeve>
+        </SleeveContainer>
+      </SleeveFlipper>
+    </Folder>
   );
 };
 
 const Folder = styled(Flex)`
   position: relative;
   width: 500px;
+  perspective: 3500px;
 `;
 
 const SleeveContainer = styled(Flex)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  perspective: 1000px;
+  position: relative;
+  width: 100%;
+  height: 100%;
 `;
 
 const SleeveFlipper = styled(animated.div)`
   display: flex;
   flex: 1 1 0%;
-  width: 250px;
+  width: 100%;
   transform-style: preserve-3d;
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 `;
 
 const Sleeve = styled(Flex)`
