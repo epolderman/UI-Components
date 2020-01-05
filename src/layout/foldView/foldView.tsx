@@ -45,10 +45,12 @@ export const FoldView: React.FC<FoldViewProps> = ({
           transform: right.y,
         }}
       >
-        <SleeveContainer>
-          <FrontSleeve>{rightFrontContent}</FrontSleeve>
-          <BackSleeve>{rightBackContent}</BackSleeve>
-        </SleeveContainer>
+        <Paper elevation={3} style={{ display: "flex", flex: "1 1 0%" }}>
+          <SleeveContainer>
+            <FrontSleeve>{rightFrontContent}</FrontSleeve>
+            <BackSleeve>{rightBackContent}</BackSleeve>
+          </SleeveContainer>
+        </Paper>
       </SleeveFlipper>
       <SleeveFlipper
         style={{
@@ -57,14 +59,18 @@ export const FoldView: React.FC<FoldViewProps> = ({
           transform: left.y,
         }}
       >
-        <SleeveContainer>
-          <FrontSleeve>{leftFrontContent}</FrontSleeve>
-          <BackSleeve>{leftBackContent}</BackSleeve>
-        </SleeveContainer>
+        <Paper elevation={3} style={{ display: "flex", flex: "1 1 0%" }}>
+          <SleeveContainer>
+            <FrontSleeve>{leftFrontContent}</FrontSleeve>
+            <BackSleeve>{leftBackContent}</BackSleeve>
+          </SleeveContainer>
+        </Paper>
       </SleeveFlipper>
     </FolderPaper>
   );
 };
+
+/* Remove box shadows on certain sides of the dimensions */
 
 const FolderPaper = withStyles({
   root: {
