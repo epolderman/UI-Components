@@ -19,14 +19,8 @@ const App: React.FC = () => (
     <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="500px">
       <FoldViewExample />
     </Flex> */}
-    <Flex
-      justifyContent="stretch"
-      alignItems="stretch"
-      flex="1 1 0%"
-      style={{ margin: "24px" }}
-    >
-      <ScrollSyncExample />
-    </Flex>
+
+    <ScrollSyncExample />
   </MuiThemeProvider>
 );
 

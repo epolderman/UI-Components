@@ -35,9 +35,8 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
       ref={parentRef}
       justifyContent="stretch"
       alignItems="stretch"
-      style={{ overflow: "auto", height: "100vh" }}
+      style={{ overflowY: "auto", padding: "24px", height: "500px" }}
       onScroll={onScroll}
-      bg="red"
       flex="1 1 0%"
     >
       {children({
