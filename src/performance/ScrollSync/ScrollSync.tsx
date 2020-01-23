@@ -5,10 +5,11 @@ import React, {
   Children,
   useState,
   useImperativeHandle,
+  useLayoutEffect,
 } from "react";
 import ReactDOM from "react-dom";
 import { Flex } from "@rebass/grid/emotion";
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 
 interface ChildrenProps {
   scrollTop?: number;
@@ -19,15 +20,19 @@ interface ScrollSyncProps {
   children?: (props: ChildrenProps) => React.ReactNode;
 }
 
+/* Can we get away just holding this in state? */
 export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
   const [height, setHeight] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setHeight(parentRef.current.clientHeight), []);
+  useEffect(() => setHeight(parentRef.current.getBoundingClientRect().height), [
+    parentRef.current,
+  ]);
 
+  // this is not passing the scroll to the table so thats why we don't see the perf issue
   const onScroll = useCallback(() => {
-    setScrollTop(top => parentRef.current.scrollTop);
+    setScrollTop(la => parentRef.current.scrollTop);
   }, []);
 
   return (
@@ -35,12 +40,13 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
       ref={parentRef}
       justifyContent="stretch"
       alignItems="stretch"
-      style={{ overflowY: "auto", padding: "24px", height: "500px" }}
+      bg="teal"
+      style={{ overflowY: "scroll", padding: "32px" }}
       onScroll={onScroll}
       flex="1 1 0%"
     >
       {children({
-        scrollTop,
+        scrollTop: 0,
         height,
       })}
     </Flex>
