@@ -64,42 +64,45 @@ export const ScrollSyncExample: React.FC = () => {
       {({ scrollTop, height }) => {
         console.log("Render Child ScrollTop", scrollTop);
         console.log("Render Child Height", height);
+
         return (
-          <AutoSizer disableHeight>
-            {({ width }) => {
-              return (
-                <Table
-                  autoHeight
-                  width={width}
-                  height={height}
-                  headerHeight={90}
-                  rowRenderer={tableRowRenderer}
-                  headerRowRenderer={tableHeaderRowRenderer}
-                  rowCount={dummy_data.length}
-                  rowHeight={90}
-                  rowGetter={getData}
-                  scrollTop={scrollTop}
-                >
-                  <Column
-                    dataKey="Name"
-                    label="Name"
-                    headerRenderer={columnHeaderRenderer}
-                    cellRenderer={columnCellRenderer}
-                    width={210}
-                    flexGrow={1}
-                  />
-                  <Column
-                    dataKey="PropertyWithText"
-                    label="Property"
-                    headerRenderer={columnHeaderRenderer}
-                    cellRenderer={columnCellRenderer}
-                    width={210}
-                    flexGrow={1}
-                  />
-                </Table>
-              );
-            }}
-          </AutoSizer>
+          <Flex flex="1 1 auto">
+            <AutoSizer disableHeight>
+              {({ width }) => {
+                return (
+                  <Table
+                    autoHeight
+                    width={width}
+                    height={height}
+                    headerHeight={35}
+                    rowRenderer={tableRowRenderer}
+                    headerRowRenderer={tableHeaderRowRenderer}
+                    rowCount={dummy_data.length}
+                    rowHeight={60}
+                    rowGetter={getData}
+                    scrollTop={scrollTop}
+                  >
+                    <Column
+                      dataKey="Name"
+                      label="Name"
+                      headerRenderer={columnHeaderRenderer}
+                      cellRenderer={columnCellRenderer}
+                      width={210}
+                      flexGrow={1}
+                    />
+                    <Column
+                      dataKey="PropertyWithText"
+                      label="Property"
+                      headerRenderer={columnHeaderRenderer}
+                      cellRenderer={columnCellRenderer}
+                      width={210}
+                      flexGrow={1}
+                    />
+                  </Table>
+                );
+              }}
+            </AutoSizer>
+          </Flex>
         );
       }}
     </ScrollSync>

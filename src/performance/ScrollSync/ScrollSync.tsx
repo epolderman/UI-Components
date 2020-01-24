@@ -20,22 +20,31 @@ interface ScrollSyncProps {
   children?: (props: ChildrenProps) => React.ReactNode;
 }
 
-/* Can we get away just holding this in state? */
 export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
   const [height, setHeight] = useState(0);
   const [scrollTop, setScrollTop] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const onScroll = useCallback(() => setScrollTop(la => parentRef.current.scrollTop), []);
+
+  /* Against the react deps advice from Dan, but the only way we can track large measurments on divs */
   useEffect(() => setHeight(parentRef.current.getBoundingClientRect().height), [
     parentRef.current,
   ]);
 
+  console.log("height is parent", height);
+
   return (
     <Flex
       ref={parentRef}
-      bg="teal"
-      style={{ overflowY: "scroll", padding: "32px", height: "900px" }}
+      alignItems="stretch"
+      style={{
+        overflowY: "scroll",
+        padding: "32px",
+        height: "100vh",
+        width: "100%",
+        background: "teal",
+      }}
       onScroll={onScroll}
       flex="1 1 0%"
     >
