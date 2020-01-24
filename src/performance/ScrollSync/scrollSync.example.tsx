@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ScrollSync } from "./ScrollSync";
 import {
   Table,
@@ -10,18 +10,21 @@ import {
   TableCellProps,
 } from "react-virtualized";
 import { Flex } from "@rebass/grid/emotion";
-import { TableCell, withStyles, TableRow } from "@material-ui/core";
+import { TableCell, withStyles, TableRow, Typography, Paper } from "@material-ui/core";
 import styled from "@emotion/styled";
+import { makeShadow, ELEVATIONS } from "../../common/elevation";
 
 const dummy_data = new Array(1001).fill({
-  Name: "Erik",
-  PropertyWithText: "Something something something something",
+  Name: "Death Stranding",
+  PropertyWithText: "A very good game!",
+  Type: "Role Playing Game",
+  Score: "5.5",
 });
 
 export const ScrollSyncExample: React.FC = () => {
   const tableHeaderRowRenderer = useCallback((props: TableHeaderRowProps) => {
     return (
-      <VirtualTableRow component="div" style={props.style}>
+      <VirtualTableRow component="div" style={{ ...props.style }}>
         {props.columns}
       </VirtualTableRow>
     );
@@ -49,8 +52,22 @@ export const ScrollSyncExample: React.FC = () => {
             {props.rowData.PropertyWithText}
           </BodyCell>
         );
+      case "Type":
+        return (
+          <BodyCell variant="body" component="div">
+            {props.rowData.Type}
+          </BodyCell>
+        );
+      case "Score":
+        return (
+          <BodyCell variant="body" component="div">
+            {props.rowData.Score}
+          </BodyCell>
+        );
     }
   }, []);
+
+  const parentStyles = useMemo(() => ({ background: "white", padding: "32px" }), []);
 
   const getData = useCallback(({ index }) => dummy_data[index], []);
 
@@ -60,52 +77,98 @@ export const ScrollSyncExample: React.FC = () => {
   );
 
   return (
-    <ScrollSync>
+    <ScrollSync parentContainerStyle={parentStyles}>
       {({ scrollTop, height }) => {
-        console.log("Render Child ScrollTop", scrollTop);
-        console.log("Render Child Height", height);
-
         return (
-          <Flex flex="1 1 auto">
-            <AutoSizer disableHeight>
-              {({ width }) => {
-                return (
-                  <Table
-                    autoHeight
-                    width={width}
-                    height={height}
-                    headerHeight={35}
-                    rowRenderer={tableRowRenderer}
-                    headerRowRenderer={tableHeaderRowRenderer}
-                    rowCount={dummy_data.length}
-                    rowHeight={60}
-                    rowGetter={getData}
-                    scrollTop={scrollTop}
-                  >
-                    <Column
-                      dataKey="Name"
-                      label="Name"
-                      headerRenderer={columnHeaderRenderer}
-                      cellRenderer={columnCellRenderer}
-                      width={210}
-                      flexGrow={1}
-                    />
-                    <Column
-                      dataKey="PropertyWithText"
-                      label="Property"
-                      headerRenderer={columnHeaderRenderer}
-                      cellRenderer={columnCellRenderer}
-                      width={210}
-                      flexGrow={1}
-                    />
-                  </Table>
-                );
-              }}
-            </AutoSizer>
-          </Flex>
+          <>
+            <Header />
+            <PaperWrapper elevation={2}>
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  return (
+                    <Table
+                      autoHeight
+                      width={width}
+                      height={height}
+                      headerHeight={35}
+                      rowRenderer={tableRowRenderer}
+                      headerRowRenderer={tableHeaderRowRenderer}
+                      rowCount={dummy_data.length}
+                      rowHeight={60}
+                      rowGetter={getData}
+                      scrollTop={scrollTop}
+                      overscanRowCount={10}
+                      gridStyle={{
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      <Column
+                        dataKey="Name"
+                        label="Name"
+                        headerRenderer={columnHeaderRenderer}
+                        cellRenderer={columnCellRenderer}
+                        width={90}
+                        flexGrow={1}
+                        flexShrink={1}
+                      />
+                      <Column
+                        dataKey="PropertyWithText"
+                        label="Property"
+                        headerRenderer={columnHeaderRenderer}
+                        cellRenderer={columnCellRenderer}
+                        width={90}
+                        flexGrow={1}
+                        flexShrink={1}
+                      />
+                      <Column
+                        dataKey="Type"
+                        label="Type"
+                        headerRenderer={columnHeaderRenderer}
+                        cellRenderer={columnCellRenderer}
+                        width={90}
+                        flexGrow={1}
+                        flexShrink={1}
+                      />
+                      <Column
+                        dataKey="Score"
+                        label="Score"
+                        headerRenderer={columnHeaderRenderer}
+                        cellRenderer={columnCellRenderer}
+                        width={90}
+                        flexGrow={1}
+                        flexShrink={1}
+                      />
+                    </Table>
+                  );
+                }}
+              </AutoSizer>
+            </PaperWrapper>
+          </>
         );
       }}
     </ScrollSync>
+  );
+};
+
+const PaperWrapper = withStyles({
+  root: {
+    display: "flex",
+    flex: "1 1 auto",
+  },
+})(Paper);
+
+export const Header: React.FC = () => {
+  return (
+    <Flex
+      py="8px"
+      px="16px"
+      bg="blue"
+      style={{ color: "white", height: "56px" }}
+      justifyContent="flex-start"
+      alignItems="center"
+    >
+      <Typography variant="subtitle1">Table Scroll Example</Typography>
+    </Flex>
   );
 };
 
@@ -128,9 +191,6 @@ const HeaderCell = withStyles({
     boxSizing: "border-box",
     padding: "8px 16px !important",
     height: "35px",
-    alignItems: "center",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
   },
 })(TableCell);
 

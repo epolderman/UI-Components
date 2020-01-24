@@ -8,6 +8,7 @@ interface ChildrenProps {
 
 interface ScrollSyncProps {
   children?: (props: ChildrenProps) => React.ReactNode;
+  parentContainerStyle?: React.CSSProperties;
 }
 
 interface ScrollSyncState {
@@ -33,7 +34,10 @@ function reducer(state: ScrollSyncState, action: ScrollSyncActions): ScrollSyncS
   }
 }
 
-export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
+export const ScrollSync: React.FC<ScrollSyncProps> = ({
+  children,
+  parentContainerStyle,
+}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const parentRef = useRef<HTMLDivElement>(null);
   const { scrollTop, height } = state;
@@ -43,7 +47,12 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
     []
   );
 
-  /* Against the react deps advice from Dan, but the only way we can track large measurments on divs */
+  /* 
+  
+  Against the react deps advice from Dan, 
+  but the only way we can track large measurments on large divs 
+  
+  */
   useEffect(
     () =>
       dispatch({
@@ -58,11 +67,11 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
       ref={parentRef}
       alignItems="stretch"
       justifyContent="stretch"
+      flexDirection="column"
       style={{
+        ...parentContainerStyle,
         overflowY: "scroll",
-        padding: "32px",
         height: "100vh",
-        background: "#f7f7f7",
       }}
       onScroll={onScroll}
       flex="1 1 0%"
