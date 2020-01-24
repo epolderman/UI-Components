@@ -26,27 +26,21 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({ children }) => {
   const [scrollTop, setScrollTop] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const onScroll = useCallback(() => setScrollTop(la => parentRef.current.scrollTop), []);
   useEffect(() => setHeight(parentRef.current.getBoundingClientRect().height), [
     parentRef.current,
   ]);
 
-  // this is not passing the scroll to the table so thats why we don't see the perf issue
-  const onScroll = useCallback(() => {
-    setScrollTop(la => parentRef.current.scrollTop);
-  }, []);
-
   return (
     <Flex
       ref={parentRef}
-      justifyContent="stretch"
-      alignItems="stretch"
       bg="teal"
-      style={{ overflowY: "scroll", padding: "32px" }}
+      style={{ overflowY: "scroll", padding: "32px", height: "900px" }}
       onScroll={onScroll}
       flex="1 1 0%"
     >
       {children({
-        scrollTop: 0,
+        scrollTop,
         height,
       })}
     </Flex>

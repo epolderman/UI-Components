@@ -40,7 +40,7 @@ export const ScrollSyncExample: React.FC = () => {
       case "Name":
         return (
           <BodyCell variant="body" component="div">
-            {props.rowData.Name}
+            {`${props.rowIndex} ${props.rowData.Name}`}
           </BodyCell>
         );
       case "PropertyWithText":
@@ -54,15 +54,16 @@ export const ScrollSyncExample: React.FC = () => {
 
   const getData = useCallback(({ index }) => dummy_data[index], []);
 
-  const columnHeaderRenderer = useCallback((props: TableHeaderProps) => {
-    return <HeaderCell>{props.label}</HeaderCell>;
-  }, []);
+  const columnHeaderRenderer = useCallback(
+    (props: TableHeaderProps) => <HeaderCell>{props.label}</HeaderCell>,
+    []
+  );
 
   return (
     <ScrollSync>
       {({ scrollTop, height }) => {
-        console.log("Render Child ST", scrollTop);
-        console.log("Render Child HT", height);
+        console.log("Render Child ScrollTop", scrollTop);
+        console.log("Render Child Height", height);
         return (
           <AutoSizer disableHeight>
             {({ width }) => {
