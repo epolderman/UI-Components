@@ -13,7 +13,7 @@ import { Flex } from "@rebass/grid/emotion";
 import { TableCell, withStyles, TableRow } from "@material-ui/core";
 import styled from "@emotion/styled";
 
-const dummy_data = new Array(1000).fill({
+const dummy_data = new Array(1001).fill({
   Name: "Erik",
   PropertyWithText: "Something something something something",
 });

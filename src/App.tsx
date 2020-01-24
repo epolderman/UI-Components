@@ -15,12 +15,13 @@ const globalStyles = css`
 
   body,
   html {
-    margin: 24;
+    margin: 0;
     padding: 0;
     position: relative;
     height: 100%;
     width: 100%;
     overflow: hidden;
+    box-sizing: border-box;
   }
 `;
 
