@@ -24,7 +24,10 @@ const dummy_data = new Array(1001).fill({
 export const ScrollSyncExample: React.FC = () => {
   const tableHeaderRowRenderer = useCallback((props: TableHeaderRowProps) => {
     return (
-      <VirtualTableRow component="div" style={{ ...props.style }}>
+      <VirtualTableRow
+        component="div"
+        style={{ ...props.style, position: "sticky", top: "76px", zIndex: 99 }}
+      >
         {props.columns}
       </VirtualTableRow>
     );
@@ -67,7 +70,7 @@ export const ScrollSyncExample: React.FC = () => {
     }
   }, []);
 
-  const parentStyles = useMemo(() => ({ background: "white", padding: "32px" }), []);
+  const parentStyles = useMemo(() => ({ background: "white" }), []);
 
   const getData = useCallback(({ index }) => dummy_data[index], []);
 
@@ -81,6 +84,16 @@ export const ScrollSyncExample: React.FC = () => {
       {({ scrollTop, height }) => {
         return (
           <>
+            <Flex
+              bg="white"
+              style={{
+                height: "32px",
+                minHeight: "32px",
+                zIndex: 99,
+                position: "sticky",
+                top: 0,
+              }}
+            />
             <Header />
             <PaperWrapper elevation={2}>
               <AutoSizer disableHeight>
@@ -154,6 +167,7 @@ const PaperWrapper = withStyles({
   root: {
     display: "flex",
     flex: "1 1 auto",
+    margin: "0px 32px 32px 32px",
   },
 })(Paper);
 
@@ -163,7 +177,14 @@ export const Header: React.FC = () => {
       py="8px"
       px="16px"
       bg="blue"
-      style={{ color: "white", height: "56px" }}
+      margin="0px 32px"
+      style={{
+        color: "white",
+        height: "44px",
+        position: "sticky",
+        top: "32px",
+        zIndex: 99,
+      }}
       justifyContent="flex-start"
       alignItems="center"
     >
