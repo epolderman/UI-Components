@@ -24,10 +24,7 @@ const dummy_data = new Array(1001).fill({
 export const ScrollSyncExample: React.FC = () => {
   const tableHeaderRowRenderer = useCallback((props: TableHeaderRowProps) => {
     return (
-      <VirtualTableRow
-        component="div"
-        style={{ ...props.style, position: "sticky", top: "76px", zIndex: 99 }}
-      >
+      <VirtualTableRow component="div" style={props.style}>
         {props.columns}
       </VirtualTableRow>
     );
@@ -84,16 +81,7 @@ export const ScrollSyncExample: React.FC = () => {
       {({ scrollTop, height }) => {
         return (
           <>
-            <Flex
-              bg="white"
-              style={{
-                height: "32px",
-                minHeight: "32px",
-                zIndex: 99,
-                position: "sticky",
-                top: 0,
-              }}
-            />
+            <ScrollBlocker />
             <Header />
             <PaperWrapper elevation={2}>
               <AutoSizer disableHeight>
@@ -111,9 +99,6 @@ export const ScrollSyncExample: React.FC = () => {
                       rowGetter={getData}
                       scrollTop={scrollTop}
                       overscanRowCount={10}
-                      gridStyle={{
-                        boxSizing: "border-box",
-                      }}
                     >
                       <Column
                         dataKey="Name"
@@ -163,6 +148,15 @@ export const ScrollSyncExample: React.FC = () => {
   );
 };
 
+const ScrollBlocker = styled(Flex)`
+  height: 32px;
+  min-height: 32px;
+  z-index: 99;
+  position: sticky;
+  top: 0;
+  background: white;
+`;
+
 const PaperWrapper = withStyles({
   root: {
     display: "flex",
@@ -171,25 +165,26 @@ const PaperWrapper = withStyles({
   },
 })(Paper);
 
+const HeaderWrapper = styled(Flex)`
+  color: white;
+  height: 44px;
+  position: sticky;
+  top: 32px;
+  z-index: 99;
+`;
+
 export const Header: React.FC = () => {
   return (
-    <Flex
+    <HeaderWrapper
       py="8px"
       px="16px"
       bg="blue"
       margin="0px 32px"
-      style={{
-        color: "white",
-        height: "44px",
-        position: "sticky",
-        top: "32px",
-        zIndex: 99,
-      }}
       justifyContent="flex-start"
       alignItems="center"
     >
       <Typography variant="subtitle1">Table Scroll Example</Typography>
-    </Flex>
+    </HeaderWrapper>
   );
 };
 
@@ -220,6 +215,9 @@ const VirtualTableRow = withStyles({
     display: "flex",
     background: HEADER_COLOR,
     paddingRight: "0px !important",
+    position: "sticky",
+    top: "76px",
+    zIndex: 99,
   },
 })(TableRow);
 
