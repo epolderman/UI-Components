@@ -42,10 +42,11 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({
   const parentRef = useRef<HTMLDivElement>(null);
   const { scrollTop, height } = state;
 
-  const onScroll = useCallback(
-    () => dispatch({ type: "UPDATE_SCROLL_TOP", payload: parentRef.current.scrollTop }),
-    []
-  );
+  const onScroll = useCallback(() => {
+    requestAnimationFrame(() => {
+      dispatch({ type: "UPDATE_SCROLL_TOP", payload: parentRef.current.scrollTop });
+    });
+  }, []);
 
   /* 
   
