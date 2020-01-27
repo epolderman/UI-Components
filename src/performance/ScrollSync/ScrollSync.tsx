@@ -1,5 +1,6 @@
 import { Flex } from "@rebass/grid/emotion";
 import React, { useCallback, useEffect, useRef, useReducer } from "react";
+import styled from "@emotion/styled";
 
 interface ChildrenProps {
   scrollTop?: number;
@@ -64,16 +65,12 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({
   );
 
   return (
-    <Flex
+    <ScrollContainer
       ref={parentRef}
       alignItems="stretch"
       justifyContent="stretch"
       flexDirection="column"
-      style={{
-        ...parentContainerStyle,
-        overflowY: "scroll",
-        height: "100vh",
-      }}
+      style={parentContainerStyle}
       onScroll={onScroll}
       flex="1 1 0%"
     >
@@ -81,6 +78,11 @@ export const ScrollSync: React.FC<ScrollSyncProps> = ({
         scrollTop,
         height,
       })}
-    </Flex>
+    </ScrollContainer>
   );
 };
+
+const ScrollContainer = styled(Flex)`
+  overflow-y: scroll;
+  height: 100vh;
+`;

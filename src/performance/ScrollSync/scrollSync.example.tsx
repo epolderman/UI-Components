@@ -174,12 +174,14 @@ const HeaderWrapper = styled(Flex)`
   z-index: 99;
 `;
 
+const HEADER_NAV_COLOR = `rgb(47,64,80)`;
+
 export const Header: React.FC = () => {
   return (
     <HeaderWrapper
       py="8px"
       px="16px"
-      bg="blue"
+      bg={HEADER_NAV_COLOR}
       margin="0px 32px"
       justifyContent="flex-start"
       alignItems="center"
@@ -199,7 +201,7 @@ const BodyCell = withStyles({
   },
 })(TableCell);
 
-const HEADER_COLOR = "#f7f7f7";
+const TABLE_HEADER_COLOR = "#f7f7f7";
 
 const HeaderCell = withStyles({
   root: {
@@ -214,7 +216,7 @@ const HeaderCell = withStyles({
 const VirtualTableRow = withStyles({
   root: {
     display: "flex",
-    background: HEADER_COLOR,
+    background: TABLE_HEADER_COLOR,
     paddingRight: "0px !important",
     position: "sticky",
     top: "76px",
