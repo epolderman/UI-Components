@@ -99,6 +99,7 @@ export const ScrollSyncExample: React.FC = () => {
                       rowGetter={getData}
                       scrollTop={scrollTop}
                       overscanRowCount={10}
+                      gridStyle={{ outline: "none" }}
                     >
                       <Column
                         dataKey="Name"
