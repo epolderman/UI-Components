@@ -2,6 +2,12 @@ import { Flex } from "@rebass/grid/emotion";
 import React, { useCallback, useEffect, useRef, useReducer } from "react";
 import styled from "@emotion/styled";
 
+/* 
+  Issues:
+  Safari Perf Issue
+  FF Sticky Issue on Title Bar
+*/
+
 interface ChildrenProps {
   scrollTop?: number;
   height?: number;
