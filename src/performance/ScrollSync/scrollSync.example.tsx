@@ -82,8 +82,8 @@ export const ScrollSyncExample: React.FC = () => {
         return (
           <>
             <ScrollBlocker />
-            <Header />
             <PaperWrapper elevation={2}>
+              <TableHeader text="Scroll Perf Example" />
               <AutoSizer disableHeight>
                 {({ width }) => {
                   return (
@@ -98,7 +98,7 @@ export const ScrollSyncExample: React.FC = () => {
                       rowHeight={60}
                       rowGetter={getData}
                       scrollTop={scrollTop}
-                      overscanRowCount={10}
+                      overscanRowCount={7}
                       gridStyle={{ outline: "none" }}
                     >
                       <Column
@@ -161,6 +161,7 @@ const ScrollBlocker = styled(Flex)`
 const PaperWrapper = withStyles({
   root: {
     display: "flex",
+    flexDirection: "column",
     flex: "1 1 auto",
     margin: "0px 32px 32px 32px",
   },
@@ -176,17 +177,16 @@ const HeaderWrapper = styled(Flex)`
 
 const HEADER_NAV_COLOR = `rgb(47,64,80)`;
 
-export const Header: React.FC = () => {
+export const TableHeader: React.FC<{ text: string }> = ({ text }) => {
   return (
     <HeaderWrapper
       py="8px"
       px="16px"
       bg={HEADER_NAV_COLOR}
-      margin="0px 32px"
       justifyContent="flex-start"
       alignItems="center"
     >
-      <Typography variant="subtitle1">Table Scroll Example</Typography>
+      <Typography variant="subtitle1">{text}</Typography>
     </HeaderWrapper>
   );
 };

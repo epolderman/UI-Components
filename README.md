@@ -14,6 +14,8 @@
 
 - Date Selector: React Spring for open close / error animations. Supports text field & mouse date selection. (Done)
 
+![](RegDate.gif)
+
 - Date Range Selector: Supports selection via ranges by text fields and mouse selection. Supports Virtualization + Animating via props flag `disableVirtualization` (WIP)
 
 - Fold View: Component that handles all rotations and 3d perspectives and the user can just handle passing

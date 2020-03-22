@@ -29,16 +29,33 @@ export const App: React.FC = () => (
   <Flex>
     <Global styles={globalStyles} />
     <MuiThemeProvider theme={theme}>
-      {/* <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
-      <DateRangeExample />
-    </Flex>
-    <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="500px">
-      <DateExample />
-    </Flex>
-    <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="500px">
-      <FoldViewExample />
-    </Flex> */}
-      <ScrollSyncExample />
+      <Flex
+        flexDirection="column"
+        alignItems="center"
+        flex="1 1 0%"
+        style={{ margin: "200px 0 200px 0", overflow: "auto" }}
+      >
+        <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
+          <DateRangeExample />
+        </Flex>
+        <Flex
+          justifyContent="center"
+          alignItems="stretch"
+          flex="1 1 0%"
+          marginTop={"300px"}
+        >
+          <DateExample />
+        </Flex>
+        <Flex
+          justifyContent="center"
+          alignItems="stretch"
+          flex="1 1 0%"
+          marginTop="300px"
+        >
+          <FoldViewExample />
+        </Flex>
+      </Flex>
+      {/* <ScrollSyncExample /> */}
     </MuiThemeProvider>
   </Flex>
 );
