@@ -1,5 +1,7 @@
 # UI Components in React / Typescript
 
+![](RegDate.gif)
+
 ## Low Level Component Programming
 
 ### Project Focus : Advanced components built with primitive lego blocks from Material UI
@@ -14,11 +16,13 @@
 
 - Date Selector: React Spring for open close / error animations. Supports text field & mouse date selection. (Done)
 
-![](RegDate.gif)
+![](Date_Selector_Input.gif)
 
 - Date Range Selector: Supports selection via ranges by text fields and mouse selection. Supports Virtualization + Animating via props flag `disableVirtualization` (WIP)
 
 ![](Range_Selector.gif)
+
+![](Range_Selector_Input.gif)
 
 - Fold View: Component that handles all rotations and 3d perspectives and the user can just handle passing
 React Nodes / JSX to the interface. (WIP)
