@@ -14,11 +14,11 @@
 
 ##### Date Selector Components: Windowing is achieved by virtualization. Animations in the calendar are imperative via the Web API 'requestAnimationFrame'. Supports +41 / -41 years in the future/past.
 
-- Date Selector: React Spring for open close / error animations. Supports text field & mouse date selection. (Done)
+- Date Selector: React Spring for open close / error animations. Supports text field & mouse date selection. (Done - In Production)
 
 ![](Date_Selector_Input.gif)
 
-- Date Range Selector: Supports selection via ranges by text fields and mouse selection. Supports Virtualization + Animating via props flag `disableVirtualization` (WIP)
+- Date Range Selector: Supports selection via ranges by text fields and mouse selection. Supports Virtualization + Animating via props flag `disableVirtualization` (WIP - Rapid Prototyped)
 
 ![](Range_Selector.gif)
 

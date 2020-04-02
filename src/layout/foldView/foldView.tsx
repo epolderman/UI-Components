@@ -5,7 +5,9 @@ import { Paper, withStyles } from "@material-ui/core";
 import { animated, SpringConfig, useSpring } from "react-spring";
 
 export interface FoldViewProps {
+  /* flag for open / close */
   isOpen: boolean;
+  /* content for the folder */
   leftFrontContent: React.ReactNode;
   leftBackContent: React.ReactNode;
   middleContent: React.ReactNode;
@@ -70,7 +72,7 @@ export const FoldView: React.FC<FoldViewProps> = ({
   );
 };
 
-/* Remove box shadows on certain sides of the dimensions */
+/* Remove box shadows on certain sides of the dimensions (Going to be hacky - do last) */
 
 const FolderPaper = withStyles({
   root: {
