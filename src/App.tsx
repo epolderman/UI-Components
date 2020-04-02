@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { theme } from "../src/theme/theme";
 import { MuiThemeProvider } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import { Flex } from "@rebass/grid/emotion";
 import { DateExample } from "./selection/datePickers/dateSelector/dateSelector.example";
 import { DateRangeExample } from "./selection/datePickers/dateRange/dateRange.example";
@@ -25,37 +26,97 @@ const globalStyles = css`
   }
 `;
 
-export const App: React.FC = () => (
-  <Flex>
-    <Global styles={globalStyles} />
-    <MuiThemeProvider theme={theme}>
-      <Flex
-        flexDirection="column"
-        alignItems="center"
-        flex="1 1 0%"
-        style={{ margin: "200px 0 200px 0", overflow: "auto" }}
-      >
-        <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
-          <DateRangeExample />
+const COMPONENT_EXAMPLES = [
+  "date_selector",
+  "range_selector",
+  "folder_view",
+  "scroll_sync",
+];
+
+export const App: React.FC = () => {
+  const [activeExample, setActiveExample] = useState(COMPONENT_EXAMPLES[0]);
+
+  const onNextClick = useCallback(() => {
+    let index = COMPONENT_EXAMPLES.findIndex(comp => comp === activeExample);
+    if (index === COMPONENT_EXAMPLES.length - 1) {
+      return setActiveExample(COMPONENT_EXAMPLES[0]);
+    }
+    setActiveExample(COMPONENT_EXAMPLES[index + 1]);
+  }, [activeExample]);
+
+  const onPrevClick = useCallback(() => {
+    let index = COMPONENT_EXAMPLES.findIndex(comp => comp === activeExample);
+    if (index - 1 < 0) {
+      return setActiveExample(COMPONENT_EXAMPLES[COMPONENT_EXAMPLES.length - 1]);
+    }
+    setActiveExample(COMPONENT_EXAMPLES[index - 1]);
+  }, [activeExample]);
+
+  const activeJSX = useMemo(() => {
+    switch (activeExample) {
+      case "date_selector":
+        return (
+          <Flex
+            justifyContent="center"
+            alignItems="stretch"
+            flex="1 1 0%"
+            marginTop={"300px"}
+          >
+            <DateExample />
+          </Flex>
+        );
+      case "range_selector":
+        return (
+          <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
+            <DateRangeExample />
+          </Flex>
+        );
+      case "folder_view":
+        return (
+          <Flex
+            justifyContent="center"
+            alignItems="stretch"
+            flex="1 1 0%"
+            marginTop="300px"
+          >
+            <FoldViewExample />
+          </Flex>
+        );
+      case "scroll_sync":
+        return (
+          <Flex style={{ height: "100%", width: "100%" }}>
+            <ScrollSyncExample />
+          </Flex>
+        );
+      default:
+        return (
+          <Flex
+            justifyContent="center"
+            alignItems="stretch"
+            flex="1 1 0%"
+            marginTop={"300px"}
+          >
+            <DateExample />
+          </Flex>
+        );
+    }
+  }, [activeExample]);
+
+  return (
+    <Flex
+      flexDirection="column"
+      alignItems="stretch"
+      justifyContent="stretch"
+      flex="1 1 0%"
+    >
+      <MuiThemeProvider theme={theme}>
+        <Global styles={globalStyles} />
+        <Flex flex="1 1 0%" justifyContent="space-between" alignItems="center">
+          <Button onClick={onPrevClick}>Prev</Button>
+          <Button onClick={onNextClick}>Next</Button>
         </Flex>
-        <Flex
-          justifyContent="center"
-          alignItems="stretch"
-          flex="1 1 0%"
-          marginTop={"300px"}
-        >
-          <DateExample />
-        </Flex>
-        <Flex
-          justifyContent="center"
-          alignItems="stretch"
-          flex="1 1 0%"
-          marginTop="300px"
-        >
-          <FoldViewExample />
-        </Flex>
-      </Flex>
-      {/* <ScrollSyncExample /> */}
-    </MuiThemeProvider>
-  </Flex>
-);
+        {activeJSX}
+      </MuiThemeProvider>
+    </Flex>
+  );
+};
