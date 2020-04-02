@@ -26,6 +26,13 @@ const globalStyles = css`
   }
 `;
 
+enum COMPONENTS {
+  dateSelector = "date_selector",
+  rangeSelector = "range_selector",
+  folderView = "folder_view",
+  scrollSync = "scroll_sync",
+}
+
 const COMPONENT_EXAMPLES = [
   "date_selector",
   "range_selector",
@@ -54,7 +61,7 @@ export const App: React.FC = () => {
 
   const activeJSX = useMemo(() => {
     switch (activeExample) {
-      case "date_selector":
+      case COMPONENTS.dateSelector:
         return (
           <Flex
             justifyContent="center"
@@ -65,13 +72,13 @@ export const App: React.FC = () => {
             <DateExample />
           </Flex>
         );
-      case "range_selector":
+      case COMPONENTS.rangeSelector:
         return (
           <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
             <DateRangeExample />
           </Flex>
         );
-      case "folder_view":
+      case COMPONENTS.folderView:
         return (
           <Flex
             justifyContent="center"
@@ -82,7 +89,7 @@ export const App: React.FC = () => {
             <FoldViewExample />
           </Flex>
         );
-      case "scroll_sync":
+      case COMPONENTS.scrollSync:
         return (
           <Flex style={{ height: "100%", width: "100%" }}>
             <ScrollSyncExample />
