@@ -18,11 +18,11 @@ export const FoldViewExample: React.FC<{}> = () => {
         <Button onClick={() => setOpen(isOpen => !isOpen)}>Toggle Foldview</Button>
         <FoldView
           isOpen={isOpen}
-          leftFrontContent={<Content color="blue" />}
-          leftBackContent={<Content color="teal" />}
-          middleContent={<Content color="yellow" />}
-          rightFrontContent={<Content color="green" />}
-          rightBackContent={<Content color="orange" />}
+          leftFrontContent={<Content color="blue" contentString="Left Front" />}
+          leftBackContent={<Content color="teal" contentString="Left Back" />}
+          middleContent={<Content color="yellow" contentString="Middle" />}
+          rightFrontContent={<Content color="green" contentString="Right Front" />}
+          rightBackContent={<Content color="orange" contentString="Right Back" />}
         />
       </Flex>
     </Flex>
@@ -31,9 +31,10 @@ export const FoldViewExample: React.FC<{}> = () => {
 
 interface ContentProps {
   color?: string;
+  contentString?: string;
 }
 
-const Content: React.FC<ContentProps> = ({ color }) => {
+const Content: React.FC<ContentProps> = ({ color, contentString }) => {
   return (
     <Flex
       flex="1 1 0%"
@@ -42,7 +43,7 @@ const Content: React.FC<ContentProps> = ({ color }) => {
       justifyContent="center"
       alignItems="center"
     >
-      <Typography>Content</Typography>
+      <Typography>{contentString}</Typography>
     </Flex>
   );
 };
