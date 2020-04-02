@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { FoldView } from "./foldView";
 import { Flex } from "@rebass/grid/emotion";
 import { Typography, Button } from "@material-ui/core";
 
 export const FoldViewExample: React.FC<{}> = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
+  const onClickOpen = useCallback(() => setOpen(isOpen => !isOpen), []);
   return (
     <Flex
       style={{
@@ -15,7 +16,9 @@ export const FoldViewExample: React.FC<{}> = () => {
       flex="1 1 0%"
     >
       <Flex flexDirection="column">
-        <Button onClick={() => setOpen(isOpen => !isOpen)}>Toggle Foldview</Button>
+        <Button style={{ marginBottom: "8px" }} onClick={onClickOpen}>
+          {isOpen ? `Close` : `Open`}
+        </Button>
         <FoldView
           isOpen={isOpen}
           leftFrontContent={<Content_Mimicer color="blue" contentString="Left Front" />}
@@ -44,14 +47,16 @@ const Content_Mimicer: React.FC<ContentMimicerProps> = ({ color, contentString }
     if (isInner) {
       return <Typography>{contentString}</Typography>;
     }
-    return DUMMY_DATA.map(val => <Typography>{contentString}</Typography>);
+    return DUMMY_DATA.map((val, index) => (
+      <Typography key={index}>{contentString}</Typography>
+    ));
   }, [contentString, isInner]);
 
   return (
     <Flex
       flex="1 1 0%"
       bg={color}
-      style={{ height: "500px", overflow: "auto" }}
+      style={{ height: "750px", overflow: "auto" }}
       justifyContent="center"
       alignItems="center"
       flexDirection="column"
