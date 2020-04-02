@@ -22,8 +22,6 @@
 
 ![](Range_Selector.gif)
 
-![](Range_Selector_Input.gif)
-
 - Fold View: Component that handles all rotations and 3d perspectives and the user can just handle passing
 React Nodes / JSX to the interface. (WIP)
 
