@@ -10,6 +10,8 @@ import {
   Route,
   Switch,
   useLocation,
+  browserHistory,
+  withRouter,
 } from "react-router-dom";
 import { theme } from "../src/theme/theme";
 import { FoldViewExample } from "./layout/foldView/foldView.example";
@@ -17,7 +19,6 @@ import { ScrollSyncExample } from "./performance/ScrollSync/scrollSync.example";
 import { DateRangeExample } from "./selection/datePickers/dateRange/dateRange.example";
 import { DateExample } from "./selection/datePickers/dateSelector/dateSelector.example";
 import { usePopoverState } from "./utils/hooks";
-import { withRouter } from "react-router-dom";
 
 const globalStyles = css`
   html {
@@ -37,6 +38,7 @@ const globalStyles = css`
 `;
 
 enum COMPONENT_ROUTES {
+  home = "/",
   dateSelector = "/dateSelector",
   rangeSelector = "/rangeSelector",
   folderView = "/folderView",
@@ -94,7 +96,31 @@ const NavBar: React.FC = () => {
   );
 };
 
-const NavToggle = withRouter(NavBar);
+const ComponentRouter: React.FC = () => (
+  <Router history={browserHistory}>
+    <NavBar />
+    <Switch>
+      <Route
+        path={[COMPONENT_ROUTES.home, COMPONENT_ROUTES.dateSelector]}
+        component={DateExample}
+      />
+      <Route exact path={COMPONENT_ROUTES.rangeSelector} component={DateRangeExample} />
+      <Route
+        exact
+        path={COMPONENT_ROUTES.scrollSync}
+        component={() => (
+          <Flex style={{ height: "100%", width: "100%" }}>
+            <ScrollSyncExample />
+          </Flex>
+        )}
+      />
+      <Route exact path={COMPONENT_ROUTES.folderView}>
+        <FoldViewExample />
+      </Route>
+      <Route component={DummyPage} text={"Sorry, Select A Component Route"} />
+    </Switch>
+  </Router>
+);
 
 export const App: React.FC = () => {
   return (
@@ -106,36 +132,7 @@ export const App: React.FC = () => {
     >
       <MuiThemeProvider theme={theme}>
         <Global styles={globalStyles} />
-        <Flex flexDirection="column">
-          <Router>
-            <NavToggle />
-            <Switch>
-              <Route
-                exact
-                path={COMPONENT_ROUTES.rangeSelector}
-                component={DateRangeExample}
-              />
-              <Route
-                exact
-                path={COMPONENT_ROUTES.scrollSync}
-                component={() => (
-                  <Flex style={{ height: "100%", width: "100%" }}>
-                    <ScrollSyncExample />
-                  </Flex>
-                )}
-              />
-              <Route
-                exact
-                path={["/", COMPONENT_ROUTES.dateSelector]}
-                component={DateExample}
-              />
-              <Route exact path={COMPONENT_ROUTES.folderView}>
-                <FoldViewExample />
-              </Route>
-              <Route component={DummyPage} text={"Sorry, Select A Component Route"} />
-            </Switch>
-          </Router>
-        </Flex>
+        <ComponentRouter />
       </MuiThemeProvider>
     </Flex>
   );
