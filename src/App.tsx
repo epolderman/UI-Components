@@ -112,11 +112,6 @@ export const App: React.FC = () => {
             <Switch>
               <Route
                 exact
-                path={["/", COMPONENT_ROUTES.dateSelector]}
-                component={DateExample}
-              />
-              <Route
-                exact
                 path={COMPONENT_ROUTES.rangeSelector}
                 component={DateRangeExample}
               />
@@ -128,7 +123,12 @@ export const App: React.FC = () => {
                     <ScrollSyncExample />
                   </Flex>
                 )}
-              ></Route>
+              />
+              <Route
+                exact
+                path={["/", COMPONENT_ROUTES.dateSelector]}
+                component={DateExample}
+              />
               <Route exact path={COMPONENT_ROUTES.folderView}>
                 <FoldViewExample />
               </Route>
