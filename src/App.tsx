@@ -101,6 +101,7 @@ const ComponentRouter: React.FC = () => (
     <NavBar />
     <Switch>
       <Route
+        exact
         path={[COMPONENT_ROUTES.home, COMPONENT_ROUTES.dateSelector]}
         component={DateExample}
       />
@@ -130,8 +131,8 @@ export const App: React.FC = () => {
       justifyContent="stretch"
       flex="1 1 0%"
     >
+      <Global styles={globalStyles} />
       <MuiThemeProvider theme={theme}>
-        <Global styles={globalStyles} />
         <ComponentRouter />
       </MuiThemeProvider>
     </Flex>

@@ -1,96 +1,100 @@
-import webpack from 'webpack';
-import htmlwebpackplugin from 'html-webpack-plugin';
-import path from 'path';
-const htmlWebPackRootPlugin = require('html-webpack-root-plugin');
+import webpack from "webpack";
+import htmlwebpackplugin from "html-webpack-plugin";
+const htmlRootPlugin = require("html-webpack-root-plugin");
+import path from "path";
 const resolveLoader = {
-  modules: ['node_modules', path.resolve(__dirname, 'loaders')]
+  modules: ["node_modules", path.resolve(__dirname, "loaders")],
 };
 const resolve = {
-  extensions: ['.tsx', '.ts', '.js']
+  extensions: [".tsx", ".ts", ".js"],
 };
 const webpackConfigs: webpack.Configuration[] = [
   {
-    name: 'development',
-    mode: 'development',
-    entry: './src/index.tsx',
+    name: "development",
+    mode: "development",
+    entry: "./src/index.tsx",
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          loader: 'babel-loader'
-        }
-      ]
+          exclude: /node_modules/,
+          loader: "babel-loader",
+        },
+      ],
     },
-    resolveLoader,
+    // resolveLoader,
     resolve,
     output: {
-      path: path.resolve(__dirname, './dist'),
-      publicPath: '/',
-      filename: 'bundle.js'
+      filename: "bundle.js",
+      path: path.join(__dirname, "dist"),
     },
     plugins: [
       new htmlwebpackplugin({
-        title: 'UI Web Components'
+        title: "UI Web Components",
+        inject: true,
       }),
-      new htmlWebPackRootPlugin(),
-      new webpack.HotModuleReplacementPlugin()
+      new htmlRootPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
-      contentBase: path.join(__dirname, './dist'),
+      contentBase: path.join(__dirname, "dist"),
+      publicPath: "/",
+      port: 9000,
+      historyApiFallback: true,
       hot: true,
-      port: 9000
-    }
+      open: true,
+    },
   },
   {
-    name: 'library',
-    mode: 'production',
-    entry: './src/index.ts',
+    name: "library",
+    mode: "production",
+    entry: "./src/index.ts",
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          loader: 'babel-loader'
-        }
-      ]
+          loader: "babel-loader",
+        },
+      ],
     },
     resolve,
     output: {
-      path: path.resolve(__dirname, 'lib'),
-      filename: 'index.js',
-      libraryTarget: 'umd',
-      umdNamedDefine: true
+      path: path.resolve(__dirname, "lib"),
+      filename: "index.js",
+      libraryTarget: "umd",
+      umdNamedDefine: true,
     },
     resolveLoader,
     externals: {
       react: {
-        root: 'React',
-        commonjs2: 'react',
-        commonjs: ['react'],
-        amd: 'react'
+        root: "React",
+        commonjs2: "react",
+        commonjs: ["react"],
+        amd: "react",
       },
-      'react-dom': {
-        root: 'ReactDOM',
-        commonjs2: './react-dom',
-        commonjs: ['./react-dom'],
-        amd: 'react-dom'
+      "react-dom": {
+        root: "ReactDOM",
+        commonjs2: "./react-dom",
+        commonjs: ["./react-dom"],
+        amd: "react-dom",
       },
-      'material-ui/core': {
-        commonjs: 'material-ui',
-        commonjs2: 'material-ui'
+      "material-ui/core": {
+        commonjs: "material-ui",
+        commonjs2: "material-ui",
       },
-      'material-ui/icons': {
-        commonjs: 'material-ui/icons',
-        commonjs2: 'material-ui/icons'
+      "material-ui/icons": {
+        commonjs: "material-ui/icons",
+        commonjs2: "material-ui/icons",
       },
       lodash: {
-        root: 'lodash',
-        commonjs: ['lodash'],
-        commonjs2: 'lodash',
-        amd: 'lodash'
-      }
+        root: "lodash",
+        commonjs: ["lodash"],
+        commonjs2: "lodash",
+        amd: "lodash",
+      },
     },
-    devtool: 'source-map'
-  }
+    devtool: "source-map",
+  },
 ];
 
 export default webpackConfigs;
