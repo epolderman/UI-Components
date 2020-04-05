@@ -1,13 +1,23 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { theme } from "../src/theme/theme";
+import { css, Global } from "@emotion/core";
+import { Button, Menu, MenuItem, Typography } from "@material-ui/core";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Apps } from "@material-ui/icons";
 import { Flex } from "@rebass/grid/emotion";
-import { DateExample } from "./selection/datePickers/dateSelector/dateSelector.example";
-import { DateRangeExample } from "./selection/datePickers/dateRange/dateRange.example";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Link,
+  Route,
+  Switch,
+  useLocation,
+} from "react-router-dom";
+import { theme } from "../src/theme/theme";
 import { FoldViewExample } from "./layout/foldView/foldView.example";
 import { ScrollSyncExample } from "./performance/ScrollSync/scrollSync.example";
-import { css, Global } from "@emotion/core";
+import { DateRangeExample } from "./selection/datePickers/dateRange/dateRange.example";
+import { DateExample } from "./selection/datePickers/dateSelector/dateSelector.example";
+import { usePopoverState } from "./utils/hooks";
+import { withRouter } from "react-router-dom";
 
 const globalStyles = css`
   html {
@@ -26,89 +36,67 @@ const globalStyles = css`
   }
 `;
 
-enum COMPONENTS {
-  dateSelector = "date_selector",
-  rangeSelector = "range_selector",
-  folderView = "folder_view",
-  scrollSync = "scroll_sync",
+enum COMPONENT_ROUTES {
+  dateSelector = "/dateSelector",
+  rangeSelector = "/rangeSelector",
+  folderView = "/folderView",
+  scrollSync = "/scrollSync",
 }
 
 const COMPONENT_EXAMPLES = [
-  "date_selector",
-  "range_selector",
-  "folder_view",
-  "scroll_sync",
+  { route: COMPONENT_ROUTES.dateSelector, text: "Date Selector" },
+  { route: COMPONENT_ROUTES.rangeSelector, text: "Range Selector" },
+  { route: COMPONENT_ROUTES.folderView, text: "Folder View" },
+  { route: COMPONENT_ROUTES.scrollSync, text: "Scroll Sync" },
 ];
 
+const NavBar: React.FC = () => {
+  const { element, onOpen, onClose, isOpen } = usePopoverState();
+  const [activeComponent, setActiveComponent] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location == null) {
+      return;
+    }
+    console.log("location", location);
+    const isDefault = location.pathname === "/";
+    setActiveComponent(isDefault ? "/dateSelector" : location.pathname);
+  }, [location]);
+
+  return (
+    <Flex justifyContent="center" alignItems="center" mt="8px" mb="64px">
+      <Flex style={{ paddingRight: "8px" }}>
+        <Typography>{`Active Component: ${activeComponent}`}</Typography>
+      </Flex>
+      <Flex>
+        <Button onClick={onOpen} variant="text" style={{ color: "#ff1a75" }}>
+          <Apps />
+        </Button>
+        <Menu
+          anchorEl={element}
+          open={isOpen}
+          getContentAnchorEl={null}
+          onClose={onClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          {COMPONENT_EXAMPLES.map(({ route, text }) => {
+            return (
+              <MenuItem key={route} onClick={onClose} component={Link} to={route}>
+                {text}
+              </MenuItem>
+            );
+          })}
+        </Menu>
+      </Flex>
+    </Flex>
+  );
+};
+
+const NavToggle = withRouter(NavBar);
+
 export const App: React.FC = () => {
-  const [activeExample, setActiveExample] = useState(COMPONENT_EXAMPLES[0]);
-
-  const onNextClick = useCallback(() => {
-    let index = COMPONENT_EXAMPLES.findIndex(comp => comp === activeExample);
-    if (index === COMPONENT_EXAMPLES.length - 1) {
-      return setActiveExample(COMPONENT_EXAMPLES[0]);
-    }
-    setActiveExample(COMPONENT_EXAMPLES[index + 1]);
-  }, [activeExample]);
-
-  const onPrevClick = useCallback(() => {
-    let index = COMPONENT_EXAMPLES.findIndex(comp => comp === activeExample);
-    if (index - 1 < 0) {
-      return setActiveExample(COMPONENT_EXAMPLES[COMPONENT_EXAMPLES.length - 1]);
-    }
-    setActiveExample(COMPONENT_EXAMPLES[index - 1]);
-  }, [activeExample]);
-
-  const activeJSX = useMemo(() => {
-    switch (activeExample) {
-      case COMPONENTS.dateSelector:
-        return (
-          <Flex
-            justifyContent="center"
-            alignItems="stretch"
-            flex="1 1 0%"
-            marginTop={"300px"}
-          >
-            <DateExample />
-          </Flex>
-        );
-      case COMPONENTS.rangeSelector:
-        return (
-          <Flex justifyContent="center" alignItems="stretch" flex="1 1 0%" paddingY="8px">
-            <DateRangeExample />
-          </Flex>
-        );
-      case COMPONENTS.folderView:
-        return (
-          <Flex
-            justifyContent="center"
-            alignItems="stretch"
-            flex="1 1 0%"
-            marginTop="300px"
-          >
-            <FoldViewExample />
-          </Flex>
-        );
-      case COMPONENTS.scrollSync:
-        return (
-          <Flex style={{ height: "100%", width: "100%" }}>
-            <ScrollSyncExample />
-          </Flex>
-        );
-      default:
-        return (
-          <Flex
-            justifyContent="center"
-            alignItems="stretch"
-            flex="1 1 0%"
-            marginTop={"300px"}
-          >
-            <DateExample />
-          </Flex>
-        );
-    }
-  }, [activeExample]);
-
   return (
     <Flex
       flexDirection="column"
@@ -118,12 +106,45 @@ export const App: React.FC = () => {
     >
       <MuiThemeProvider theme={theme}>
         <Global styles={globalStyles} />
-        <Flex flex="1 1 0%" justifyContent="space-between" alignItems="center">
-          <Button onClick={onPrevClick}>Prev</Button>
-          <Button onClick={onNextClick}>Next</Button>
+        <Flex flexDirection="column">
+          <Router>
+            <NavToggle />
+            <Switch>
+              <Route
+                exact
+                path={["/", COMPONENT_ROUTES.dateSelector]}
+                component={DateExample}
+              />
+              <Route
+                exact
+                path={COMPONENT_ROUTES.rangeSelector}
+                component={DateRangeExample}
+              />
+              <Route
+                exact
+                path={COMPONENT_ROUTES.scrollSync}
+                component={() => (
+                  <Flex style={{ height: "100%", width: "100%" }}>
+                    <ScrollSyncExample />
+                  </Flex>
+                )}
+              ></Route>
+              <Route exact path={COMPONENT_ROUTES.folderView}>
+                <FoldViewExample />
+              </Route>
+              <Route component={DummyPage} text={"Sorry, Select A Component Route"} />
+            </Switch>
+          </Router>
         </Flex>
-        {activeJSX}
       </MuiThemeProvider>
+    </Flex>
+  );
+};
+
+const DummyPage: React.FC<{ text: string }> = ({ text }) => {
+  return (
+    <Flex justifyContent="center" alignItems="center">
+      <Typography>{text}</Typography>
     </Flex>
   );
 };
