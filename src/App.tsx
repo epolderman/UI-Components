@@ -61,9 +61,9 @@ const NavBar: React.FC = () => {
     if (location == null) {
       return;
     }
-    console.log("location", location);
     const isDefault = location.pathname === "/";
-    setActiveComponent(isDefault ? "/dateSelector" : location.pathname);
+    const component = COMPONENT_EXAMPLES.find((comp) => comp.route === location.pathname);
+    setActiveComponent(isDefault ? "Date Selector" : component.text);
   }, [location]);
 
   return (
