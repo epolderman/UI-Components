@@ -1,7 +1,7 @@
 import { css, Global } from "@emotion/core";
 import { Button, Menu, MenuItem, Typography } from "@material-ui/core";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { Apps } from "@material-ui/icons";
+import { Apps, ExploreOff } from "@material-ui/icons";
 import { Flex } from "@rebass/grid/emotion";
 import React, { useEffect, useState } from "react";
 import {
@@ -63,7 +63,9 @@ const NavBar: React.FC = () => {
     }
     const isDefault = location.pathname === "/";
     const component = COMPONENT_EXAMPLES.find((comp) => comp.route === location.pathname);
-    setActiveComponent(isDefault ? "Date Selector" : component.text);
+    setActiveComponent(
+      isDefault ? "Date Selector" : component != null ? component.text : "Bad Route"
+    );
   }, [location]);
 
   return (
@@ -118,7 +120,7 @@ const ComponentRouter: React.FC = () => (
       <Route exact path={COMPONENT_ROUTES.folderView}>
         <FoldViewExample />
       </Route>
-      <Route component={DummyPage} text={"Sorry, Select A Component Route"} />
+      <Route component={FourOhFour} />
     </Switch>
   </Router>
 );
@@ -139,10 +141,18 @@ export const App: React.FC = () => {
   );
 };
 
-const DummyPage: React.FC<{ text: string }> = ({ text }) => {
+const FourOhFour: React.FC = () => {
   return (
-    <Flex justifyContent="center" alignItems="center">
-      <Typography>{text}</Typography>
+    <Flex
+      flexDirection="column"
+      flex="1 1 0%"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <ExploreOff fontSize="large" />
+      <Typography variant="h6" color="textPrimary">
+        Sorry, select a correct component route
+      </Typography>
     </Flex>
   );
 };
