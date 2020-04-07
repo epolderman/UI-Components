@@ -8,6 +8,8 @@ const resolveLoader = {
 const resolve = {
   extensions: [".tsx", ".ts", ".js"],
 };
+
+// @todo: Fix the dev build hot reload, fix library build, set up in AWS
 const webpackConfigs: webpack.Configuration[] = [
   {
     name: "development",
