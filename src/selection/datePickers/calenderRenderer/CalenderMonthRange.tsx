@@ -233,7 +233,11 @@ export const CalendarMonthRange: React.FC<CalendarMonthRangeProps> = React.memo(
   }
 );
 
-// @todo: add final check for date within rage but 1st arrives on Sunday [Check feb 2020]
+/* 
+@todo Small Rendering Circle Bugs:
+1. add final check for date within rage but 1st arrives on Sunday [Check feb 2020]
+2. check on date ending on first of a week
+*/
 const styleBuilder = (
   dateRange: DateRangeTuple,
   hoverDate: Date,
